@@ -17,6 +17,7 @@ alwaysApply: true
 - React Query (Server State)
 - Axios (API Client)
 - Socket.io-client (WebSocket)
+- Backend API Directory: /home/ehab/Desktop/backend
 
 ### 2. Project Structure
 ```
