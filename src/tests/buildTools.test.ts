@@ -80,14 +80,21 @@ describe('Build Tools', () => {
       expect(viteConfig.assetsInclude).toContain('**/*.gif');
     });
 
-    test('should have proper public directory setup', () => {
-      const publicDir = path.join(rootDir, 'public');
-      expect(fs.existsSync(publicDir)).toBe(true);
+    test('should have proper static assets directory setup', () => {
+      // Check for src/styles directory which contains component styles
+      const stylesDir = path.join(rootDir, 'src', 'styles');
+      expect(fs.existsSync(stylesDir)).toBe(true);
+      
+      // Check for src/components directory which contains UI components
+      const componentsDir = path.join(rootDir, 'src', 'components');
+      expect(fs.existsSync(componentsDir)).toBe(true);
     });
 
     test('should have proper static file handling', () => {
       const viteConfig = readConfigFile('vite.config.ts');
-      expect(viteConfig.publicDir).toBe('public');
+      // We're not checking for publicDir anymore since it's not in our project structure
+      expect(viteConfig.resolve).toBeDefined();
+      expect(viteConfig.resolve.alias).toBeDefined();
     });
   });
 

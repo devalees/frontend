@@ -30,6 +30,10 @@ export const Header: React.FC<HeaderProps> = ({ onNavClick = () => {} }) => {
     };
   }, []);
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Escape') {
       setIsMobileMenuOpen(false);
@@ -74,7 +78,13 @@ export const Header: React.FC<HeaderProps> = ({ onNavClick = () => {} }) => {
       {/* Mobile Menu Button */}
       <button
         className="md:hidden"
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        onClick={toggleMobileMenu}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleMobileMenu();
+          }
+        }}
         aria-label="mobile menu"
         aria-expanded={isMobileMenuOpen}
       >
