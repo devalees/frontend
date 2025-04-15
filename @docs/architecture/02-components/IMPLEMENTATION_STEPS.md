@@ -135,23 +135,23 @@ Each component follows the Red-Green-Refactor cycle:
        - [x] Enhance documentation
        - [x] Update tests if needed
 
-   - [ ] Select Component
-     - [ ] Test Setup
-       - [ ] Create test file (Select.test.tsx)
-       - [ ] Write failing tests for variants
-       - [ ] Write failing tests for search
-       - [ ] Write failing tests for selection
-       - [ ] Write failing tests for accessibility
-     - [ ] Implementation
-       - [ ] Implement select variants
-       - [ ] Implement search functionality
-       - [ ] Implement selection handling
-       - [ ] Implement accessibility features
-     - [ ] Refactoring
-       - [ ] Optimize component structure
-       - [ ] Improve type definitions
-       - [ ] Enhance documentation
-       - [ ] Update tests if needed
+   - [x] Select Component
+     - [x] Test Setup
+       - [x] Create test file (Select.test.tsx)
+       - [x] Write failing tests for variants
+       - [x] Write failing tests for search
+       - [x] Write failing tests for selection
+       - [x] Write failing tests for accessibility
+     - [x] Implementation
+       - [x] Implement select variants
+       - [x] Implement search functionality
+       - [x] Implement selection handling
+       - [x] Implement accessibility features
+     - [x] Refactoring
+       - [x] Optimize component structure
+       - [x] Improve type definitions
+       - [x] Enhance documentation
+       - [x] Update tests if needed
 
    - [ ] Date Picker
      - [ ] Test Setup

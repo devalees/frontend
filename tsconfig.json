@@ -13,7 +13,8 @@
     "esModuleInterop": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
-    "incremental": true
+    "incremental": true,
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": ["src/**/*"],
   "references": [{ "path": "./tsconfig.node.json" }]
