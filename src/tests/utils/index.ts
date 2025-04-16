@@ -9,5 +9,6 @@
 export * from './testUtils';
 export * from './fixtures';
 export * from './mockApi';
+export * from './mockPerformance';
 
 // Add any additional utility functions here that don't fit in the other files 
