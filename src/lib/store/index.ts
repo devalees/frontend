@@ -4,6 +4,7 @@ import { StateCreator } from 'zustand';
 import { createStore } from './createStore';
 import { RootState, createTodoSlice, createUserSlice } from './slices';
 import { HistoryState, withHistory } from './middleware/history';
+import { withDebugger, DebugState } from './middleware/debugger';
 
 // Custom hook state type
 interface CustomHookState {
@@ -12,7 +13,7 @@ interface CustomHookState {
 }
 
 // Combined state type with history and custom hook state
-export type StoreState = RootState & HistoryState<RootState> & CustomHookState;
+export type StoreState = RootState & HistoryState<RootState> & CustomHookState & DebugState;
 
 interface Store {
   getState: () => any;
@@ -71,10 +72,26 @@ const store = createStore<StoreState>({
     isLoggedIn: () => false,
     undo: () => {},
     redo: () => {},
+    __debug: {
+      enabled: process.env.NODE_ENV !== 'production',
+      levels: [],
+      actionHistory: [],
+      stateHistory: [],
+      toggleDebug: () => {},
+      setDebugLevels: () => {},
+      clearHistory: () => {},
+      getActionHistory: () => [],
+      getStateHistory: () => [],
+    },
   } as StoreState,
   middleware: [
     // Cast the withHistory middleware to the correct type to avoid TypeScript errors
     withHistory as unknown as (fn: StateCreator<StoreState>) => StateCreator<StoreState>,
+    // Add debugger middleware
+    withDebugger({
+      // Initialize debugger with default options
+      enabled: process.env.NODE_ENV !== 'production',
+    }) as unknown as (fn: StateCreator<StoreState>) => StateCreator<StoreState>,
     (stateCreator) => {
       return (...args) => {
         const todoState = createTodoSlice(...args);
