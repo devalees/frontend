@@ -4,19 +4,39 @@ import '@testing-library/jest-dom';
 import React from 'react';
 
 import { RouteError } from '../../lib/routing';
-import { mockPerformance } from '../utils/mockPerformance';
+import { performanceMockInstance } from '../utils/mockPerformance';
 
 describe('RouteError Performance', () => {
   const mockRetry = vi.fn();
   const errorMessage = 'Test error message';
+  const originalPerformance = window.performance;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockPerformance.reset();
+    performanceMockInstance.reset();
+    // Replace window.performance with our mock
+    Object.defineProperty(window, 'performance', {
+      configurable: true,
+      value: {
+        mark: performanceMockInstance.mark,
+        measure: performanceMockInstance.measure,
+        getEntriesByType: performanceMockInstance.getEntriesByType,
+        clearMarks: performanceMockInstance.clearMarks,
+        clearMeasures: performanceMockInstance.clearMeasures
+      }
+    });
+  });
+
+  afterEach(() => {
+    // Restore original window.performance
+    Object.defineProperty(window, 'performance', {
+      configurable: true,
+      value: originalPerformance
+    });
   });
 
   it('should render error message with optimal performance', () => {
-    const { markSpy, measureSpy } = mockPerformance.spyOnMetrics();
+    const { markSpy, measureSpy } = performanceMockInstance.spyOnMetrics();
     
     render(
       <RouteError 
@@ -45,7 +65,7 @@ describe('RouteError Performance', () => {
   });
 
   it('should handle retry button click efficiently', () => {
-    const { markSpy, measureSpy } = mockPerformance.spyOnMetrics();
+    const { markSpy, measureSpy } = performanceMockInstance.spyOnMetrics();
     
     render(
       <RouteError 
@@ -70,22 +90,22 @@ describe('RouteError Performance', () => {
   });
 
   it('should optimize render without retry button', () => {
-    const { markSpy, measureSpy } = mockPerformance.spyOnMetrics();
+    const { markSpy, measureSpy } = performanceMockInstance.spyOnMetrics();
     
     render(<RouteError message={errorMessage} />);
     
-    const retryButton = screen.queryByRole('button', { name: /try again/i });
+    const retryButton = screen.queryByRole('button', { name: /retry/i });
     expect(retryButton).not.toBeInTheDocument();
 
     expect(measureSpy).toHaveBeenCalledWith(
       'route-error-no-retry-render-time',
-      'route-error-render-start',
-      'route-error-render-end'
+      'route-error-no-retry-render-start',
+      'route-error-no-retry-render-end'
     );
   });
 
   it('should render error icon with consistent performance', () => {
-    const { markSpy, measureSpy } = mockPerformance.spyOnMetrics();
+    const { markSpy, measureSpy } = performanceMockInstance.spyOnMetrics();
     
     render(<RouteError message={errorMessage} />);
     
@@ -94,8 +114,8 @@ describe('RouteError Performance', () => {
 
     expect(measureSpy).toHaveBeenCalledWith(
       'route-error-icon-render-time',
-      'route-error-render-start',
-      'route-error-render-end'
+      'route-error-icon-render-start',
+      'route-error-icon-render-end'
     );
   });
 }); 

@@ -4,12 +4,18 @@ import '@testing-library/jest-dom';
 import React from 'react';
 
 import { RouteLink } from '../../lib/routing';
-import { mockPerformance } from '../utils/mockPerformance';
+import { performanceMockInstance } from '../utils/mockPerformance';
 
 vi.mock('../../lib/routing/chunkLoader', () => ({
   getRouteChunks: vi.fn(),
   preloadChunk: vi.fn()
 }));
+
+// Mock global.performance to use our performanceMockInstance utility
+Object.defineProperty(global, 'performance', {
+  value: performanceMockInstance,
+  configurable: true,
+});
 
 describe('RouteLink Performance', () => {
   const mockChunk = {
@@ -21,11 +27,11 @@ describe('RouteLink Performance', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockPerformance.reset();
+    performanceMockInstance.reset();
   });
 
   it('should preload route chunks efficiently on hover', async () => {
-    const { markSpy, measureSpy } = mockPerformance.spyOnMetrics();
+    const { markSpy, measureSpy } = performanceMockInstance.spyOnMetrics();
     const { getRouteChunks, preloadChunk } = await import('../../lib/routing/chunkLoader');
     
     // Configure mocks with synchronous resolution
@@ -64,7 +70,7 @@ describe('RouteLink Performance', () => {
   });
 
   it('should handle click events with optimal performance', async () => {
-    const { markSpy, measureSpy } = mockPerformance.spyOnMetrics();
+    const { markSpy, measureSpy } = performanceMockInstance.spyOnMetrics();
     const { getRouteChunks } = await import('../../lib/routing/chunkLoader');
     
     vi.mocked(getRouteChunks).mockResolvedValue([mockChunk]);

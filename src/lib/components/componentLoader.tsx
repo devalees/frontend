@@ -1,4 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode, Suspense, useEffect, ComponentType } from 'react';
+import { logComponentPerformance, logComponentLoadTimes } from './debugPerformance';
 
 /**
  * Component metadata interface
@@ -52,6 +53,25 @@ const componentRegistry = new Map<string, ComponentMetadata>();
 // Cache for preloaded components
 const preloadCache = new Map<string, Promise<any>>();
 
+// Debug helper - log component registry contents
+const logRegistryContents = () => {
+  console.log('[ComponentLoader] Registry contents:', 
+    Array.from(componentRegistry.entries()).map(([id, metadata]) => ({
+      id,
+      displayName: metadata.displayName,
+      path: metadata.path,
+      dependencies: metadata.dependencies.length
+    }))
+  );
+};
+
+// Debug helper - log preload cache contents
+const logPreloadCacheContents = () => {
+  console.log('[ComponentLoader] Preload cache contents:', 
+    Array.from(preloadCache.keys())
+  );
+};
+
 /**
  * Error boundary component for handling component loading errors
  */
@@ -66,6 +86,7 @@ export class ComponentErrorBoundary extends Component<ComponentErrorBoundaryProp
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     const componentError: ComponentError = error;
+    console.log('[ComponentErrorBoundary] Error caught in getDerivedStateFromError:', error.message);
     
     return {
       hasError: true,
@@ -76,11 +97,17 @@ export class ComponentErrorBoundary extends Component<ComponentErrorBoundaryProp
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log error to performance monitoring
     performance.mark('component-error-start');
-    console.error('Component loading error:', error, errorInfo);
+    console.error('[ComponentErrorBoundary] Component loading error:', {
+      message: error.message,
+      componentId: this.props.componentId,
+      stack: error.stack,
+      errorInfo
+    });
     
     // Add component ID to error if provided
     if (this.props.componentId && this.state.error) {
       this.state.error.componentId = this.props.componentId;
+      console.log(`[ComponentErrorBoundary] Added componentId ${this.props.componentId} to error`);
     }
     
     performance.mark('component-error-end');
@@ -92,6 +119,7 @@ export class ComponentErrorBoundary extends Component<ComponentErrorBoundaryProp
   }
 
   handleRetry = (): void => {
+    console.log('[ComponentErrorBoundary] Retry attempted for component', this.props.componentId);
     performance.mark('component-retry-start');
     this.setState({ hasError: false, error: null });
     performance.mark('component-retry-end');
@@ -106,6 +134,11 @@ export class ComponentErrorBoundary extends Component<ComponentErrorBoundaryProp
     const { fallback, children } = this.props;
     
     if (this.state.hasError && this.state.error) {
+      console.log('[ComponentErrorBoundary] Rendering fallback for error:', {
+        message: this.state.error.message,
+        componentId: this.state.error.componentId
+      });
+      
       const errorProps: FallbackProps = {
         error: this.state.error,
         retry: this.handleRetry
@@ -114,10 +147,12 @@ export class ComponentErrorBoundary extends Component<ComponentErrorBoundaryProp
       // Check if it's a render function or a component
       if (this.isRenderFunction(fallback)) {
         // It's a render function
+        console.log('[ComponentErrorBoundary] Using render function fallback');
         return fallback(this.state.error, this.handleRetry);
       }
       
       // It's a component
+      console.log('[ComponentErrorBoundary] Using component fallback');
       return React.createElement(fallback, errorProps);
     }
     
@@ -136,12 +171,15 @@ export class ComponentErrorBoundary extends Component<ComponentErrorBoundaryProp
  * @returns The import path for the component
  */
 function getComponentPath(componentId: string): string {
+  console.log(`[ComponentLoader] Getting path for component: ${componentId}`);
   const component = componentRegistry.get(componentId);
   
   if (!component) {
+    console.error(`[ComponentLoader] Component with ID "${componentId}" not found in registry`);
     throw new Error(`Component with ID "${componentId}" not found in registry`);
   }
   
+  console.log(`[ComponentLoader] Found path ${component.path} for component ${componentId}`);
   return component.path;
 }
 
@@ -151,15 +189,20 @@ function getComponentPath(componentId: string): string {
  * @returns Promise that resolves when dependencies are loaded
  */
 async function loadDependencies(componentId: string): Promise<void> {
+  console.log(`[ComponentLoader] Loading dependencies for component: ${componentId}`);
   const component = componentRegistry.get(componentId);
   
   if (!component || !component.dependencies || component.dependencies.length === 0) {
+    console.log(`[ComponentLoader] No dependencies to load for component: ${componentId}`);
     return;
   }
+  
+  console.log(`[ComponentLoader] Dependencies for ${componentId}:`, component.dependencies);
   
   // In a real implementation, this would load any required dependencies
   // For now, we'll just simulate a delay
   await new Promise(resolve => setTimeout(resolve, 10));
+  console.log(`[ComponentLoader] Finished loading dependencies for ${componentId}`);
 }
 
 /**
@@ -168,11 +211,13 @@ async function loadDependencies(componentId: string): Promise<void> {
  * @returns Promise that resolves to the component
  */
 export async function loadComponent(componentId: string): Promise<{ default: React.ComponentType<any> }> {
+  console.log(`[ComponentLoader] Loading component: ${componentId}`);
   performance.mark('component-load-start');
   
   try {
     // First load dependencies
     performance.mark('component-dependencies-load-start');
+    console.log(`[ComponentLoader] Starting dependency loading for ${componentId}`);
     await loadDependencies(componentId);
     performance.mark('component-dependencies-load-end');
     performance.measure(
@@ -180,6 +225,7 @@ export async function loadComponent(componentId: string): Promise<{ default: Rea
       'component-dependencies-load-start',
       'component-dependencies-load-end'
     );
+    console.log(`[ComponentLoader] Completed dependency loading for ${componentId}`);
     
     // Get the path to the component module
     const componentPath = getComponentPath(componentId);
@@ -188,6 +234,7 @@ export async function loadComponent(componentId: string): Promise<{ default: Rea
     // In a real implementation, this would be:
     // const component = await import(componentPath);
     // For testing purposes, we'll simulate the import
+    console.log(`[ComponentLoader] Dynamically importing component from ${componentPath}`);
     const component = await simulateDynamicImport(componentPath);
     
     // After component is loaded, we measure the render time
@@ -204,7 +251,11 @@ export async function loadComponent(componentId: string): Promise<{ default: Rea
       'component-render-end'
     );
     
+    console.log(`[ComponentLoader] Successfully loaded component: ${componentId}`);
     return component;
+  } catch (error) {
+    console.error(`[ComponentLoader] Error loading component ${componentId}:`, error);
+    throw error;
   } finally {
     performance.mark('component-load-end');
     performance.measure(
@@ -221,14 +272,19 @@ export async function loadComponent(componentId: string): Promise<{ default: Rea
  * @returns Promise that resolves to the component
  */
 async function simulateDynamicImport(path: string): Promise<{ default: React.ComponentType<any> }> {
+  console.log(`[ComponentLoader] Simulating dynamic import for path: ${path}`);
+  
   // Check if we should throw an error (useful for testing error boundaries)
   if (path.includes('error')) {
+    console.warn(`[ComponentLoader] Path contains 'error', throwing simulated error`);
     throw new Error('Failed to load component');
   }
   
   // Simulate network delay
+  console.log(`[ComponentLoader] Simulating network delay for component import`);
   await new Promise(resolve => setTimeout(resolve, 50));
   
+  console.log(`[ComponentLoader] Dynamic import simulation completed for: ${path}`);
   // Return a simple component
   return {
     default: (props: any) => (
@@ -245,22 +301,26 @@ async function simulateDynamicImport(path: string): Promise<{ default: React.Com
  * @returns Promise that resolves when preloading is complete
  */
 export async function preloadComponent(componentId: string): Promise<void> {
+  console.log(`[ComponentLoader] Preloading component: ${componentId}`);
   performance.mark('component-preload-start');
   
   try {
     // Check if component is already in preload cache
     if (preloadCache.has(componentId)) {
+      console.log(`[ComponentLoader] Component ${componentId} already preloaded, skipping`);
       return;
     }
     
     // Get the component path
     const componentPath = getComponentPath(componentId);
+    console.log(`[ComponentLoader] Starting preload for component ${componentId} at path ${componentPath}`);
     
     // Start preloading by creating a promise that loads the component
     const preloadPromise = loadComponent(componentId);
     
     // Store in cache
     preloadCache.set(componentId, preloadPromise);
+    console.log(`[ComponentLoader] Added component ${componentId} to preload cache`);
     
     // Start loading dependencies in background
     performance.mark('component-dependencies-preload-start');
@@ -271,6 +331,12 @@ export async function preloadComponent(componentId: string): Promise<void> {
       'component-dependencies-preload-start',
       'component-dependencies-preload-end'
     );
+    
+    console.log(`[ComponentLoader] Completed preloading component: ${componentId}`);
+    logPreloadCacheContents();
+  } catch (error) {
+    console.error(`[ComponentLoader] Error preloading component ${componentId}:`, error);
+    throw error;
   } finally {
     performance.mark('component-preload-end');
     performance.measure(
@@ -287,6 +353,12 @@ export async function preloadComponent(componentId: string): Promise<void> {
  * @returns The registered component metadata
  */
 export function registerComponent(component: ComponentMetadata): ComponentMetadata {
+  console.log(`[ComponentLoader] Registering component: ${component.id}`, {
+    displayName: component.displayName,
+    path: component.path,
+    dependencies: component.dependencies
+  });
+  
   performance.mark('component-register-start');
   
   // Store the component in registry
@@ -299,6 +371,9 @@ export function registerComponent(component: ComponentMetadata): ComponentMetada
     'component-register-end'
   );
   
+  console.log(`[ComponentLoader] Successfully registered component: ${component.id}`);
+  logRegistryContents();
+  
   return component;
 }
 
@@ -308,16 +383,21 @@ export function registerComponent(component: ComponentMetadata): ComponentMetada
  * @returns React lazy component
  */
 export function lazyLoadComponent(componentId: string): React.LazyExoticComponent<React.ComponentType<any>> {
+  console.log(`[ComponentLoader] Creating lazy component for: ${componentId}`);
   performance.mark('component-lazy-load-init-start');
   
   // Create a lazy component that loads the actual component when rendered
   const LazyComponent = React.lazy(async () => {
+    console.log(`[ComponentLoader] Lazy component ${componentId} triggered loading`);
+    
     // If component was preloaded, use that promise
     if (preloadCache.has(componentId)) {
+      console.log(`[ComponentLoader] Using preloaded component for ${componentId}`);
       return preloadCache.get(componentId) as Promise<{ default: React.ComponentType<any> }>;
     }
     
     // Otherwise load it normally
+    console.log(`[ComponentLoader] No preloaded version found, loading component ${componentId} normally`);
     return loadComponent(componentId);
   });
   
@@ -328,6 +408,7 @@ export function lazyLoadComponent(componentId: string): React.LazyExoticComponen
     'component-lazy-load-init-end'
   );
   
+  console.log(`[ComponentLoader] Created lazy component for: ${componentId}`);
   return LazyComponent;
 }
 
@@ -341,22 +422,32 @@ export function getComponent(
   componentId: string,
   fallback: ComponentType<FallbackProps> | RenderFallbackFn
 ): React.FC<any> {
+  console.log(`[ComponentLoader] getComponent called for: ${componentId}`);
+  
   // Get the lazy component
   const LazyComponent = lazyLoadComponent(componentId);
+  console.log(`[ComponentLoader] LazyComponent created for ${componentId}`);
   
   // Create a wrapper component that handles loading states and errors
   const Component: React.FC<any> = (props) => {
+    console.log(`[ComponentLoader] Rendering wrapped component for ${componentId}`);
+    
     // Track when the component renders
     useEffect(() => {
+      console.log(`[ComponentLoader] Component ${componentId} mounted, starting performance tracking`);
       performance.mark(`component-${componentId}-render-start`);
       
       return () => {
+        console.log(`[ComponentLoader] Component ${componentId} unmounted, ending performance tracking`);
         performance.mark(`component-${componentId}-render-end`);
         performance.measure(
           `component-${componentId}-render-time`,
           `component-${componentId}-render-start`,
           `component-${componentId}-render-end`
         );
+        
+        // Log performance data for this component
+        logComponentPerformance(componentId);
       };
     }, []);
     
@@ -369,5 +460,22 @@ export function getComponent(
     );
   };
   
+  console.log(`[ComponentLoader] Created wrapped component for: ${componentId}`);
   return Component;
+}
+
+// Add a debug function to log component loading performance
+export function debugComponentLoading(): void {
+  console.log('[ComponentLoader] --- DEBUG COMPONENT LOADING ---');
+  console.log('Component Registry:', Array.from(componentRegistry.entries()).map(([id, metadata]) => ({
+    id,
+    displayName: metadata.displayName,
+    path: metadata.path,
+    dependencies: metadata.dependencies.length
+  })));
+  
+  console.log('Preload Cache:', Array.from(preloadCache.keys()));
+  
+  // Log all component load times
+  logComponentLoadTimes();
 } 

@@ -21,88 +21,51 @@ interface MockPerformanceMeasure extends PerformanceMeasure {
   detail: any;
 }
 
-type PerformanceMetrics = {
-  markSpy: SpyInstance;
-  measureSpy: SpyInstance;
-};
-
 class PerformanceMock {
   private marks: Record<string, number> = {};
   private measures: Record<string, MockPerformanceEntry> = {};
   private entries: MockPerformanceEntry[] = [];
-  private markSpy: SpyInstance;
-  private measureSpy: SpyInstance;
-
-  constructor() {
-    // Create spy functions
-    this.markSpy = vi.fn((name: string) => {
-      this.marks[name] = Date.now();
-      return {
+  
+  // Create spy functions for testing
+  public mark = vi.fn((name: string) => {
+    this.marks[name] = Date.now();
+    return {
+      name,
+      entryType: 'mark',
+      startTime: this.marks[name],
+      duration: 0,
+      detail: null,
+      toJSON: () => ({
         name,
         entryType: 'mark',
         startTime: this.marks[name],
-        duration: 0,
-        detail: null,
-        toJSON: () => ({
-          name,
-          entryType: 'mark',
-          startTime: this.marks[name],
-          duration: 0
-        })
-      } as MockPerformanceMark;
-    });
+        duration: 0
+      })
+    } as MockPerformanceMark;
+  });
 
-    this.measureSpy = vi.fn((name: string, startMark: string, endMark: string) => {
-      const start = this.marks[startMark] || 0;
-      const end = this.marks[endMark] || Date.now();
-      const duration = end - start;
-      
-      const measure = {
+  public measure = vi.fn((name: string, startMark: string, endMark: string) => {
+    const start = this.marks[startMark] || 0;
+    const end = this.marks[endMark] || Date.now();
+    const duration = end - start;
+    
+    const measure = {
+      name,
+      entryType: 'measure',
+      startTime: start,
+      duration,
+      detail: null,
+      toJSON: () => ({
         name,
         entryType: 'measure',
         startTime: start,
-        duration,
-        detail: null,
-        toJSON: () => ({
-          name,
-          entryType: 'measure',
-          startTime: start,
-          duration
-        })
-      } as MockPerformanceMeasure;
-      
-      this.measures[name] = measure;
-      return measure;
-    });
-
-    // Mock the performance API
-    const mockPerformance = {
-      mark: this.markSpy,
-      measure: this.measureSpy,
-      getEntriesByType: (type: string): PerformanceEntryList => {
-        const entries = type === 'resource' 
-          ? this.entries 
-          : Object.values(this.measures).filter(entry => entry.entryType === type);
-        
-        return Object.assign(entries, {
-          toJSON: () => entries.map(entry => entry.toJSON())
-        }) as PerformanceEntryList;
-      },
-      clearMarks: () => {
-        this.marks = {};
-      },
-      clearMeasures: () => {
-        this.measures = {};
-      }
-    };
-
-    // Replace the global performance object
-    Object.defineProperty(global, 'performance', {
-      value: mockPerformance,
-      writable: true,
-      configurable: true
-    });
-  }
+        duration
+      })
+    } as MockPerformanceMeasure;
+    
+    this.measures[name] = measure;
+    return measure;
+  });
 
   /**
    * Reset all performance mocks and clear stored metrics
@@ -112,16 +75,6 @@ class PerformanceMock {
     this.measures = {};
     this.entries = [];
     vi.clearAllMocks();
-  }
-
-  /**
-   * Get spy instances for performance methods
-   */
-  spyOnMetrics(): PerformanceMetrics {
-    return {
-      markSpy: this.markSpy,
-      measureSpy: this.measureSpy
-    };
   }
 
   /**
@@ -146,7 +99,46 @@ class PerformanceMock {
     };
     this.entries.push(resourceEntry);
   }
+
+  /**
+   * Get entries by type
+   */
+  getEntriesByType(type: string): PerformanceEntryList {
+    return this.entries.filter(entry => entry.entryType === type) as unknown as PerformanceEntryList;
+  }
+
+  /**
+   * Clear all marks
+   */
+  clearMarks() {
+    this.marks = {};
+    vi.clearAllMocks();
+  }
+
+  /**
+   * Clear all measures
+   */
+  clearMeasures() {
+    this.measures = {};
+    vi.clearAllMocks();
+  }
+
+  /**
+   * Create spy functions for performance marks and measures
+   * This is used in tests to verify that performance marks and measures are called
+   */
+  spyOnMetrics() {
+    // Since we're already using vi.fn() for mark and measure,
+    // we can just return those directly as they already have spy functionality
+    return {
+      markSpy: this.mark,
+      measureSpy: this.measure
+    };
+  }
 }
 
-// Export a singleton instance
-export const mockPerformance = new PerformanceMock(); 
+// Create a singleton instance
+const performanceMockInstance = new PerformanceMock();
+
+// Export the singleton instance
+export { performanceMockInstance }; 

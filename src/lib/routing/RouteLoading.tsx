@@ -10,40 +10,41 @@ export interface RouteLoadingProps {
 }
 
 export const RouteLoading: React.FC<RouteLoadingProps> = ({ showSkeleton = true }) => {
-  useEffect(() => {
-    performance.mark('route-loading-render-start');
-    return () => {
-      performance.mark('route-loading-render-end');
-      performance.measure(
-        'route-loading-render-time',
-        'route-loading-render-start',
-        'route-loading-render-end'
-      );
-    };
-  }, []);
+  // Mark the start of rendering immediately
+  performance.mark('route-loading-render-start');
 
   useEffect(() => {
+    // This effect runs after the component mounts
     if (showSkeleton) {
       performance.mark('skeleton-render-start');
-      return () => {
+    }
+    
+    return () => {
+      // This cleanup runs when the component unmounts
+      if (showSkeleton) {
         performance.mark('skeleton-render-end');
         performance.measure(
           'skeleton-render-time',
           'skeleton-render-start',
           'skeleton-render-end'
         );
-      };
-    } else {
-      performance.mark('route-loading-render-start');
-      return () => {
-        performance.mark('route-loading-render-end');
+      }
+      
+      performance.mark('route-loading-render-end');
+      performance.measure(
+        'route-loading-render-time',
+        'route-loading-render-start',
+        'route-loading-render-end'
+      );
+      
+      if (!showSkeleton) {
         performance.measure(
           'route-loading-no-skeleton-render-time',
           'route-loading-render-start',
           'route-loading-render-end'
         );
-      };
-    }
+      }
+    };
   }, [showSkeleton]);
 
   return (

@@ -16,58 +16,105 @@ export const RouteError: React.FC<RouteErrorProps> = ({
   message = 'Failed to load route',
   onRetry 
 }) => {
+  // Mark the start of rendering immediately
+  if (typeof window !== 'undefined') {
+    console.log('[RouteError] Creating initial render start mark');
+    try {
+      window.performance.mark('route-error-render-start');
+      console.log('[RouteError] Successfully created render start mark');
+    } catch (error) {
+      console.error('[RouteError] Failed to create render start mark:', error);
+    }
+  } else {
+    console.log('[RouteError] Window not available for initial render mark');
+  }
+
   // Main component render performance
   useEffect(() => {
-    performance.mark('route-error-render-start');
+    console.log('[RouteError] Running main render effect');
+    if (typeof window !== 'undefined') {
+      try {
+        window.performance.mark('route-error-render-end');
+        window.performance.measure(
+          'route-error-render-time',
+          'route-error-render-start',
+          'route-error-render-end'
+        );
+        console.log('[RouteError] Successfully created render end mark and measure');
+      } catch (error) {
+        console.error('[RouteError] Error in main render effect:', error);
+      }
+    }
     
-    // Set the render-end mark synchronously for testing
-    performance.mark('route-error-render-end');
-    performance.measure(
-      'route-error-render-time',
-      'route-error-render-start',
-      'route-error-render-end'
-    );
-    
-    return () => {};
+    return () => {
+      console.log('[RouteError] Cleanup main render effect');
+    };
   }, []);
 
   const handleRetry = useCallback(() => {
     if (onRetry) {
-      performance.mark('route-error-retry-start');
+      console.log('[RouteError] Handling retry click');
+      if (typeof window !== 'undefined') {
+        try {
+          window.performance.mark('route-error-retry-start');
+          console.log('[RouteError] Created retry start mark');
+        } catch (error) {
+          console.error('[RouteError] Failed to create retry start mark:', error);
+        }
+      }
       onRetry();
-      performance.mark('route-error-retry-end');
-      performance.measure(
-        'route-error-retry-time',
-        'route-error-retry-start',
-        'route-error-retry-end'
-      );
+      if (typeof window !== 'undefined') {
+        try {
+          window.performance.mark('route-error-retry-end');
+          window.performance.measure(
+            'route-error-retry-time',
+            'route-error-retry-start',
+            'route-error-retry-end'
+          );
+          console.log('[RouteError] Successfully created retry end mark and measure');
+        } catch (error) {
+          console.error('[RouteError] Failed to create retry end mark/measure:', error);
+        }
+      }
     }
   }, [onRetry]);
 
   // No-retry render performance
   useEffect(() => {
-    if (!onRetry) {
-      // Create a separate measurement for no-retry case
-      performance.mark('route-error-render-start');
-      performance.mark('route-error-render-end');
-      performance.measure(
-        'route-error-no-retry-render-time',
-        'route-error-render-start',
-        'route-error-render-end'
-      );
+    console.log('[RouteError] Running no-retry effect, onRetry present:', !!onRetry);
+    if (!onRetry && typeof window !== 'undefined') {
+      try {
+        window.performance.mark('route-error-no-retry-render-start');
+        window.performance.mark('route-error-no-retry-render-end');
+        window.performance.measure(
+          'route-error-no-retry-render-time',
+          'route-error-no-retry-render-start',
+          'route-error-no-retry-render-end'
+        );
+        console.log('[RouteError] Successfully created no-retry marks and measure');
+      } catch (error) {
+        console.error('[RouteError] Error in no-retry effect:', error);
+      }
     }
   }, [onRetry]);
 
   // Icon render performance
   useEffect(() => {
-    // Create a separate measurement for icon render
-    performance.mark('route-error-render-start');
-    performance.mark('route-error-render-end');
-    performance.measure(
-      'route-error-icon-render-time',
-      'route-error-render-start',
-      'route-error-render-end'
-    );
+    console.log('[RouteError] Running icon render effect');
+    if (typeof window !== 'undefined') {
+      try {
+        window.performance.mark('route-error-icon-render-start');
+        window.performance.mark('route-error-icon-render-end');
+        window.performance.measure(
+          'route-error-icon-render-time',
+          'route-error-icon-render-start',
+          'route-error-icon-render-end'
+        );
+        console.log('[RouteError] Successfully created icon render marks and measure');
+      } catch (error) {
+        console.error('[RouteError] Error in icon render effect:', error);
+      }
+    }
   }, []);
 
   return (
@@ -97,9 +144,9 @@ export const RouteError: React.FC<RouteErrorProps> = ({
         <Button 
           onClick={handleRetry}
           variant="primary"
-          aria-label="Retry loading route"
+          className="mt-4"
         >
-          Try Again
+          Retry Loading Route
         </Button>
       )}
     </div>

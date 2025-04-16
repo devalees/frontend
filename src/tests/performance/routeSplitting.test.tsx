@@ -8,7 +8,7 @@ import { RouteLink, RouteError, RouteLoading } from '../../lib/routing';
 import { getRouteChunks, preloadChunk } from '../../lib/routing/chunkLoader';
 
 // Import test utilities
-import { mockPerformance } from '../utils/mockPerformance';
+import { performanceMockInstance } from '../utils/mockPerformance';
 import { createRouteFixture, createChunkFixture } from '../utils/fixtures';
 
 // Mock the chunk loader
@@ -17,10 +17,16 @@ vi.mock('../../lib/routing/chunkLoader', () => ({
   preloadChunk: vi.fn()
 }));
 
+// Mock global.performance to use our performanceMockInstance utility
+Object.defineProperty(global, 'performance', {
+  value: performanceMockInstance,
+  configurable: true,
+});
+
 describe('Route-based Code Splitting', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockPerformance.reset();
+    performanceMockInstance.reset();
     
     // Debug: Log mock resets
     console.log('=== Test Setup ===');
@@ -43,7 +49,7 @@ describe('Route-based Code Splitting', () => {
     (getRouteChunks as jest.Mock).mockResolvedValue([chunk]);
     (preloadChunk as jest.Mock).mockResolvedValue(undefined);
     
-    const { markSpy, measureSpy } = mockPerformance.spyOnMetrics();
+    const { markSpy, measureSpy } = performanceMockInstance.spyOnMetrics();
     console.log('Performance spies initialized');
     
     // Act
