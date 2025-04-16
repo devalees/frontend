@@ -1,13 +1,41 @@
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
 import { StateCreator } from 'zustand';
 import { createStore } from './createStore';
 import { RootState, createTodoSlice, createUserSlice } from './slices';
 import { HistoryState, withHistory } from './middleware/history';
 
-// Combined state type with history
-export type StoreState = RootState & HistoryState<RootState>;
+// Custom hook state type
+interface CustomHookState {
+  customHookData: any | null;
+  customHookError: Error | null;
+}
+
+// Combined state type with history and custom hook state
+export type StoreState = RootState & HistoryState<RootState> & CustomHookState;
+
+interface Store {
+  getState: () => any;
+  setState: (updater: any) => void;
+}
+
+// Create the store with middleware
+const baseStore = create<Store>()(
+  devtools(
+    persist(
+      (set, get) => ({
+        getState: get,
+        setState: set,
+      }),
+      {
+        name: 'app-storage',
+      }
+    )
+  )
+);
 
 // Create the root store with all slices and middleware
-const useStore = createStore<StoreState>({
+const store = createStore<StoreState>({
   initialState: {
     todos: [],
     user: null,
@@ -17,6 +45,8 @@ const useStore = createStore<StoreState>({
     notificationHandler: undefined,
     past: [],
     future: [],
+    customHookData: null,
+    customHookError: null,
     // Initialize with empty functions that will be replaced by slice implementations
     addTodo: () => {},
     toggleTodo: () => {},
@@ -60,7 +90,8 @@ const useStore = createStore<StoreState>({
   ],
 });
 
-export default useStore;
+// Export the hook
+export { store as useStore };
 
 // Re-export types from slices for convenience
 export * from './slices'; 
