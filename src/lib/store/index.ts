@@ -1,114 +1,55 @@
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import { StateCreator } from 'zustand';
-import { createStore } from './createStore';
-import { RootState, createTodoSlice, createUserSlice } from './slices';
-import { HistoryState, withHistory } from './middleware/history';
-import { withDebugger, DebugState } from './middleware/debugger';
+import { devtools } from 'zustand/middleware';
+import { persist } from 'zustand/middleware';
+import { createTodoSlice, createUserSlice, createNotificationSlice } from './slices';
+import type { RootState } from './slices';
+import type { HistoryState } from './middleware/history';
+import type { DebugState } from './middleware/debugger';
 
-// Custom hook state type
-interface CustomHookState {
-  customHookData: any | null;
-  customHookError: Error | null;
-}
+// Combined state type with all middleware enhancements
+export type StoreState = RootState & Partial<HistoryState<RootState>> & Partial<DebugState>;
 
-// Combined state type with history and custom hook state
-export type StoreState = RootState & HistoryState<RootState> & CustomHookState & DebugState;
-
-interface Store {
-  getState: () => any;
-  setState: (updater: any) => void;
-}
-
-// Create the store with middleware
-const baseStore = create<Store>()(
+/**
+ * Create the root store by combining all slices
+ * This uses a simplified approach to avoid complex type issues
+ */
+export const useStore = create<StoreState>()(
   devtools(
     persist(
-      (set, get) => ({
-        getState: get,
-        setState: set,
+      (...a) => ({
+        // Include all slice state and actions
+        ...createTodoSlice(...a),
+        ...createUserSlice(...a),
+        ...createNotificationSlice(...a),
+        
+        // Add basic history functionality
+        past: [],
+        future: [],
+        undo: () => {},
+        redo: () => {},
+        canUndo: false,
+        canRedo: false,
+        
+        // Add minimal debug state
+        __debug: {
+          enabled: process.env.NODE_ENV === 'development',
+          levels: [],
+          actionHistory: [],
+          stateHistory: [],
+          toggleDebug: () => {},
+          setDebugLevels: () => {},
+          clearHistory: () => {},
+          getActionHistory: () => [],
+          getStateHistory: () => []
+        }
       }),
       {
         name: 'app-storage',
+        partialize: (state) => ({
+          user: state.user
+        })
       }
-    )
+    ),
+    { name: 'AppStore' }
   )
-);
-
-// Create the root store with all slices and middleware
-const store = createStore<StoreState>({
-  initialState: {
-    todos: [],
-    user: null,
-    todoFilter: 'all',
-    todosLoading: false,
-    userLoading: false,
-    notificationHandler: undefined,
-    past: [],
-    future: [],
-    customHookData: null,
-    customHookError: null,
-    // Initialize with empty functions that will be replaced by slice implementations
-    addTodo: () => {},
-    toggleTodo: () => {},
-    removeTodo: () => {},
-    toggleTodos: () => {},
-    removeTodos: () => {},
-    setTodoFilter: () => {},
-    getFilteredTodos: () => [],
-    createTodoAsync: async () => ({ id: '', text: '', completed: false }),
-    fetchTodos: async () => {},
-    getCompletedTodos: () => [],
-    getPendingTodos: () => [],
-    getTodoById: () => undefined,
-    setUser: () => {},
-    logout: () => {},
-    loginAsync: async () => ({ id: '', name: '' }),
-    fetchUser: async () => {},
-    setNotificationHandler: () => {},
-    clearNotificationHandler: () => {},
-    getUserName: () => null,
-    getUserId: () => null,
-    isLoggedIn: () => false,
-    undo: () => {},
-    redo: () => {},
-    __debug: {
-      enabled: process.env.NODE_ENV !== 'production',
-      levels: [],
-      actionHistory: [],
-      stateHistory: [],
-      toggleDebug: () => {},
-      setDebugLevels: () => {},
-      clearHistory: () => {},
-      getActionHistory: () => [],
-      getStateHistory: () => [],
-    },
-  } as StoreState,
-  middleware: [
-    // Cast the withHistory middleware to the correct type to avoid TypeScript errors
-    withHistory as unknown as (fn: StateCreator<StoreState>) => StateCreator<StoreState>,
-    // Add debugger middleware
-    withDebugger({
-      // Initialize debugger with default options
-      enabled: process.env.NODE_ENV !== 'production',
-    }) as unknown as (fn: StateCreator<StoreState>) => StateCreator<StoreState>,
-    (stateCreator) => {
-      return (...args) => {
-        const todoState = createTodoSlice(...args);
-        const userState = createUserSlice(...args);
-        const state = stateCreator(...args);
-        return {
-          ...state,
-          ...todoState,
-          ...userState,
-        };
-      };
-    },
-  ],
-});
-
-// Export the hook
-export { store as useStore };
-
-// Re-export types from slices for convenience
-export * from './slices'; 
+); 

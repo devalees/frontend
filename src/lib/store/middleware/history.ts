@@ -5,13 +5,42 @@ export interface HistoryState<T> {
   future: T[];
   undo: () => void;
   redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
-const MAX_HISTORY_SIZE = 10;
+export interface HistoryOptions {
+  /** Maximum number of states to keep in history */
+  maxHistorySize?: number;
+  /** Keys to exclude from history tracking */
+  excludeKeys?: string[];
+  /** Specific keys to include in history (takes precedence over excludeKeys) */
+  includeKeys?: string[];
+  /** Whether to enable debug logs */
+  debug?: boolean;
+  /** Whether to deep clone state (safer but slower) */
+  deepClone?: boolean;
+  /** Minimum time (ms) between capturing state changes */
+  throttleMs?: number;
+  /** Callback when history changes */
+  onHistoryChange?: (past: any[], future: any[]) => void;
+}
 
-const historyKeys = ['past', 'future', 'undo', 'redo'] as const;
+const DEFAULT_OPTIONS: HistoryOptions = {
+  maxHistorySize: 10,
+  excludeKeys: [],
+  includeKeys: undefined,
+  debug: false,
+  deepClone: true,
+  throttleMs: 300
+};
 
-// Deep clone function to ensure state is properly copied
+const DEFAULT_HISTORY_KEYS = ['past', 'future', 'undo', 'redo', 'canUndo', 'canRedo'] as const;
+
+/**
+ * Deep clone function to ensure state is properly copied
+ * Only used when deepClone option is enabled
+ */
 const deepCloneState = <T>(obj: T): T => {
   if (obj === null || typeof obj !== 'object') {
     return obj;
@@ -31,115 +60,253 @@ const deepCloneState = <T>(obj: T): T => {
   return clonedObj;
 };
 
-const filterHistoryState = <T extends object>(state: T & HistoryState<T>): T => {
-  const filtered = { ...state };
+/**
+ * Shallow clone function for better performance
+ */
+const shallowCloneState = <T>(obj: T): T => {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  
+  if (Array.isArray(obj)) {
+    return [...obj] as any;
+  }
+  
+  return { ...obj };
+};
+
+/**
+ * Filter out history-related keys from the state
+ * If includeKeys is provided, only include those keys
+ */
+const filterHistoryState = <T extends object>(
+  state: T & HistoryState<T>, 
+  options: Pick<HistoryOptions, 'excludeKeys' | 'includeKeys'> = {}
+): T => {
+  const { excludeKeys = [], includeKeys } = options;
+  const filteredState = { ...state };
+  
+  // Default keys to exclude
+  const keysToExclude = [...DEFAULT_HISTORY_KEYS, ...(excludeKeys || [])];
+  
+  // If includeKeys is provided, only include those keys
+  if (includeKeys && includeKeys.length > 0) {
+    const result: Record<string, any> = {};
+    
+    for (const key of includeKeys) {
+      if (key in filteredState && !keysToExclude.includes(key)) {
+        result[key] = (filteredState as any)[key];
+      }
+    }
+    
+    return result as T;
+  }
+  
+  // Otherwise, exclude keys that shouldn't be tracked
   const result = Object.fromEntries(
-    Object.entries(filtered).filter(([key]) => !historyKeys.includes(key as typeof historyKeys[number]))
+    Object.entries(filteredState).filter(([key]) => !keysToExclude.includes(key))
   );
+  
   return result as T;
 };
 
-export const withHistory = <T extends object>(
-  config: StateCreator<T>
-): StateCreator<T & HistoryState<T>> => (set, get, api) => {
-  const wrappedSet = (
-    updater: ((state: T & HistoryState<T>) => Partial<T & HistoryState<T>>) | Partial<T & HistoryState<T>>
-  ) => {
-    const currentState = filterHistoryState(get() as T & HistoryState<T>);
-    const state = get() as T & HistoryState<T>;
-    
-    console.log('Recording state in history:', { 
-      currentState,
-      updater: typeof updater === 'function' ? 'function' : updater
-    });
-    
-    // Skip tracking history for certain actions
-    const isHistoryAction = typeof updater === 'function' 
-      ? false 
-      : Object.keys(updater).some(key => historyKeys.includes(key as typeof historyKeys[number]));
+/**
+ * Check if the state has meaningfully changed from previous state
+ * Avoids adding duplicate states to history
+ */
+const hasStateChanged = <T extends object>(
+  prevState: T,
+  currentState: T,
+  options: Pick<HistoryOptions, 'includeKeys'> = {}
+): boolean => {
+  const { includeKeys } = options;
+  
+  // If includeKeys is provided, only compare those keys
+  if (includeKeys && includeKeys.length > 0) {
+    return includeKeys.some(key => 
+      prevState[key as keyof T] !== currentState[key as keyof T]
+    );
+  }
+  
+  // Otherwise, do a shallow comparison of all keys
+  const prevKeys = Object.keys(prevState);
+  const currentKeys = Object.keys(currentState);
+  
+  if (prevKeys.length !== currentKeys.length) {
+    return true;
+  }
+  
+  return prevKeys.some(key => 
+    prevState[key as keyof T] !== currentState[key as keyof T]
+  );
+};
 
-    if (isHistoryAction) {
-      set(updater);
-      return;
-    }
+/**
+ * Create history middleware with options
+ */
+export const createHistoryMiddleware = <T extends object>(options: HistoryOptions = {}) => {
+  const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
+  
+  return (config: StateCreator<T>): StateCreator<T & HistoryState<T>> => (set, get, api) => {
+    const cloneState = mergedOptions.deepClone ? deepCloneState : shallowCloneState;
     
-    // Always clear the future stack when a new action is performed
-    // Store the deep-cloned current state in history
-    set((prevState) => ({
-      ...(typeof updater === 'function' ? updater(prevState) : updater),
-      past: [...state.past, deepCloneState(currentState)].slice(-MAX_HISTORY_SIZE),
-      future: [], // Always clear future when a new action is performed
-    }));
-  };
-
-  // Wire up the initial slice
-  const initialState = config(wrappedSet as any, get, api);
-
-  // Return the enhanced state with history capabilities
-  return {
-    ...initialState,
-    past: [],
-    future: [],
-    undo: () => {
+    // Track the last time we recorded history and last saved state
+    let lastRecordTimestamp = 0;
+    let lastSavedState: T | null = null;
+    
+    const wrappedSet = (
+      updater: ((state: T & HistoryState<T>) => Partial<T & HistoryState<T>>) | Partial<T & HistoryState<T>>
+    ) => {
       const state = get() as T & HistoryState<T>;
-      const previous = state.past[state.past.length - 1];
-
-      if (!previous) return;
-
-      const newPast = state.past.slice(0, -1);
-      const currentState = filterHistoryState(state);
-
-      console.log('UNDO - Debug Info');
-      console.log('Current todos:', (state as any).todos);
-      console.log('Previous state todos:', (previous as any).todos);
-      console.log('Past states count:', state.past.length);
       
-      // Create an entirely new state object
-      const newState = {
-        ...state, // Start with current state to preserve functions
-        ...deepCloneState(previous), // Apply previous state data
-        // Reset history tracking properties
-        past: newPast,
-        future: [deepCloneState(currentState), ...state.future].slice(0, MAX_HISTORY_SIZE),
-        undo: state.undo,
-        redo: state.redo
-      } as T & HistoryState<T>;
-      
-      console.log('New state todos after undo:', (newState as any).todos);
-      
-      set(newState);
-      
-      // Log the state after set to verify
-      setTimeout(() => {
-        const afterState = get() as T & HistoryState<T>;
-        console.log('State todos AFTER set:', (afterState as any).todos);
-      }, 0);
-    },
-    redo: () => {
-      const state = get() as T & HistoryState<T>;
-      const next = state.future[0];
+      // Skip tracking history for history-related actions
+      const isHistoryAction = typeof updater === 'function' 
+        ? false 
+        : Object.keys(updater).some(key => DEFAULT_HISTORY_KEYS.includes(key as any));
 
-      if (!next) return;
-
-      const newFuture = state.future.slice(1);
-      const currentState = filterHistoryState(state);
-
-      console.log('REDO - Debug Info');
-      console.log('Current todos:', (state as any).todos);
-      console.log('Next state todos:', (next as any).todos);
+      if (isHistoryAction) {
+        set(updater);
+        return;
+      }
       
-      // Using directly set instead of applying to ensure complete replacement
-      set({
-        // First apply all of the current state for any properties not in the history
-        ...state, 
-        // Then overwrite with the next state
-        ...next,
-        // Then explicitly set the history tracking properties
-        past: [...state.past, deepCloneState(currentState)].slice(-MAX_HISTORY_SIZE),
-        future: newFuture,
-        undo: state.undo,
-        redo: state.redo
-      } as T & HistoryState<T>);
-    },
+      // Get the current state without history keys
+      const currentState = filterHistoryState(state, {
+        excludeKeys: mergedOptions.excludeKeys,
+        includeKeys: mergedOptions.includeKeys
+      });
+      
+      // Get the current time for throttling
+      const now = Date.now();
+      
+      // Check if we should record this state change 
+      // (throttle updates and ensure state has changed)
+      const shouldRecordHistory = 
+        !lastSavedState || 
+        now - lastRecordTimestamp > mergedOptions.throttleMs! ||
+        hasStateChanged(lastSavedState, currentState, { includeKeys: mergedOptions.includeKeys });
+        
+      if (shouldRecordHistory) {
+        // Update timestamp and last saved state
+        lastRecordTimestamp = now;
+        lastSavedState = cloneState(currentState);
+        
+        if (mergedOptions.debug) {
+          console.log('Recording state in history:', { 
+            currentState,
+            timestamp: now
+          });
+        }
+      
+        // Store the current state in history and clear future
+        set((prevState) => {
+          const newState = typeof updater === 'function' ? updater(prevState) : updater;
+          const newPast = shouldRecordHistory 
+            ? [...prevState.past, cloneState(currentState)].slice(-mergedOptions.maxHistorySize!)
+            : prevState.past;
+            
+          const result = {
+            ...prevState,
+            ...newState,
+            past: newPast,
+            future: [], // Clear future when new action is performed
+            canUndo: newPast.length > 0,
+            canRedo: false,
+          };
+          
+          // Call the callback if provided
+          if (mergedOptions.onHistoryChange) {
+            mergedOptions.onHistoryChange(result.past, result.future);
+          }
+          
+          return result;
+        });
+      } else {
+        // Just update the state without recording history
+        set(updater);
+      }
+    };
+
+    // Wire up the initial slice
+    const initialState = config(wrappedSet as any, get, api);
+
+    // Return the enhanced state with history capabilities
+    return {
+      ...initialState,
+      past: [],
+      future: [],
+      canUndo: false,
+      canRedo: false,
+      undo: () => {
+        const state = get() as T & HistoryState<T>;
+        const previous = state.past[state.past.length - 1];
+
+        if (!previous) return;
+
+        const newPast = state.past.slice(0, -1);
+        const currentState = filterHistoryState(state, {
+          excludeKeys: mergedOptions.excludeKeys,
+          includeKeys: mergedOptions.includeKeys
+        });
+
+        if (mergedOptions.debug) {
+          console.log('UNDO - Previous state:', previous);
+          console.log('UNDO - Current state:', currentState);
+        }
+        
+        // Create a new state object with the previous state
+        set({
+          ...state, // Start with current state to preserve functions
+          ...cloneState(previous), // Apply previous state data
+          // Update history tracking
+          past: newPast,
+          future: [cloneState(currentState), ...state.future].slice(0, mergedOptions.maxHistorySize!),
+          canUndo: newPast.length > 0,
+          canRedo: true
+        } as T & HistoryState<T>);
+        
+        // Call the callback if provided
+        if (mergedOptions.onHistoryChange) {
+          const updatedState = get() as T & HistoryState<T>;
+          mergedOptions.onHistoryChange(updatedState.past, updatedState.future);
+        }
+      },
+      redo: () => {
+        const state = get() as T & HistoryState<T>;
+        const next = state.future[0];
+
+        if (!next) return;
+
+        const newFuture = state.future.slice(1);
+        const currentState = filterHistoryState(state, {
+          excludeKeys: mergedOptions.excludeKeys,
+          includeKeys: mergedOptions.includeKeys
+        });
+
+        if (mergedOptions.debug) {
+          console.log('REDO - Next state:', next);
+          console.log('REDO - Current state:', currentState);
+        }
+        
+        // Apply the next state from the future
+        set({
+          ...state, // Start with current state
+          ...next,  // Apply next state data
+          // Update history tracking
+          past: [...state.past, cloneState(currentState)].slice(-mergedOptions.maxHistorySize!),
+          future: newFuture,
+          canUndo: true,
+          canRedo: newFuture.length > 0
+        } as T & HistoryState<T>);
+        
+        // Call the callback if provided
+        if (mergedOptions.onHistoryChange) {
+          const updatedState = get() as T & HistoryState<T>;
+          mergedOptions.onHistoryChange(updatedState.past, updatedState.future);
+        }
+      },
+    };
   };
-}; 
+};
+
+// Export a middleware with default options for backward compatibility
+export const withHistory = createHistoryMiddleware(); 

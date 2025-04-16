@@ -18,9 +18,9 @@ Each API task follows the Red-Green-Refactor cycle:
        - [x] Configure base settings
        - [x] Set up interceptors
      - [x] Refactoring
-       - [x] Optimize configuration
-       - [x] Update documentation
-       - [x] Review and adjust
+       - [ ] Optimize configuration
+       - [ ] Update documentation
+       - [ ] Review and adjust
 
    - [x] Error Handling
      - [x] Test Setup
@@ -33,9 +33,9 @@ Each API task follows the Red-Green-Refactor cycle:
        - [x] Create error formatters
        - [x] Set up error logging
      - [x] Refactoring
-       - [x] Optimize error handling
-       - [x] Update documentation
-       - [x] Review and adjust
+       - [ ] Optimize error handling
+       - [ ] Update documentation
+       - [ ] Review and adjust
 
 2. **WebSocket Support**
    - [x] Socket.io Client
@@ -49,9 +49,9 @@ Each API task follows the Red-Green-Refactor cycle:
        - [x] Implement event handling
        - [x] Configure reconnection
      - [x] Refactoring
-       - [x] Optimize client setup
-       - [x] Update documentation
-       - [x] Review and adjust
+       - [ ] Optimize client setup
+       - [ ] Update documentation
+       - [ ] Review and adjust
 
    - [x] Real-time Updates
      - [x] Test Setup
