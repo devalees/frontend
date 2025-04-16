@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DatePicker } from '../../components/forms/DatePicker';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -18,7 +18,9 @@ describe('DatePicker Component', () => {
       render(<DatePicker onChange={handleChange} />);
       const dateInput = screen.getByTestId('date-picker-input');
       
-      fireEvent.change(dateInput, { target: { value: '2023-05-20' } });
+      await act(async () => {
+        fireEvent.change(dateInput, { target: { value: '2023-05-20' } });
+      });
       
       expect(handleChange).toHaveBeenCalledWith('2023-05-20');
     });
@@ -31,17 +33,8 @@ describe('DatePicker Component', () => {
     });
   });
 
-  // Range Tests
+  // Date Range Selection Tests
   describe('Date Range Selection', () => {
-    it('should allow selecting a date range', () => {
-      render(<DatePicker range onChange={() => {}} />);
-      const startDateInput = screen.getByTestId('date-picker-start-input');
-      const endDateInput = screen.getByTestId('date-picker-end-input');
-      
-      expect(startDateInput).toBeInTheDocument();
-      expect(endDateInput).toBeInTheDocument();
-    });
-
     it('should validate that end date is after start date', async () => {
       const handleChange = vi.fn();
       render(<DatePicker range onChange={handleChange} />);
@@ -49,15 +42,25 @@ describe('DatePicker Component', () => {
       const startDateInput = screen.getByTestId('date-picker-start-input');
       const endDateInput = screen.getByTestId('date-picker-end-input');
       
-      await userEvent.clear(startDateInput);
-      await userEvent.type(startDateInput, '2023-05-01');
+      await act(async () => {
+        fireEvent.change(startDateInput, { target: { value: '2023-05-20' } });
+      });
       
-      await userEvent.clear(endDateInput);
-      await userEvent.type(endDateInput, '2023-04-30');
+      // First onChange call with just start date
+      expect(handleChange).toHaveBeenCalledWith({ startDate: '2023-05-20', endDate: '' });
       
-      const errorMessage = screen.getByTestId('date-range-error');
-      expect(errorMessage).toBeInTheDocument();
-      expect(errorMessage).toHaveTextContent('End date must be after start date');
+      await act(async () => {
+        fireEvent.change(endDateInput, { target: { value: '2023-05-19' } });
+      });
+      
+      expect(screen.getByText('End date must be after start date')).toBeInTheDocument();
+      
+      await act(async () => {
+        fireEvent.change(endDateInput, { target: { value: '2023-05-21' } });
+      });
+      
+      expect(screen.queryByText('End date must be after start date')).not.toBeInTheDocument();
+      expect(handleChange).toHaveBeenLastCalledWith({ startDate: '2023-05-20', endDate: '2023-05-21' });
     });
 
     it('should call onChange with both start and end dates when range is selected', async () => {
@@ -67,16 +70,19 @@ describe('DatePicker Component', () => {
       const startDateInput = screen.getByTestId('date-picker-start-input');
       const endDateInput = screen.getByTestId('date-picker-end-input');
       
-      await userEvent.clear(startDateInput);
-      await userEvent.type(startDateInput, '2023-05-01');
-      
-      await userEvent.clear(endDateInput);
-      await userEvent.type(endDateInput, '2023-05-10');
-      
-      expect(handleChange).toHaveBeenCalledWith({
-        startDate: '2023-05-01',
-        endDate: '2023-05-10'
+      await act(async () => {
+        fireEvent.change(startDateInput, { target: { value: '2023-05-20' } });
       });
+      
+      // First onChange call with just start date
+      expect(handleChange).toHaveBeenCalledWith({ startDate: '2023-05-20', endDate: '' });
+      
+      await act(async () => {
+        fireEvent.change(endDateInput, { target: { value: '2023-05-21' } });
+      });
+      
+      // Second onChange call with both dates
+      expect(handleChange).toHaveBeenLastCalledWith({ startDate: '2023-05-20', endDate: '2023-05-21' });
     });
   });
 
@@ -94,7 +100,9 @@ describe('DatePicker Component', () => {
       render(<DatePicker format="DD/MM/YYYY" onChange={handleChange} />);
       const dateInput = screen.getByTestId('date-picker-input');
       
-      fireEvent.change(dateInput, { target: { value: '15/06/2023' } });
+      await act(async () => {
+        fireEvent.change(dateInput, { target: { value: '15/06/2023' } });
+      });
       
       expect(handleChange).toHaveBeenCalledWith('2023-06-15');
     });

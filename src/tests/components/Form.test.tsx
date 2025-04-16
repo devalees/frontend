@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import '@testing-library/jest-dom';
 import { Form, FormSection } from '../../components/forms/Form';
@@ -71,15 +71,17 @@ describe('Form Component', () => {
         </Form>
       );
       
-      const submitButton = screen.getByRole('button');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        const submitButton = screen.getByRole('button');
+        fireEvent.click(submitButton);
+      });
       
       await waitFor(() => {
         expect(handleSubmit).not.toHaveBeenCalled();
       });
     });
 
-    it('should show validation errors for invalid fields', () => {
+    it('should show validation errors for invalid fields', async () => {
       render(
         <Form onSubmit={() => {}}>
           <div>
@@ -89,15 +91,18 @@ describe('Form Component', () => {
       );
       
       const emailInput = screen.getByRole('textbox', { name: /email/i });
-      fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
-      fireEvent.blur(emailInput);
+      
+      await act(async () => {
+        fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
+        fireEvent.blur(emailInput);
+      });
       
       const errorMessages = screen.getAllByText('Please enter a valid email address');
       expect(errorMessages.length).toBeGreaterThan(0);
       expect(emailInput).toHaveAttribute('aria-invalid', 'true');
     });
 
-    it('should clear validation errors when field is corrected', () => {
+    it('should clear validation errors when field is corrected', async () => {
       render(
         <Form onSubmit={() => {}}>
           <div>
@@ -109,19 +114,24 @@ describe('Form Component', () => {
       const emailInput = screen.getByRole('textbox', { name: /email/i });
       
       // First, trigger validation error
-      fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
-      fireEvent.blur(emailInput);
+      await act(async () => {
+        fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
+        fireEvent.blur(emailInput);
+      });
       
       const errorMessages = screen.getAllByText('Please enter a valid email address');
       expect(errorMessages.length).toBeGreaterThan(0);
       
       // Then, correct the field
-      fireEvent.change(emailInput, { target: { value: 'valid@email.com' } });
-      fireEvent.blur(emailInput);
+      await act(async () => {
+        fireEvent.change(emailInput, { target: { value: 'valid@email.com' } });
+        fireEvent.blur(emailInput);
+      });
+      
       expect(screen.queryByText('Please enter a valid email address')).not.toBeInTheDocument();
     });
 
-    it('should support custom validation rules', () => {
+    it('should support custom validation rules', async () => {
       const validationRules = {
         password: (value: string) => {
           if (value.length < 8) {
@@ -142,15 +152,20 @@ describe('Form Component', () => {
       const passwordInput = screen.getByLabelText(/password/i);
       
       // Test password too short
-      fireEvent.change(passwordInput, { target: { value: 'short' } });
-      fireEvent.blur(passwordInput);
+      await act(async () => {
+        fireEvent.change(passwordInput, { target: { value: 'short' } });
+        fireEvent.blur(passwordInput);
+      });
       
       const errorMessages = screen.getAllByText('Password must be at least 8 characters long');
       expect(errorMessages.length).toBeGreaterThan(0);
       
       // Test valid password
-      fireEvent.change(passwordInput, { target: { value: 'Password123' } });
-      fireEvent.blur(passwordInput);
+      await act(async () => {
+        fireEvent.change(passwordInput, { target: { value: 'Password123' } });
+        fireEvent.blur(passwordInput);
+      });
+      
       expect(screen.queryByText(/password must/i)).not.toBeInTheDocument();
     });
   });
@@ -169,15 +184,17 @@ describe('Form Component', () => {
         </Form>
       );
       
-      const submitButton = screen.getByRole('button');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        const submitButton = screen.getByRole('button');
+        fireEvent.click(submitButton);
+      });
       
       await waitFor(() => {
         expect(handleSubmit).toHaveBeenCalled();
       });
     });
 
-    it('should prevent default form submission', () => {
+    it('should prevent default form submission', async () => {
       const handleSubmit = vi.fn();
       
       render(
@@ -192,7 +209,9 @@ describe('Form Component', () => {
       const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
       const preventDefaultSpy = vi.spyOn(submitEvent, 'preventDefault');
       
-      form.dispatchEvent(submitEvent);
+      await act(async () => {
+        form.dispatchEvent(submitEvent);
+      });
       
       expect(preventDefaultSpy).toHaveBeenCalled();
     });
@@ -210,16 +229,18 @@ describe('Form Component', () => {
         </Form>
       );
       
-      const submitButton = screen.getByRole('button');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        const submitButton = screen.getByRole('button');
+        fireEvent.click(submitButton);
+      });
       
-      expect(submitButton).toBeDisabled();
-      expect(submitButton).toHaveTextContent('Submitting...');
+      expect(screen.getByRole('button')).toBeDisabled();
+      expect(screen.getByRole('button')).toHaveTextContent('Submitting...');
       
       await waitFor(() => {
         expect(handleSubmit).toHaveBeenCalled();
-        expect(submitButton).not.toBeDisabled();
-        expect(submitButton).toHaveTextContent('Submit');
+        expect(screen.getByRole('button')).not.toBeDisabled();
+        expect(screen.getByRole('button')).toHaveTextContent('Submit');
       });
     });
 
@@ -235,8 +256,10 @@ describe('Form Component', () => {
         </Form>
       );
       
-      const submitButton = screen.getByRole('button');
-      fireEvent.click(submitButton);
+      await act(async () => {
+        const submitButton = screen.getByRole('button');
+        fireEvent.click(submitButton);
+      });
       
       await waitFor(() => {
         const errorMessages = screen.getAllByText('Submission failed');
@@ -258,7 +281,7 @@ describe('Form Component', () => {
       expect(form).toHaveAttribute('aria-label', 'Login Form');
     });
 
-    it('should associate error messages with form fields', () => {
+    it('should associate error messages with form fields', async () => {
       render(
         <Form onSubmit={() => {}}>
           <div>
@@ -268,8 +291,11 @@ describe('Form Component', () => {
       );
       
       const emailInput = screen.getByRole('textbox', { name: /email/i });
-      fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
-      fireEvent.blur(emailInput);
+      
+      await act(async () => {
+        fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
+        fireEvent.blur(emailInput);
+      });
       
       expect(emailInput).toHaveAttribute('aria-invalid', 'true');
       expect(emailInput).toHaveAttribute('aria-describedby');
@@ -287,14 +313,17 @@ describe('Form Component', () => {
       );
       
       const form = screen.getByRole('form');
-      fireEvent.submit(form);
+      
+      await act(async () => {
+        fireEvent.submit(form);
+      });
       
       await waitFor(() => {
         expect(handleSubmit).toHaveBeenCalled();
       });
     });
 
-    it('should announce validation errors to screen readers', () => {
+    it('should announce validation errors to screen readers', async () => {
       render(
         <Form onSubmit={() => {}}>
           <div>
@@ -304,8 +333,11 @@ describe('Form Component', () => {
       );
       
       const emailInput = screen.getByRole('textbox', { name: /email/i });
-      fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
-      fireEvent.blur(emailInput);
+      
+      await act(async () => {
+        fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
+        fireEvent.blur(emailInput);
+      });
       
       const liveRegion = screen.getByRole('status', { hidden: true });
       expect(liveRegion).toHaveTextContent('Please enter a valid email address');
