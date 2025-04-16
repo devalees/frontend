@@ -69,16 +69,16 @@ Each state management task follows the Red-Green-Refactor cycle:
        - [ ] Review and adjust
 
 3. **State Utilities**
-   - [~] State Helpers
+   - [x] State Helpers
      - [x] Test Setup
        - [x] Create test file (stateHelpers.test.ts)
        - [x] Write failing tests for state updates
        - [x] Write failing tests for state selectors
        - [x] Write failing tests for state validation
-     - [~] Implementation
+     - [x] Implementation
        - [x] Create update helpers
        - [x] Implement selector helpers
-       - [ ] Set up validation helpers
+       - [x] Set up validation helpers
      - [ ] Refactoring
        - [ ] Optimize helpers
        - [ ] Update documentation
@@ -105,4 +105,4 @@ Status Indicators:
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Fixed the history middleware to correctly implement undo/redo functionality. Implemented state update and selector helpers with comprehensive test suites. Completed action effects implementation including notification, undo/redo, localStorage persistence, and logging effects. 
+Last Updated: Fixed the history middleware to correctly implement undo/redo functionality. Implemented state update and selector helpers with comprehensive test suites. Completed action effects implementation including notification, undo/redo, localStorage persistence, and logging effects. Added validation helpers to validate state data against schemas. 
