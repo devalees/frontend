@@ -100,13 +100,44 @@ Each API task follows the Red-Green-Refactor cycle:
        - [ ] Update documentation
        - [ ] Review and adjust
 
+4. **Advanced API Features**
+   - [x] Token Refresh Mechanism
+     - [x] Test Setup
+       - [x] Create test file (tokenRefresh.test.ts)
+       - [x] Write failing tests for token expiration detection
+       - [x] Write failing tests for refresh token flow
+       - [x] Write failing tests for request retry after refresh
+     - [x] Implementation
+       - [x] Implement token expiration detection
+       - [x] Create refresh token workflow
+       - [x] Set up request retry after refresh
+     - [ ] Refactoring
+       - [ ] Optimize token refresh strategy
+       - [ ] Update documentation
+       - [ ] Review and adjust
+
+   - [x] Optimistic Updates
+     - [x] Test Setup
+       - [x] Create test file (optimisticUpdates.test.ts)
+       - [x] Write failing tests for optimistic state changes
+       - [x] Write failing tests for rollback mechanism
+       - [x] Write failing tests for conflict resolution
+     - [x] Implementation
+       - [x] Implement optimistic state updates
+       - [x] Create rollback system
+       - [x] Set up conflict resolution strategies
+     - [ ] Refactoring
+       - [ ] Optimize optimistic update workflow
+       - [ ] Update documentation
+       - [ ] Review and adjust
+
 Status Indicators:
 - [ ] Not started
 - [~] In progress
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Implemented Response Handlers with support for parsing API responses, transforming data with type-safe transformers, and handling various error scenarios. The implementation handles standard responses, paginated data, custom data extraction, and various error types including network, timeout, and server errors. All tests are now passing. Next steps will focus on refactoring and optimization. (Date: August 2023)
+Last Updated: Successfully implemented and fixed Token Refresh Mechanism and Optimistic Updates system. All tests are now passing. The token refresh mechanism handles 401 responses to transparently refresh expired JWT tokens. The optimistic updates feature provides immediate UI updates while requests are in flight, with robust rollback handling for failed requests. Both implementations follow the project's TDD approach with comprehensive test coverage. (Date: August 2023)
 
 ## Documentation Status
 
