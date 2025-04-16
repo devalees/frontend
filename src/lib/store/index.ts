@@ -43,7 +43,8 @@ const useStore = createStore<StoreState>({
     redo: () => {},
   } as StoreState,
   middleware: [
-    withHistory,
+    // Cast the withHistory middleware to the correct type to avoid TypeScript errors
+    withHistory as unknown as (fn: StateCreator<StoreState>) => StateCreator<StoreState>,
     (stateCreator) => {
       return (...args) => {
         const todoState = createTodoSlice(...args);
