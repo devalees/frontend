@@ -12,6 +12,7 @@ src/
 │   ├── form/          # Form-related components
 │   └── loading/       # Loading state components
 ├── lib/               # Utility functions and hooks
+│   ├── api/           # API clients and utilities
 │   ├── utils/         # Helper functions
 │   └── hooks/         # Custom React hooks
 └── styles/            # Global styles and theme
@@ -27,7 +28,8 @@ src/
 2. Create a `.env` file in the root directory with the following variables:
    ```
    VITE_APP_NAME=React App
-   VITE_API_URL=http://localhost:3000
+   NEXT_PUBLIC_API_URL=http://localhost:8000/api/
+   NEXT_PUBLIC_API_TIMEOUT=10000
    NODE_ENV=development
    ```
 
@@ -51,9 +53,36 @@ src/
 
 ## Environment Variables
 
+### General Configuration
 - `VITE_APP_NAME` - Application name
-- `VITE_API_URL` - API endpoint URL
-- `NODE_ENV` - Environment mode (development/production)
+- `NODE_ENV` - Environment mode (development/test/production)
+
+### API Configuration
+- `NEXT_PUBLIC_API_URL` - Base URL for API requests
+- `NEXT_PUBLIC_API_TIMEOUT` - Request timeout in milliseconds
+
+## API Infrastructure
+
+### Environment-Based Configuration
+
+The application uses an environment-based configuration system for API requests that automatically adapts based on the current environment:
+
+- **Development Environment**: 
+  - Debug logging enabled
+  - Relaxed validation status
+  - Detailed error reporting
+
+- **Test Environment**:
+  - Debug logging enabled
+  - Default timeout settings
+  - Consistent configuration for testing
+
+- **Production Environment**:
+  - Debug logging disabled
+  - Request retry functionality
+  - Optimized error handling
+
+For more details, see the [API Environment Configuration Documentation](./@docs/architecture/03-api/environment-config.md).
 
 ## Contributing
 
