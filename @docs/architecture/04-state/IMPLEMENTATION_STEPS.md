@@ -53,31 +53,31 @@ Each state management task follows the Red-Green-Refactor cycle:
        - [x] Update documentation
        - [x] Review and adjust
 
-   - [ ] Actions
-     - [ ] Test Setup
-       - [ ] Create test file (actions.test.ts)
-       - [ ] Write failing tests for action creators
-       - [ ] Write failing tests for async actions
-       - [ ] Write failing tests for action effects
-     - [ ] Implementation
-       - [ ] Create action creators
-       - [ ] Implement async actions
-       - [ ] Set up action effects
+   - [s] Actions
+     - [x] Test Setup
+       - [x] Create test file (actions.test.ts)
+       - [x] Write failing tests for action creators
+       - [x] Write failing tests for async actions
+       - [x] Write failing tests for action effects
+     - [x] Implementation
+       - [x] Create action creators
+       - [x] Implement async actions
+       - [x] Set up action effects
      - [ ] Refactoring
        - [ ] Optimize actions
        - [ ] Update documentation
        - [ ] Review and adjust
 
 3. **State Utilities**
-   - [ ] State Helpers
-     - [ ] Test Setup
-       - [ ] Create test file (stateHelpers.test.ts)
-       - [ ] Write failing tests for state updates
-       - [ ] Write failing tests for state selectors
-       - [ ] Write failing tests for state validation
-     - [ ] Implementation
-       - [ ] Create update helpers
-       - [ ] Implement selector helpers
+   - [~] State Helpers
+     - [x] Test Setup
+       - [x] Create test file (stateHelpers.test.ts)
+       - [x] Write failing tests for state updates
+       - [x] Write failing tests for state selectors
+       - [x] Write failing tests for state validation
+     - [~] Implementation
+       - [x] Create update helpers
+       - [x] Implement selector helpers
        - [ ] Set up validation helpers
      - [ ] Refactoring
        - [ ] Optimize helpers
@@ -105,4 +105,4 @@ Status Indicators:
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Completed state slices implementation with tests passing. Added proper selectors and actions for both todo and user slices. 
+Last Updated: Fixed the history middleware to correctly implement undo/redo functionality. Implemented state update and selector helpers with comprehensive test suites. Completed action effects implementation including notification, undo/redo, localStorage persistence, and logging effects. 

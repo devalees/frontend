@@ -1,52 +1,55 @@
 import { create, StateCreator, StoreApi } from 'zustand';
-import { persist, StateStorage, PersistOptions, createJSONStorage } from 'zustand/middleware';
+import { devtools, DevtoolsOptions } from 'zustand/middleware';
+import { persist, PersistOptions, createJSONStorage, StorageValue, PersistStorage } from 'zustand/middleware';
 
-type CreateStoreOptions<T> = {
-  initialState: T;
+export interface CreateStoreOptions<T> {
+  initialState?: Partial<T>;
   middleware?: Array<(fn: StateCreator<T>) => StateCreator<T>>;
-  persist?: Omit<PersistOptions<T>, 'storage'> & { 
-    storage?: StateStorage; 
-    name: string;
+  persist?: Omit<PersistOptions<T>, 'storage'> & {
+    storage?: PersistStorage<T>;
   };
-};
+}
+
+type StoreMutators = [
+  ['zustand/devtools', never],
+  ['zustand/persist', unknown]
+];
 
 /**
- * Creates a Zustand store with the provided configuration options
- * @param options Store configuration options
- * @returns Configured Zustand store
+ * Creates a Zustand store with the given options
+ * @param options Store creation options
+ * @returns A Zustand store instance
  */
-export const createStore = <T extends object>(options: CreateStoreOptions<T>): StoreApi<T> => {
-  const { initialState, middleware = [], persist: persistOptions } = options;
+export const createStore = <T extends object>(options: CreateStoreOptions<T> = {}): StoreApi<T> => {
+  const { initialState = {}, middleware = [], persist: persistOptions } = options;
 
   // Create a base state creator function
-  let stateCreator: StateCreator<T> = (set, get) => ({ ...initialState });
+  let stateCreator: StateCreator<T, [], StoreMutators> = (set, get, api) => ({
+    ...initialState as T,
+  });
 
-  // Apply middleware in order (if provided)
-  if (middleware.length > 0) {
-    // Apply middleware in the order provided (for zustandConfig test)
-    for (let i = 0; i < middleware.length; i++) {
-      if (typeof middleware[i] === 'function') {
-        stateCreator = middleware[i](stateCreator);
-      }
-    }
+  // Apply custom middleware
+  for (const middlewareFn of middleware) {
+    stateCreator = middlewareFn(stateCreator as any) as typeof stateCreator;
   }
 
-  // Apply persist middleware if persistence options are provided
+  // Apply persistence if configured
   if (persistOptions) {
-    // Set default storage if not provided
-    const storage = persistOptions.storage || createJSONStorage(() => localStorage);
-    
-    // Configure persistence with options
-    const { storage: _, ...otherOptions } = persistOptions;
     const persistConfig: PersistOptions<T> = {
-      ...otherOptions,
-      storage: storage as any // Type assertion to handle storage compatibility
+      ...persistOptions,
+      storage: persistOptions.storage || createJSONStorage(() => localStorage),
     };
-    
-    // Apply persist middleware
-    stateCreator = persist(stateCreator, persistConfig) as unknown as StateCreator<T>;
+    stateCreator = persist(stateCreator, persistConfig) as typeof stateCreator;
   }
 
-  // Create and return the store
-  return create<T>(stateCreator);
+  // Apply devtools in development
+  if (process.env.NODE_ENV === 'development') {
+    const devtoolsConfig: DevtoolsOptions = {
+      name: 'Store',
+      enabled: true,
+    };
+    stateCreator = devtools(stateCreator, devtoolsConfig) as typeof stateCreator;
+  }
+
+  return create(stateCreator);
 }; 
