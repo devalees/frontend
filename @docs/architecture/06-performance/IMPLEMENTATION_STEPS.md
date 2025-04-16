@@ -1,5 +1,9 @@
 # Performance Optimization Implementation Steps
 
+> **Note**: When writing tests for these performance features, please follow our standardized testing approach:
+> - [General Testing Approach](../05-testing/GENERAL_TESTING_APPROACH.md) - Core testing principles and patterns for all tests
+> - [Performance Testing Approach](./TESTING_APPROACH.md) - Performance-specific testing guidelines
+
 ## Test-Driven Development Approach
 Each performance task follows the Red-Green-Refactor cycle:
 1. Write failing tests (Red)
