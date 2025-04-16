@@ -130,10 +130,31 @@ Each state management task follows the Red-Green-Refactor cycle:
        - [x] Add keyboard shortcuts (Ctrl+Shift+D)
        - [x] Add URL parameter support (?debug)
 
+5. **TypeScript Utility Types**
+   - [x] Test Setup
+     - [x] Create test file for utility types (stateTypes.test.ts)
+     - [x] Write failing tests for AsyncState type
+     - [x] Write failing tests for Selector types
+     - [x] Write failing tests for other utility types
+   - [x] Implementation
+     - [x] Create base utility types
+     - [x] Implement AsyncState and helpers
+     - [x] Add selector and action creator types
+     - [x] Add pagination utility types
+   - [x] Integration
+     - [x] Refactor Todo slice with utility types
+     - [x] Refactor User slice with utility types
+     - [x] Refactor Notification slice with utility types
+     - [x] Update related components (if needed)
+   - [x] Documentation
+     - [x] Document utility types
+     - [x] Add JSDoc comments
+     - [x] Update implementation steps
+
 Status Indicators:
 - [ ] Not started
 - [~] In progress
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Completed refactoring of state management implementation with improved typing for middleware, slice factory pattern, extracted notification handling to separate slice, optimized history tracking to be selective about stored data, and simplified the store creation process. All required improvements have been implemented. 
+Last Updated: Added TypeScript utility types to reduce code duplication in the state implementation. Created specialized types for async operations, selectors, computed values, pagination and more. Refactored existing slices to use these utility types, making the code more maintainable and type-safe. 

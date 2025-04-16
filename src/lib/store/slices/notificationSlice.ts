@@ -1,5 +1,11 @@
 import { StateCreator } from 'zustand';
-import { createSlice } from '../sliceFactory';
+import { 
+  Selector, 
+  SelectorWithDeps, 
+  Paginated,
+  createInitialPaginationState,
+  updatePaginationState 
+} from '../utils/stateTypes';
 
 // Notification priority levels
 export enum NotificationPriority {
@@ -22,7 +28,7 @@ export interface Notification {
 // Notification state
 export interface NotificationSlice {
   // State
-  notifications: Notification[];
+  notificationsData: Paginated<Notification>;
   notificationHandler?: (message: string, priority?: NotificationPriority, metadata?: Record<string, any>) => void;
   
   // Actions
@@ -31,6 +37,9 @@ export interface NotificationSlice {
   markAllAsRead: () => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
+  
+  // Pagination actions
+  setPage: (page: number) => void;
   
   // Handler management
   setNotificationHandler: (handler: (message: string, priority?: NotificationPriority, metadata?: Record<string, any>) => void) => void;
@@ -44,84 +53,139 @@ export interface NotificationSlice {
 /**
  * Create a notification slice for managing system notifications
  */
-export const createNotificationSlice = createSlice<NotificationSlice>((set, get) => ({
-  // Initial state
-  notifications: [],
-  notificationHandler: undefined,
+export const createNotificationSlice: StateCreator<NotificationSlice> = (set, get) => {
+  // Define type-safe selectors
+  const getUnreadNotificationsSelector: Selector<NotificationSlice, Notification[]> = (state) => {
+    return state.notificationsData.items.filter(notification => !notification.read);
+  };
   
-  // Actions
-  addNotification: (message, priority = NotificationPriority.NORMAL, metadata = {}) => {
-    const newNotification: Notification = {
-      id: Date.now().toString(),
-      message,
-      timestamp: Date.now(),
-      read: false,
-      priority,
-      metadata,
-    };
+  const getNotificationsByPrioritySelector: SelectorWithDeps<NotificationSlice, Notification[], [NotificationPriority]> = 
+    (state, priority) => state.notificationsData.items.filter(notification => notification.priority === priority);
+  
+  return {
+    // Initial state
+    notificationsData: {
+      items: [],
+      pagination: createInitialPaginationState(10)
+    },
+    notificationHandler: undefined,
     
-    set((state) => ({
-      ...state,
-      notifications: [...state.notifications, newNotification]
-    }));
+    // Actions
+    addNotification: (message, priority = NotificationPriority.NORMAL, metadata = {}) => {
+      const newNotification: Notification = {
+        id: Date.now().toString(),
+        message,
+        timestamp: Date.now(),
+        read: false,
+        priority,
+        metadata,
+      };
+      
+      set(state => {
+        const newItems = [...state.notificationsData.items, newNotification];
+        return {
+          ...state,
+          notificationsData: {
+            items: newItems,
+            pagination: updatePaginationState(state.notificationsData.pagination, newItems.length)
+          }
+        };
+      });
+      
+      // Call the notification handler if set
+      get().notificationHandler?.(message, priority, metadata);
+    },
     
-    // Call the notification handler if set
-    get().notificationHandler?.(message, priority, metadata);
-  },
-  
-  markAsRead: (id) => {
-    set((state) => ({
-      ...state,
-      notifications: state.notifications.map(notification => 
-        notification.id === id 
-          ? { ...notification, read: true } 
-          : notification
-      )
-    }));
-  },
-  
-  markAllAsRead: () => {
-    set((state) => ({
-      ...state,
-      notifications: state.notifications.map(notification => ({ ...notification, read: true }))
-    }));
-  },
-  
-  removeNotification: (id) => {
-    set((state) => ({
-      ...state,
-      notifications: state.notifications.filter(notification => notification.id !== id)
-    }));
-  },
-  
-  clearNotifications: () => {
-    set((state) => ({
-      ...state,
-      notifications: []
-    }));
-  },
-  
-  // Handler management
-  setNotificationHandler: (handler) => {
-    set((state) => ({
-      ...state,
-      notificationHandler: handler
-    }));
-  },
-  
-  clearNotificationHandler: () => {
-    set((state) => ({
-      ...state,
-      notificationHandler: undefined
-    }));
-  },
-  
-  // Selectors
-  getUnreadNotifications: () => {
-    return get().notifications.filter(notification => !notification.read);
-  },
-  
-  getNotificationsByPriority: (priority) => {
-    return get().notifications.filter(notification => notification.priority === priority);
-  }
-})); 
+    markAsRead: (id) => {
+      set(state => {
+        const updatedItems = state.notificationsData.items.map(notification => 
+          notification.id === id ? { ...notification, read: true } : notification
+        );
+        
+        return {
+          ...state,
+          notificationsData: {
+            ...state.notificationsData,
+            items: updatedItems
+          }
+        };
+      });
+    },
+    
+    markAllAsRead: () => {
+      set(state => {
+        const updatedItems = state.notificationsData.items.map(notification => 
+          ({ ...notification, read: true })
+        );
+        
+        return {
+          ...state,
+          notificationsData: {
+            ...state.notificationsData,
+            items: updatedItems
+          }
+        };
+      });
+    },
+    
+    removeNotification: (id) => {
+      set(state => {
+        const updatedItems = state.notificationsData.items.filter(notification => 
+          notification.id !== id
+        );
+        
+        return {
+          ...state,
+          notificationsData: {
+            items: updatedItems,
+            pagination: updatePaginationState(state.notificationsData.pagination, updatedItems.length)
+          }
+        };
+      });
+    },
+    
+    clearNotifications: () => {
+      set(state => ({
+        ...state,
+        notificationsData: {
+          items: [],
+          pagination: createInitialPaginationState(state.notificationsData.pagination.pageSize)
+        }
+      }));
+    },
+    
+    // Pagination actions
+    setPage: (page) => {
+      set(state => ({
+        ...state,
+        notificationsData: {
+          ...state.notificationsData,
+          pagination: {
+            ...state.notificationsData.pagination,
+            page: Math.max(1, Math.min(page, state.notificationsData.pagination.totalPages || 1)),
+            hasNextPage: page < state.notificationsData.pagination.totalPages,
+            hasPreviousPage: page > 1
+          }
+        }
+      }));
+    },
+    
+    // Handler management
+    setNotificationHandler: (handler) => {
+      set({ notificationHandler: handler });
+    },
+    
+    clearNotificationHandler: () => {
+      set({ notificationHandler: undefined });
+    },
+    
+    // Selectors
+    getUnreadNotifications: () => {
+      return getUnreadNotificationsSelector(get());
+    },
+    
+    getNotificationsByPriority: (priority) => {
+      return getNotificationsByPrioritySelector(get(), priority);
+    }
+  };
+}; 

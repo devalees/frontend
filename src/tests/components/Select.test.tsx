@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Select } from '../../components/forms/Select';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -43,18 +43,22 @@ describe('Select Component', () => {
       render(<Select options={options} searchable onChange={() => {}} />);
       const searchInput = screen.getByTestId('search-input');
       
-      // Set searchValue directly
-      await userEvent.clear(searchInput);
-      await userEvent.type(searchInput, 'Option 1');
+      // Use act to wrap the state updates
+      await act(async () => {
+        await userEvent.clear(searchInput);
+        await userEvent.type(searchInput, 'Option 1');
+      });
       
-      // Mock filtering behavior is implemented in component for test env
-      const option1 = screen.getByTestId('option-1');
-      const option2Elements = screen.queryAllByTestId('option-2');
-      const option3Elements = screen.queryAllByTestId('option-3');
-      
-      expect(option1).toBeInTheDocument();
-      expect(option2Elements.length).toBe(0);
-      expect(option3Elements.length).toBe(0);
+      // Wait for the component to update
+      await waitFor(() => {
+        const option1 = screen.getByTestId('option-1');
+        const option2Elements = screen.queryAllByTestId('option-2');
+        const option3Elements = screen.queryAllByTestId('option-3');
+        
+        expect(option1).toBeInTheDocument();
+        expect(option2Elements.length).toBe(0);
+        expect(option3Elements.length).toBe(0);
+      });
     });
 
     it('should show "No options" message when search yields no results', async () => {
@@ -62,21 +66,26 @@ describe('Select Component', () => {
       render(<Select options={options} searchable onChange={() => {}} />);
       const searchInput = screen.getByTestId('search-input');
       
-      // Set searchValue directly to trigger "no options" case
-      await userEvent.clear(searchInput);
-      await userEvent.type(searchInput, 'NonexistentOption');
+      // Use act to wrap the state updates
+      await act(async () => {
+        await userEvent.clear(searchInput);
+        await userEvent.type(searchInput, 'NonexistentOption');
+      });
       
-      // Check if options are filtered out
-      const option1Elements = screen.queryAllByTestId('option-1');
-      const option2Elements = screen.queryAllByTestId('option-2');
-      const option3Elements = screen.queryAllByTestId('option-3');
-      
-      expect(option1Elements.length).toBe(0);
-      expect(option2Elements.length).toBe(0);
-      expect(option3Elements.length).toBe(0);
-      
-      // Verify the "No options" message is shown
-      expect(screen.getByText('No options')).toBeInTheDocument();
+      // Wait for the component to update
+      await waitFor(() => {
+        // Check if options are filtered out
+        const option1Elements = screen.queryAllByTestId('option-1');
+        const option2Elements = screen.queryAllByTestId('option-2');
+        const option3Elements = screen.queryAllByTestId('option-3');
+        
+        expect(option1Elements.length).toBe(0);
+        expect(option2Elements.length).toBe(0);
+        expect(option3Elements.length).toBe(0);
+        
+        // Verify the "No options" message is shown
+        expect(screen.getByText('No options')).toBeInTheDocument();
+      });
     });
 
     it('should clear search input when clear button is clicked', async () => {
@@ -84,8 +93,10 @@ describe('Select Component', () => {
       const searchInput = screen.getByTestId('search-input');
       const clearButton = screen.getByTestId('clear-button');
       
-      await userEvent.type(searchInput, 'Option');
-      await userEvent.click(clearButton);
+      await act(async () => {
+        await userEvent.type(searchInput, 'Option');
+        await userEvent.click(clearButton);
+      });
       
       expect(searchInput).toHaveValue('');
     });
@@ -98,10 +109,21 @@ describe('Select Component', () => {
       render(<Select options={options} onChange={handleChange} />);
       
       const selectElement = screen.getByTestId('select-element');
-      await userEvent.click(selectElement);
       
-      const option = screen.getByTestId('option-1');
-      await userEvent.click(option);
+      await act(async () => {
+        await userEvent.click(selectElement);
+      });
+      
+      // Wait for options to be visible
+      await waitFor(() => {
+        const option = screen.getByTestId('option-1');
+        expect(option).toBeVisible();
+      });
+      
+      await act(async () => {
+        const option = screen.getByTestId('option-1');
+        await userEvent.click(option);
+      });
       
       expect(handleChange).toHaveBeenCalledWith('1');
     });
@@ -110,11 +132,15 @@ describe('Select Component', () => {
       const handleChange = vi.fn();
       render(<Select options={options} multiple onChange={handleChange} />);
       
-      const option1 = screen.getByTestId('option-1');
-      const option2 = screen.getByTestId('option-2');
+      await act(async () => {
+        const option1 = screen.getByTestId('option-1');
+        await userEvent.click(option1);
+      });
       
-      await userEvent.click(option1);
-      await userEvent.click(option2);
+      await act(async () => {
+        const option2 = screen.getByTestId('option-2');
+        await userEvent.click(option2);
+      });
       
       expect(handleChange).toHaveBeenCalledWith(['1', '2']);
     });
@@ -124,8 +150,14 @@ describe('Select Component', () => {
       render(<Select options={options} multiple onChange={handleChange} />);
       
       const option = screen.getByTestId('option-1');
-      await userEvent.click(option);
-      await userEvent.click(option);
+      
+      await act(async () => {
+        await userEvent.click(option);
+      });
+      
+      await act(async () => {
+        await userEvent.click(option);
+      });
       
       expect(handleChange).toHaveBeenLastCalledWith([]);
     });
@@ -159,9 +191,11 @@ describe('Select Component', () => {
       render(<Select options={options} onChange={() => {}} />);
       const selectElement = screen.getByTestId('select-element');
       
-      await userEvent.click(selectElement);
-      const option = screen.getByTestId('option-1');
-      await userEvent.click(option);
+      await act(async () => {
+        await userEvent.click(selectElement);
+        const option = screen.getByTestId('option-1');
+        await userEvent.click(option);
+      });
       
       expect(selectElement).toHaveAttribute('aria-selected', 'true');
       expect(selectElement).toHaveAttribute('aria-activedescendant');
@@ -172,7 +206,10 @@ describe('Select Component', () => {
       const selectElement = screen.getByTestId('select-element');
       
       // Focus the select
-      await userEvent.tab();
+      await act(async () => {
+        await userEvent.tab();
+      });
+      
       expect(selectElement).toHaveFocus();
       
       // We don't test Enter and Escape keys in detail as they're hard to simulate

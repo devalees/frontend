@@ -1,13 +1,24 @@
 import { StateCreator } from 'zustand';
 import { User, Credentials } from '../types';
+import { 
+  AsyncState, 
+  Selector, 
+  ActionCreator,
+  createInitialAsyncState, 
+  setLoading,
+  setSuccess,
+  setError 
+} from '../utils/stateTypes';
 
 const API_BASE_URL = 'http://localhost:3000/api';
 
 export interface UserSlice {
   // State
-  user: User | null;
-  userLoading: boolean;
+  userState: AsyncState<User>;
   notificationHandler?: (message: string) => void;
+  
+  // Derived state for backward compatibility
+  user: User | null;
 
   // Basic Actions
   setUser: (user: User | null) => void;
@@ -27,78 +38,104 @@ export interface UserSlice {
   isLoggedIn: () => boolean;
 }
 
-export const createUserSlice: StateCreator<UserSlice> = (set, get) => ({
-  // Initial State
-  user: null,
-  userLoading: false,
-  notificationHandler: undefined,
+export const createUserSlice: StateCreator<UserSlice> = (set, get) => {
+  // Define type-safe action creators
+  const updateUser: ActionCreator<UserSlice, [User | null]> = (state, user) => ({
+    ...state,
+    userState: user ? setSuccess(state.userState, user) : { ...state.userState, data: null },
+    user: user
+  });
 
-  // Basic Actions
-  setUser: (user) => {
-    set({ user });
-    // Notify on user change if handler exists
-    get().notificationHandler?.(`User ${user ? 'logged in' : 'logged out'}`);
-  },
+  // Define type-safe selectors
+  const getUserNameSelector: Selector<UserSlice, string | null> = (state) => {
+    return state.userState.data?.name ?? null;
+  };
 
-  logout: () => {
-    set({ user: null });
-    get().notificationHandler?.('User logged out');
-  },
+  const getUserIdSelector: Selector<UserSlice, string | null> = (state) => {
+    return state.userState.data?.id ?? null;
+  };
 
-  // Async Actions
-  loginAsync: async (credentials) => {
-    set({ userLoading: true });
-    try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials),
-      });
-      const user = await response.json();
-      set({ user, userLoading: false });
-      get().notificationHandler?.('Login successful');
-      return user;
-    } catch (error) {
-      console.error('Failed to login:', error);
-      set({ userLoading: false });
-      get().notificationHandler?.('Login failed');
-      throw error;
-    }
-  },
+  const isLoggedInSelector: Selector<UserSlice, boolean> = (state) => {
+    return state.userState.data !== null;
+  };
 
-  fetchUser: async () => {
-    set({ userLoading: true });
-    try {
-      const response = await fetch(`${API_BASE_URL}/user`);
-      const user = await response.json();
-      set({ user, userLoading: false });
-    } catch (error) {
-      console.error('Failed to fetch user:', error);
-      set({ userLoading: false, user: null });
-      get().notificationHandler?.('Failed to fetch user');
-      throw error;
-    }
-  },
+  return {
+    // Initial State
+    userState: createInitialAsyncState<User>(),
+    notificationHandler: undefined,
+    user: null,
 
-  // Effects
-  setNotificationHandler: (handler) => {
-    set({ notificationHandler: handler });
-  },
+    // Basic Actions
+    setUser: (user) => {
+      set(updateUser(get(), user));
+      // Notify on user change if handler exists
+      get().notificationHandler?.(`User ${user ? 'logged in' : 'logged out'}`);
+    },
 
-  clearNotificationHandler: () => {
-    set({ notificationHandler: undefined });
-  },
+    logout: () => {
+      set(updateUser(get(), null));
+      get().notificationHandler?.('User logged out');
+    },
 
-  // Selectors
-  getUserName: () => {
-    return get().user?.name ?? null;
-  },
+    // Async Actions
+    loginAsync: async (credentials) => {
+      set(state => ({ userState: setLoading(state.userState) }));
+      try {
+        const response = await fetch(`${API_BASE_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(credentials),
+        });
+        const user = await response.json();
+        set(updateUser(get(), user));
+        get().notificationHandler?.('Login successful');
+        return user;
+      } catch (error) {
+        console.error('Failed to login:', error);
+        set(state => ({ 
+          userState: setError(state.userState, error instanceof Error ? error : new Error('Failed to login')) 
+        }));
+        get().notificationHandler?.('Login failed');
+        throw error;
+      }
+    },
 
-  getUserId: () => {
-    return get().user?.id ?? null;
-  },
+    fetchUser: async () => {
+      set(state => ({ userState: setLoading(state.userState) }));
+      try {
+        const response = await fetch(`${API_BASE_URL}/user`);
+        const user = await response.json();
+        set(updateUser(get(), user));
+      } catch (error) {
+        console.error('Failed to fetch user:', error);
+        set(state => ({ 
+          userState: setError(state.userState, error instanceof Error ? error : new Error('Failed to fetch user')) 
+        }));
+        get().notificationHandler?.('Failed to fetch user');
+        throw error;
+      }
+    },
 
-  isLoggedIn: () => {
-    return get().user !== null;
-  },
-}); 
+    // Effects
+    setNotificationHandler: (handler) => {
+      set({ notificationHandler: handler });
+    },
+
+    clearNotificationHandler: () => {
+      set({ notificationHandler: undefined });
+    },
+
+    // Selectors
+    getUserName: () => {
+      return getUserNameSelector(get());
+    },
+
+    getUserId: () => {
+      return getUserIdSelector(get());
+    },
+
+    isLoggedIn: () => {
+      return isLoggedInSelector(get());
+    },
+  };
+}; 
