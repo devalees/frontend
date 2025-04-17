@@ -7,9 +7,11 @@
  * - Offline support
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi, Mock } from 'vitest';
-import { waitFor } from '@testing-library/dom';
-import { performanceMockInstance } from '../utils/mockPerformance';
+// Import core testing utilities directly from vitest
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+// Import our custom utilities from the centralized system
+import { waitFor, performanceMockInstance } from '../utils';
+import type { Mock } from 'vitest';
 
 // Define the ServiceWorkerRegistration type
 // Global scope already has a ServiceWorkerRegistration interface

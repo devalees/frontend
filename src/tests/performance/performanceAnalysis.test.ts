@@ -7,9 +7,10 @@
  * - Optimization suggestions
  */
 
+// Import core testing utilities directly from vitest
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { performanceMockInstance } from '../utils/mockPerformance';
-import { waitFor } from '../utils';
+// Import our custom utilities from the centralized system
+import { performanceMockInstance, waitFor } from '../utils';
 
 // Import performance analysis (this will fail until implemented)
 // This will be the target of our implementation

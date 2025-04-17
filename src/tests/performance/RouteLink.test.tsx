@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import React from 'react';
+// Import core testing utilities directly from vitest
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+// Import testing utilities from our centralized system
+import { render, screen, fireEvent, waitFor, performanceMockInstance } from '../utils';
 
 import { RouteLink } from '../../lib/routing';
-import { performanceMockInstance } from '../utils/mockPerformance';
 
 vi.mock('../../lib/routing/chunkLoader', () => ({
   getRouteChunks: vi.fn(),

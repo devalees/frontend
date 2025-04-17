@@ -1,9 +1,8 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import React, { useEffect } from 'react';
-import { performanceMockInstance } from '../utils/mockPerformance';
-import { render, fireEvent } from '../utils/testUtils';
-import { act, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+// Import core testing utilities directly from vitest
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+// Import testing utilities from our centralized system
+import { waitFor, act, performanceMockInstance, render, fireEvent } from '../utils';
 import TestErrorBoundary, { ComponentError as ImportedComponentError } from '../../lib/utils/TestErrorBoundary';
 
 // Create mock components for testing

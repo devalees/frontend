@@ -1,10 +1,11 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import React from 'react';
+// Import core testing utilities directly from vitest
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+// Import DOM testing utilities from our centralized system
+import { render, screen, fireEvent } from '../utils';
 
 import { RouteError } from '../../lib/routing';
-import { performanceMockInstance } from '../utils/mockPerformance';
+import { performanceMockInstance } from '../utils';
 
 describe('RouteError Performance', () => {
   const mockRetry = vi.fn();

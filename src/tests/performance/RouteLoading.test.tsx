@@ -1,10 +1,12 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import React from 'react';
+// Import core testing utilities directly from vitest
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+// Import DOM testing utilities from our centralized system
+import { render, screen } from '../utils';
+import { cleanup } from '@testing-library/react';
 
 import { RouteLoading } from '../../lib/routing';
-import { performanceMockInstance } from '../utils/mockPerformance';
+import { performanceMockInstance } from '../utils';
 
 // Mock global.performance to use our performanceMockInstance utility
 Object.defineProperty(global, 'performance', {

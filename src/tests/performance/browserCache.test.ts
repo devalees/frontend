@@ -7,7 +7,9 @@
  * - Cache update procedures
  */
 
+// Import core testing utilities directly from vitest
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+// Import our custom utilities from the centralized system
 import { waitFor } from '../utils';
 import { BrowserCache } from '../../lib/cache/browserCache';
 
