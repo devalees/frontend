@@ -23,43 +23,102 @@ alwaysApply: true
 ```
 frontend/
 ├── src/
-│   ├── components/            # All shared UI components will go here
+│   ├── app/                    # Next.js 13+ app directory
+│   │   ├── (auth)/            # Authentication routes
+│   │   │   ├── login/
+│   │   │   ├── register/
+│   │   │   └── layout.tsx
+│   │   ├── (dashboard)/       # Protected routes
+│   │   │   ├── projects/
+│   │   │   ├── tasks/
+│   │   │   ├── documents/
+│   │   │   └── layout.tsx
+│   │   ├── api/              # API routes
+│   │   │   └── [...route]/
+│   │   ├── layout.tsx        # Root layout
+│   │   └── page.tsx          # Home page
+│   │
+│   ├── components/            # All shared UI components
 │   │   ├── ui/               # Base Components
 │   │   │   ├── Button.tsx
 │   │   │   ├── Input.tsx
-│   │   │   └── Modal.tsx
+│   │   │   ├── Modal.tsx
+│   │   │   └── index.ts
 │   │   ├── layout/           # Layout Components
 │   │   │   ├── Header.tsx
 │   │   │   ├── Sidebar.tsx
-│   │   │   └── Grid.tsx
+│   │   │   ├── Grid.tsx
+│   │   │   └── index.ts
 │   │   ├── forms/            # Form Components
 │   │   │   ├── Form.tsx
 │   │   │   ├── Select.tsx
-│   │   │   └── DatePicker.tsx
-│   │   └── loading/          # Loading States
-│   │       ├── Spinner.tsx
-│   │       └── Skeleton.tsx
-│   ├── lib/                  # Component utilities and helpers
-│   │   ├── components/       # Component-specific utilities
+│   │   │   ├── DatePicker.tsx
+│   │   │   └── index.ts
+│   │   ├── loading/          # Loading States
+│   │   │   ├── Spinner.tsx
+│   │   │   ├── Skeleton.tsx
+│   │   │   └── index.ts
+│   │   └── features/         # Feature-specific components
+│   │       ├── projects/
+│   │       ├── tasks/
+│   │       └── documents/
+│   │
+│   ├── lib/                  # Utility functions and helpers
+│   │   ├── api/             # API client setup
+│   │   │   ├── axios.ts
+│   │   │   └── interceptors/
+│   │   ├── auth/            # Authentication utilities
+│   │   │   ├── middleware.ts
+│   │   │   └── session.ts
+│   │   ├── components/      # Component-specific utilities
 │   │   │   ├── button.ts
 │   │   │   ├── input.ts
 │   │   │   └── modal.ts
-│   │   └── hooks/           # Component-specific hooks
-│   │       ├── useButton.ts
-│   │       ├── useInput.ts
-│   │       └── useModal.ts
-│   ├── styles/              # Component styles
-│   │   ├── components/      # Component-specific styles
+│   │   ├── hooks/          # Component-specific hooks
+│   │   │   ├── useButton.ts
+│   │   │   ├── useInput.ts
+│   │   │   └── useModal.ts
+│   │   └── utils/          # Helper functions
+│   │
+│   ├── hooks/              # Custom React hooks
+│   │   ├── useAuth.ts
+│   │   ├── useProjects.ts
+│   │   └── useTasks.ts
+│   │
+│   ├── store/              # State management
+│   │   ├── index.ts
+│   │   └── slices/
+│   │       ├── auth.ts
+│   │       ├── projects.ts
+│   │       └── tasks.ts
+│   │
+│   ├── styles/             # Global and component styles
+│   │   ├── globals.css     # Global styles
+│   │   ├── components/     # Component-specific styles
 │   │   │   ├── button.css
 │   │   │   ├── input.css
 │   │   │   └── modal.css
-│   │   └── themes/         # Theme-specific styles
-│   └── tests/              # Component tests
-│       ├── components/     # Component-specific tests
+│   │   └── themes/        # Theme-specific styles
+│   │       ├── light.css
+│   │       └── dark.css
+│   │
+│   ├── types/             # TypeScript types
+│   │   ├── api.ts
+│   │   ├── auth.ts
+│   │   ├── components.ts
+│   │   └── models.ts
+│   │
+│   └── tests/             # Test files
+│       ├── components/    # Component tests
 │       │   ├── Button.test.tsx
 │       │   ├── Input.test.tsx
 │       │   └── Modal.test.tsx
-│       └── utils/         # Test utilities
+│       ├── hooks/        # Hook tests
+│       │   ├── useAuth.test.ts
+│       │   └── useProjects.test.ts
+│       └── utils/        # Test utilities
+│           ├── render.tsx
+│           └── test-utils.ts
 
 ### 3. Key Architectural Decisions
 

@@ -3,20 +3,104 @@
 A modern React application built with TypeScript and Vite.
 
 ## Project Structure
-
-```
-src/
-├── components/         # Reusable UI components
-│   ├── ui/            # Basic UI components
-│   ├── layout/        # Layout components
-│   ├── form/          # Form-related components
-│   └── loading/       # Loading state components
-├── lib/               # Utility functions and hooks
-│   ├── api/           # API clients and utilities
-│   ├── utils/         # Helper functions
-│   └── hooks/         # Custom React hooks
-└── styles/            # Global styles and theme
-```
+frontend/
+├── src/
+│   ├── app/                    # Next.js 13+ app directory
+│   │   ├── (auth)/            # Authentication routes
+│   │   │   ├── login/
+│   │   │   ├── register/
+│   │   │   └── layout.tsx
+│   │   ├── (dashboard)/       # Protected routes
+│   │   │   ├── projects/
+│   │   │   ├── tasks/
+│   │   │   ├── documents/
+│   │   │   └── layout.tsx
+│   │   ├── api/              # API routes
+│   │   │   └── [...route]/
+│   │   ├── layout.tsx        # Root layout
+│   │   └── page.tsx          # Home page
+│   │
+│   ├── components/            # All shared UI components
+│   │   ├── ui/               # Base Components
+│   │   │   ├── Button.tsx
+│   │   │   ├── Input.tsx
+│   │   │   ├── Modal.tsx
+│   │   │   └── index.ts
+│   │   ├── layout/           # Layout Components
+│   │   │   ├── Header.tsx
+│   │   │   ├── Sidebar.tsx
+│   │   │   ├── Grid.tsx
+│   │   │   └── index.ts
+│   │   ├── forms/            # Form Components
+│   │   │   ├── Form.tsx
+│   │   │   ├── Select.tsx
+│   │   │   ├── DatePicker.tsx
+│   │   │   └── index.ts
+│   │   ├── loading/          # Loading States
+│   │   │   ├── Spinner.tsx
+│   │   │   ├── Skeleton.tsx
+│   │   │   └── index.ts
+│   │   └── features/         # Feature-specific components
+│   │       ├── projects/
+│   │       ├── tasks/
+│   │       └── documents/
+│   │
+│   ├── lib/                  # Utility functions and helpers
+│   │   ├── api/             # API client setup
+│   │   │   ├── axios.ts
+│   │   │   └── interceptors/
+│   │   ├── auth/            # Authentication utilities
+│   │   │   ├── middleware.ts
+│   │   │   └── session.ts
+│   │   ├── components/      # Component-specific utilities
+│   │   │   ├── button.ts
+│   │   │   ├── input.ts
+│   │   │   └── modal.ts
+│   │   ├── hooks/          # Component-specific hooks
+│   │   │   ├── useButton.ts
+│   │   │   ├── useInput.ts
+│   │   │   └── useModal.ts
+│   │   └── utils/          # Helper functions
+│   │
+│   ├── hooks/              # Custom React hooks
+│   │   ├── useAuth.ts
+│   │   ├── useProjects.ts
+│   │   └── useTasks.ts
+│   │
+│   ├── store/              # State management
+│   │   ├── index.ts
+│   │   └── slices/
+│   │       ├── auth.ts
+│   │       ├── projects.ts
+│   │       └── tasks.ts
+│   │
+│   ├── styles/             # Global and component styles
+│   │   ├── globals.css     # Global styles
+│   │   ├── components/     # Component-specific styles
+│   │   │   ├── button.css
+│   │   │   ├── input.css
+│   │   │   └── modal.css
+│   │   └── themes/        # Theme-specific styles
+│   │       ├── light.css
+│   │       └── dark.css
+│   │
+│   ├── types/             # TypeScript types
+│   │   ├── api.ts
+│   │   ├── auth.ts
+│   │   ├── components.ts
+│   │   └── models.ts
+│   │
+│   └── tests/             # Test files
+│       ├── components/    # Component tests
+│       │   ├── Button.test.tsx
+│       │   ├── Input.test.tsx
+│       │   └── Modal.test.tsx
+│       ├── hooks/        # Hook tests
+│       │   ├── useAuth.test.ts
+│       │   └── useProjects.test.ts
+│       └── utils/        # Test utilities
+│           ├── render.tsx
+│           └── test-utils.ts
 
 ## Getting Started
 
