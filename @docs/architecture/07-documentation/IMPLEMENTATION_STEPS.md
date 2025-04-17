@@ -84,16 +84,16 @@ Each documentation task follows the Red-Green-Refactor cycle:
        - [ ] Update documentation
        - [ ] Review and adjust
 
-   - [ ] Tutorials
-     - [ ] Test Setup
-       - [ ] Create test file (tutorials.test.ts)
-       - [ ] Write failing tests for tutorial structure
-       - [ ] Write failing tests for step validation
-       - [ ] Write failing tests for example testing
-     - [ ] Implementation
-       - [ ] Implement tutorial structure
-       - [ ] Configure step validation
-       - [ ] Set up example testing
+   - [x] Tutorials
+     - [x] Test Setup
+       - [x] Create test file (tutorials.test.ts)
+       - [x] Write failing tests for tutorial structure
+       - [x] Write failing tests for step validation
+       - [x] Write failing tests for example testing
+     - [x] Implementation
+       - [x] Implement tutorial structure
+       - [x] Configure step validation
+       - [x] Set up example testing
      - [ ] Refactoring
        - [ ] Optimize tutorials
        - [ ] Update documentation
