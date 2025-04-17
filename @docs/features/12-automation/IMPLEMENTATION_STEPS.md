@@ -9,14 +9,33 @@ Each automation task follows the Red-Green-Refactor cycle:
 1. **Workflow Automation**
    - [ ] Workflow Creation
      - [ ] Test Setup
-       - [ ] Create test file (workflowCreation.test.ts)
+       - [ ] Create test file (`src/tests/features/automation/workflowCreation.test.ts`)
        - [ ] Write failing tests for workflow validation
        - [ ] Write failing tests for step configuration
        - [ ] Write failing tests for trigger setup
      - [ ] Implementation
-       - [ ] Implement workflow validation
-       - [ ] Create step configuration
-       - [ ] Set up trigger handling
+       - [ ] Implement workflow components:
+         - [ ] Workflow builder (`src/components/features/automation/WorkflowBuilder.tsx`)
+           - Visual drag-and-drop interface for workflow creation
+         - [ ] Step configurator (`src/components/features/automation/StepConfigurator.tsx`)
+         - [ ] Trigger selector (`src/components/features/automation/TriggerSelector.tsx`)
+         - [ ] Action configurator (`src/components/features/automation/ActionConfigurator.tsx`)
+         - [ ] Condition editor (`src/components/features/automation/ConditionEditor.tsx`)
+       - [ ] Create workflow pages:
+         - [ ] Workflows dashboard (`src/app/(dashboard)/automation/workflows/page.tsx`)
+         - [ ] Workflow editor (`src/app/(dashboard)/automation/workflows/editor/page.tsx`)
+         - [ ] Trigger configuration (`src/app/(dashboard)/automation/workflows/triggers/page.tsx`)
+         - [ ] Step library (`src/app/(dashboard)/automation/workflows/steps/page.tsx`)
+       - [ ] Implement workflow API services:
+         - [ ] Workflow service (`src/lib/automation/workflowService.ts`)
+         - [ ] Trigger service (`src/lib/automation/triggerService.ts`)
+         - [ ] Step service (`src/lib/automation/stepService.ts`)
+       - [ ] Set up workflow state management (`src/store/slices/workflowAutomation.ts`)
+         - Implement with Zustand following state pattern
+       - [ ] Create workflow validation utilities:
+         - [ ] Workflow validators (`src/lib/automation/workflowValidators.ts`)
+         - [ ] Step validators (`src/lib/automation/stepValidators.ts`)
+         - [ ] Trigger validators (`src/lib/automation/triggerValidators.ts`)
      - [ ] Refactoring
        - [ ] Optimize workflow creation
        - [ ] Update documentation
@@ -24,14 +43,33 @@ Each automation task follows the Red-Green-Refactor cycle:
 
    - [ ] Workflow Execution
      - [ ] Test Setup
-       - [ ] Create test file (workflowExecution.test.ts)
+       - [ ] Create test file (`src/tests/features/automation/workflowExecution.test.ts`)
        - [ ] Write failing tests for execution engine
        - [ ] Write failing tests for state management
        - [ ] Write failing tests for error handling
      - [ ] Implementation
-       - [ ] Implement execution engine
-       - [ ] Create state management
-       - [ ] Set up error handling
+       - [ ] Implement execution components:
+         - [ ] Execution monitor (`src/components/features/automation/ExecutionMonitor.tsx`)
+         - [ ] State viewer (`src/components/features/automation/StateViewer.tsx`)
+         - [ ] Error handler (`src/components/features/automation/ErrorHandler.tsx`)
+         - [ ] Execution log (`src/components/features/automation/ExecutionLog.tsx`)
+       - [ ] Create execution pages:
+         - [ ] Execution dashboard (`src/app/(dashboard)/automation/execution/page.tsx`)
+         - [ ] History viewer (`src/app/(dashboard)/automation/execution/history/page.tsx`)
+         - [ ] Logs page (`src/app/(dashboard)/automation/execution/logs/page.tsx`)
+         - [ ] Debug page (`src/app/(dashboard)/automation/execution/debug/page.tsx`)
+       - [ ] Implement execution API services:
+         - [ ] Execution service (`src/lib/automation/executionService.ts`)
+         - [ ] State service (`src/lib/automation/stateService.ts`)
+         - [ ] Error service (`src/lib/automation/errorService.ts`)
+       - [ ] Create execution hooks:
+         - [ ] Execution hook (`src/hooks/useWorkflowExecution.ts`)
+         - [ ] State management hook (`src/hooks/useWorkflowState.ts`)
+         - [ ] Error handling hook (`src/hooks/useWorkflowErrors.ts`)
+       - [ ] Implement execution engine utilities:
+         - [ ] Workflow runner (`src/lib/automation/execution/workflowRunner.ts`)
+         - [ ] State manager (`src/lib/automation/execution/stateManager.ts`)
+         - [ ] Step executor (`src/lib/automation/execution/stepExecutor.ts`)
      - [ ] Refactoring
        - [ ] Optimize execution
        - [ ] Update documentation
@@ -40,14 +78,30 @@ Each automation task follows the Red-Green-Refactor cycle:
 2. **Rule Engine**
    - [ ] Rule Definition
      - [ ] Test Setup
-       - [ ] Create test file (ruleDefinition.test.ts)
+       - [ ] Create test file (`src/tests/features/automation/ruleDefinition.test.ts`)
        - [ ] Write failing tests for rule validation
        - [ ] Write failing tests for condition setup
        - [ ] Write failing tests for action configuration
      - [ ] Implementation
-       - [ ] Implement rule validation
-       - [ ] Create condition setup
-       - [ ] Set up action configuration
+       - [ ] Implement rule components:
+         - [ ] Rule editor (`src/components/features/automation/RuleEditor.tsx`)
+         - [ ] Condition builder (`src/components/features/automation/ConditionBuilder.tsx`)
+         - [ ] Action selector (`src/components/features/automation/ActionSelector.tsx`)
+         - [ ] Rule validator (`src/components/features/automation/RuleValidator.tsx`)
+       - [ ] Create rule pages:
+         - [ ] Rules dashboard (`src/app/(dashboard)/automation/rules/page.tsx`)
+         - [ ] Rule editor page (`src/app/(dashboard)/automation/rules/editor/page.tsx`)
+         - [ ] Condition page (`src/app/(dashboard)/automation/rules/conditions/page.tsx`)
+         - [ ] Actions library (`src/app/(dashboard)/automation/rules/actions/page.tsx`)
+       - [ ] Implement rule API services:
+         - [ ] Rule service (`src/lib/automation/ruleService.ts`)
+         - [ ] Condition service (`src/lib/automation/conditionService.ts`)
+         - [ ] Action service (`src/lib/automation/actionService.ts`)
+       - [ ] Set up rule state management (`src/store/slices/ruleEngine.ts`)
+       - [ ] Create rule definition utilities:
+         - [ ] Rule validators (`src/lib/automation/rules/ruleValidators.ts`)
+         - [ ] Condition builders (`src/lib/automation/rules/conditionBuilders.ts`)
+         - [ ] Action configurators (`src/lib/automation/rules/actionConfigurators.ts`)
      - [ ] Refactoring
        - [ ] Optimize rules
        - [ ] Update documentation
@@ -55,14 +109,33 @@ Each automation task follows the Red-Green-Refactor cycle:
 
    - [ ] Rule Processing
      - [ ] Test Setup
-       - [ ] Create test file (ruleProcessing.test.ts)
+       - [ ] Create test file (`src/tests/features/automation/ruleProcessing.test.ts`)
        - [ ] Write failing tests for rule evaluation
        - [ ] Write failing tests for action execution
        - [ ] Write failing tests for result handling
      - [ ] Implementation
-       - [ ] Implement rule evaluation
-       - [ ] Create action execution
-       - [ ] Set up result handling
+       - [ ] Implement processing components:
+         - [ ] Rule processor (`src/components/features/automation/RuleProcessor.tsx`)
+         - [ ] Evaluation monitor (`src/components/features/automation/EvaluationMonitor.tsx`)
+         - [ ] Result handler (`src/components/features/automation/ResultHandler.tsx`)
+         - [ ] Processing log (`src/components/features/automation/ProcessingLog.tsx`)
+       - [ ] Create processing pages:
+         - [ ] Processing dashboard (`src/app/(dashboard)/automation/processing/page.tsx`)
+         - [ ] Evaluation page (`src/app/(dashboard)/automation/processing/evaluation/page.tsx`)
+         - [ ] Results page (`src/app/(dashboard)/automation/processing/results/page.tsx`)
+         - [ ] Log viewer (`src/app/(dashboard)/automation/processing/logs/page.tsx`)
+       - [ ] Implement processing API services:
+         - [ ] Processing service (`src/lib/automation/processingService.ts`)
+         - [ ] Evaluation service (`src/lib/automation/evaluationService.ts`)
+         - [ ] Result service (`src/lib/automation/resultService.ts`)
+       - [ ] Create processing hooks:
+         - [ ] Rule processing hook (`src/hooks/useRuleProcessing.ts`)
+         - [ ] Evaluation hook (`src/hooks/useRuleEvaluation.ts`)
+         - [ ] Result handling hook (`src/hooks/useRuleResults.ts`)
+       - [ ] Implement rule engine utilities:
+         - [ ] Rule evaluator (`src/lib/automation/rules/ruleEvaluator.ts`)
+         - [ ] Action executor (`src/lib/automation/rules/actionExecutor.ts`)
+         - [ ] Result handler (`src/lib/automation/rules/resultHandler.ts`)
      - [ ] Refactoring
        - [ ] Optimize processing
        - [ ] Update documentation
@@ -71,14 +144,34 @@ Each automation task follows the Red-Green-Refactor cycle:
 3. **Automation Monitoring**
    - [ ] Performance Tracking
      - [ ] Test Setup
-       - [ ] Create test file (performanceTracking.test.ts)
+       - [ ] Create test file (`src/tests/features/automation/performanceTracking.test.ts`)
        - [ ] Write failing tests for execution metrics
        - [ ] Write failing tests for resource usage
        - [ ] Write failing tests for optimization rules
      - [ ] Implementation
-       - [ ] Implement execution metrics
-       - [ ] Create resource usage
-       - [ ] Set up optimization rules
+       - [ ] Implement tracking components:
+         - [ ] Performance dashboard (`src/components/features/automation/PerformanceDashboard.tsx`)
+         - [ ] Metrics viewer (`src/components/features/automation/MetricsViewer.tsx`)
+         - [ ] Resource monitor (`src/components/features/automation/ResourceMonitor.tsx`)
+         - [ ] Optimization advisor (`src/components/features/automation/OptimizationAdvisor.tsx`)
+       - [ ] Create tracking pages:
+         - [ ] Performance dashboard (`src/app/(dashboard)/automation/monitoring/performance/page.tsx`)
+         - [ ] Metrics page (`src/app/(dashboard)/automation/monitoring/metrics/page.tsx`)
+         - [ ] Resources page (`src/app/(dashboard)/automation/monitoring/resources/page.tsx`)
+         - [ ] Optimization page (`src/app/(dashboard)/automation/monitoring/optimization/page.tsx`)
+       - [ ] Implement tracking API services:
+         - [ ] Performance service (`src/lib/automation/performanceService.ts`)
+         - [ ] Metrics service (`src/lib/automation/metricsService.ts`)
+         - [ ] Resource service (`src/lib/automation/resourceService.ts`)
+       - [ ] Set up monitoring state management (`src/store/slices/automationMonitoring.ts`)
+       - [ ] Create tracking hooks:
+         - [ ] Performance tracking hook (`src/hooks/usePerformanceTracking.ts`)
+         - [ ] Metrics hook (`src/hooks/useAutomationMetrics.ts`)
+         - [ ] Resource usage hook (`src/hooks/useResourceUsage.ts`)
+       - [ ] Implement tracking utilities:
+         - [ ] Metrics collectors (`src/lib/automation/monitoring/metricsCollectors.ts`)
+         - [ ] Resource monitors (`src/lib/automation/monitoring/resourceMonitors.ts`)
+         - [ ] Optimization analyzers (`src/lib/automation/monitoring/optimizationAnalyzers.ts`)
      - [ ] Refactoring
        - [ ] Optimize tracking
        - [ ] Update documentation
@@ -86,18 +179,171 @@ Each automation task follows the Red-Green-Refactor cycle:
 
    - [ ] Alert System
      - [ ] Test Setup
-       - [ ] Create test file (alertSystem.test.ts)
+       - [ ] Create test file (`src/tests/features/automation/alertSystem.test.ts`)
        - [ ] Write failing tests for alert conditions
        - [ ] Write failing tests for notification delivery
        - [ ] Write failing tests for alert management
      - [ ] Implementation
-       - [ ] Implement alert conditions
-       - [ ] Create notification delivery
-       - [ ] Set up alert management
+       - [ ] Implement alert components:
+         - [ ] Alert configurator (`src/components/features/automation/AlertConfigurator.tsx`)
+         - [ ] Notification manager (`src/components/features/automation/NotificationManager.tsx`)
+         - [ ] Alert dashboard (`src/components/features/automation/AlertDashboard.tsx`)
+         - [ ] Alert history (`src/components/features/automation/AlertHistory.tsx`)
+       - [ ] Create alert pages:
+         - [ ] Alert dashboard (`src/app/(dashboard)/automation/alerts/page.tsx`)
+         - [ ] Configuration page (`src/app/(dashboard)/automation/alerts/configuration/page.tsx`)
+         - [ ] Notifications page (`src/app/(dashboard)/automation/alerts/notifications/page.tsx`)
+         - [ ] History page (`src/app/(dashboard)/automation/alerts/history/page.tsx`)
+       - [ ] Implement alert API services:
+         - [ ] Alert service (`src/lib/automation/alertService.ts`)
+         - [ ] Notification service (`src/lib/automation/notificationService.ts`)
+         - [ ] Alert history service (`src/lib/automation/alertHistoryService.ts`)
+       - [ ] Create alert hooks:
+         - [ ] Alert management hook (`src/hooks/useAlertManagement.ts`)
+         - [ ] Notification hook (`src/hooks/useNotifications.ts`)
+         - [ ] Alert history hook (`src/hooks/useAlertHistory.ts`)
+       - [ ] Implement alert system utilities:
+         - [ ] Alert condition evaluators (`src/lib/automation/alerts/conditionEvaluators.ts`)
+         - [ ] Notification senders (`src/lib/automation/alerts/notificationSenders.ts`)
+         - [ ] Alert managers (`src/lib/automation/alerts/alertManagers.ts`)
      - [ ] Refactoring
        - [ ] Optimize alerts
        - [ ] Update documentation
        - [ ] Review and adjust
+
+## Key Implementation Details
+
+1. **Workflow Builder System**
+   - [ ] Create workflow store
+     - Implement Zustand store for workflow state (`src/store/slices/workflowBuilder.ts`)
+     - Add workflow CRUD operations
+     - Set up workflow validation
+     - Add TypeScript types for workflows (`src/types/workflowTypes.ts`)
+   - [ ] Implement workflow components
+     - Create workflow canvas (`src/components/features/automation/WorkflowCanvas.tsx`)
+     - Add step library (`src/components/features/automation/StepLibrary.tsx`)
+     - Implement connection editor (`src/components/features/automation/ConnectionEditor.tsx`)
+     - Create workflow validation (`src/components/features/automation/WorkflowValidation.tsx`)
+   - [ ] Set up workflow hooks
+     - Create useWorkflow hook for workflow state (`src/hooks/useWorkflow.ts`)
+     - Add useWorkflowSteps hook for step management (`src/hooks/useWorkflowSteps.ts`)
+     - Implement useWorkflowValidation hook (`src/hooks/useWorkflowValidation.ts`)
+
+2. **Rule Engine System**
+   - [ ] Create rules store
+     - Implement Zustand store for rules state (`src/store/slices/ruleBuilder.ts`)
+     - Add rule CRUD operations
+     - Set up rule validation
+     - Add TypeScript types for rules (`src/types/ruleTypes.ts`)
+   - [ ] Implement rule components
+     - Create rule builder interface (`src/components/features/automation/RuleBuilder.tsx`)
+     - Add condition editor (`src/components/features/automation/ConditionEditor.tsx`)
+     - Implement action selector (`src/components/features/automation/ActionSelector.tsx`)
+     - Create rule testing interface (`src/components/features/automation/RuleTester.tsx`)
+   - [ ] Set up rule hooks
+     - Create useRule hook for rule state (`src/hooks/useRule.ts`)
+     - Add useRuleConditions hook for condition management (`src/hooks/useRuleConditions.ts`)
+     - Implement useRuleActions hook (`src/hooks/useRuleActions.ts`)
+
+3. **Execution Engine**
+   - [ ] Create execution store
+     - Implement Zustand store for execution state (`src/store/slices/executionEngine.ts`)
+     - Add execution operations
+     - Set up state persistence
+     - Add TypeScript types for execution (`src/types/executionTypes.ts`)
+   - [ ] Implement execution components
+     - Create execution control panel (`src/components/features/automation/ExecutionControl.tsx`)
+     - Add execution monitor (`src/components/features/automation/ExecutionMonitor.tsx`)
+     - Implement debugging tools (`src/components/features/automation/DebuggingTools.tsx`)
+     - Create history viewer (`src/components/features/automation/HistoryViewer.tsx`)
+   - [ ] Set up execution hooks
+     - Create useExecution hook for execution state (`src/hooks/useExecution.ts`)
+     - Add useExecutionHistory hook (`src/hooks/useExecutionHistory.ts`)
+     - Implement useExecutionDebug hook (`src/hooks/useExecutionDebug.ts`)
+
+4. **Action Library**
+   - [ ] Create actions store
+     - Implement Zustand store for action state (`src/store/slices/actionLibrary.ts`)
+     - Add action registry
+     - Set up action configuration
+     - Add TypeScript types for actions (`src/types/actionTypes.ts`)
+   - [ ] Implement action components
+     - Create action browser (`src/components/features/automation/ActionBrowser.tsx`)
+     - Add action configuration panel (`src/components/features/automation/ActionConfiguration.tsx`)
+     - Implement custom action builder (`src/components/features/automation/CustomActionBuilder.tsx`)
+     - Create action testing interface (`src/components/features/automation/ActionTester.tsx`)
+   - [ ] Set up action hooks
+     - Create useActions hook for action state (`src/hooks/useActions.ts`)
+     - Add useActionConfiguration hook (`src/hooks/useActionConfiguration.ts`)
+     - Implement useCustomActions hook (`src/hooks/useCustomActions.ts`)
+
+5. **Monitoring System**
+   - [ ] Create monitoring store
+     - Implement Zustand store for monitoring state (`src/store/slices/automationMonitoring.ts`)
+     - Add metric collection
+     - Set up alert configuration
+     - Add TypeScript types for monitoring (`src/types/monitoringTypes.ts`)
+   - [ ] Implement monitoring components
+     - Create monitoring dashboard (`src/components/features/automation/MonitoringDashboard.tsx`)
+     - Add performance charts (`src/components/features/automation/PerformanceCharts.tsx`)
+     - Implement alert management (`src/components/features/automation/AlertManagement.tsx`)
+     - Create resource usage viewer (`src/components/features/automation/ResourceUsage.tsx`)
+   - [ ] Set up monitoring hooks
+     - Create useMonitoring hook (`src/hooks/useMonitoring.ts`)
+     - Add useAlerts hook (`src/hooks/useAlerts.ts`)
+     - Implement usePerformanceMetrics hook (`src/hooks/usePerformanceMetrics.ts`)
+
+## Architecture Integration Points
+- **UI Components**: 
+  - Leverage existing components from `src/components/ui/` and `src/components/forms/`
+  - Create specialized automation components with consistent design
+  - Implement drag-and-drop interfaces for workflow and rule building
+  - Use modular components for different automation steps and actions
+- **Visual Builder**:
+  - Implement canvas-based workflow editor with nodes and connections
+  - Create intuitive drag-and-drop interfaces for automation design
+  - Add step/action library with categorized components
+  - Build interactive validation feedback system
+- **Rules DSL (Domain-Specific Language)**:
+  - Create expressive condition builder with support for complex logic
+  - Implement template system for quick rule creation
+  - Add natural language parsing for rule definitions
+  - Support for integrating with external data sources
+- **API Client**: 
+  - Use the established API client from `src/lib/api/axios.ts`
+  - Implement specialized services for automation features
+  - Add progress tracking for long-running automation tasks
+  - Create proper error handling for automation operations
+- **State Management**: 
+  - Follow Zustand patterns in `src/store/slices/` for automation state
+  - Implement specialized stores for different automation features
+  - Use persistence for automation designs and configurations
+  - Create reactive state updates for execution monitoring
+- **Integration System**:
+  - Build connector library for external system integration
+  - Implement webhook support for event-driven automation
+  - Create OAuth flow for third-party service connections
+  - Add system event listeners for internal triggers
+- **Execution Engine**:
+  - Implement async workflow execution with state persistence
+  - Create transaction management for multi-step operations
+  - Add rollback capability for failed workflows
+  - Build robust error handling and retry mechanisms
+- **Monitoring and Metrics**:
+  - Implement performance tracking for automation execution
+  - Create dashboards for resource utilization and execution times
+  - Add historical data analysis for optimization opportunities
+  - Build alert system for automation failures and performance issues
+- **Rule Evaluation**:
+  - Implement efficient rule evaluation engine
+  - Create expression parser for complex conditions
+  - Add context management for rule evaluation
+  - Build extensible action execution framework
+- **Testing**: 
+  - Maintain minimum 80% test coverage following TDD approach
+  - Test various automation scenarios and edge cases
+  - Create unit tests for individual components and services
+  - Implement integration tests for end-to-end workflow execution
 
 Status Indicators:
 - [ ] Not started
@@ -105,4 +351,4 @@ Status Indicators:
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Created with strict test-driven development approach. 
+Last Updated: Enhanced with specific file paths and architecture integration points. 

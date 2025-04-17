@@ -9,14 +9,30 @@ Each documents task follows the Red-Green-Refactor cycle:
 1. **Document Management**
    - [ ] Document Creation
      - [ ] Test Setup
-       - [ ] Create test file (documentCreation.test.ts)
+       - [ ] Create test file (`src/tests/features/documents/documentCreation.test.ts`)
        - [ ] Write failing tests for document validation
        - [ ] Write failing tests for document storage
        - [ ] Write failing tests for document metadata
      - [ ] Implementation
-       - [ ] Implement document validation
-       - [ ] Create document storage
-       - [ ] Set up document metadata
+       - [ ] Implement document components:
+         - [ ] Document upload form (`src/components/features/documents/DocumentUploadForm.tsx`)
+           - Leverage existing Form and Input components
+         - [ ] Document creator (`src/components/features/documents/DocumentCreator.tsx`)
+         - [ ] Document metadata form (`src/components/features/documents/MetadataForm.tsx`)
+         - [ ] File preview (`src/components/features/documents/FilePreview.tsx`)
+       - [ ] Create document pages:
+         - [ ] Upload document page (`src/app/(dashboard)/documents/upload/page.tsx`)
+         - [ ] Create document page (`src/app/(dashboard)/documents/create/page.tsx`)
+         - [ ] Edit metadata page (`src/app/(dashboard)/documents/[id]/metadata/page.tsx`)
+       - [ ] Implement document API services (`src/lib/documents/documentService.ts`)
+         - Use axios client from `src/lib/api/axios.ts`
+         - Implement file upload with progress tracking
+       - [ ] Set up document state management (`src/store/slices/documents.ts`)
+         - Implement with Zustand following state pattern
+       - [ ] Create document validation utilities (`src/lib/documents/validation.ts`)
+         - File type validation
+         - Size limit validation
+         - Security scanning integration
      - [ ] Refactoring
        - [ ] Optimize document creation
        - [ ] Update documentation
@@ -24,14 +40,31 @@ Each documents task follows the Red-Green-Refactor cycle:
 
    - [ ] Document Operations
      - [ ] Test Setup
-       - [ ] Create test file (documentOperations.test.ts)
+       - [ ] Create test file (`src/tests/features/documents/documentOperations.test.ts`)
        - [ ] Write failing tests for document updates
        - [ ] Write failing tests for document deletion
        - [ ] Write failing tests for document versioning
      - [ ] Implementation
-       - [ ] Implement document updates
-       - [ ] Create document deletion
-       - [ ] Set up document versioning
+       - [ ] Implement document operation components:
+         - [ ] Document list (`src/components/features/documents/DocumentList.tsx`)
+         - [ ] Document grid view (`src/components/features/documents/DocumentGrid.tsx`)
+         - [ ] Document card (`src/components/features/documents/DocumentCard.tsx`)
+         - [ ] Document detail view (`src/components/features/documents/DocumentDetail.tsx`)
+         - [ ] Document viewer (`src/components/features/documents/DocumentViewer.tsx`)
+         - [ ] Version history (`src/components/features/documents/VersionHistory.tsx`)
+       - [ ] Create document operation pages:
+         - [ ] Document library page (`src/app/(dashboard)/documents/page.tsx`)
+         - [ ] Document detail page (`src/app/(dashboard)/documents/[id]/page.tsx`)
+         - [ ] Document edit page (`src/app/(dashboard)/documents/[id]/edit/page.tsx`)
+         - [ ] Version history page (`src/app/(dashboard)/documents/[id]/versions/page.tsx`)
+       - [ ] Implement operations API services (`src/lib/documents/operations.ts`)
+         - Handle document versioning with optimistic updates
+       - [ ] Create document hooks:
+         - [ ] Document query hook (`src/hooks/useDocument.ts`)
+         - [ ] Document list hook (`src/hooks/useDocuments.ts`)
+         - [ ] Document version hook (`src/hooks/useDocumentVersions.ts`)
+           - Use React Query for efficient data fetching and caching
+       - [ ] Implement document search utility (`src/lib/documents/search.ts`)
      - [ ] Refactoring
        - [ ] Optimize operations
        - [ ] Update documentation
@@ -40,14 +73,24 @@ Each documents task follows the Red-Green-Refactor cycle:
 2. **Document Organization**
    - [ ] Document Categories
      - [ ] Test Setup
-       - [ ] Create test file (documentCategories.test.ts)
+       - [ ] Create test file (`src/tests/features/documents/documentCategories.test.ts`)
        - [ ] Write failing tests for category creation
        - [ ] Write failing tests for category assignment
        - [ ] Write failing tests for category filtering
      - [ ] Implementation
-       - [ ] Implement category creation
-       - [ ] Create category assignment
-       - [ ] Set up category filtering
+       - [ ] Implement category components:
+         - [ ] Category manager (`src/components/features/documents/CategoryManager.tsx`)
+         - [ ] Category tree (`src/components/features/documents/CategoryTree.tsx`)
+         - [ ] Category selector (`src/components/features/documents/CategorySelector.tsx`)
+         - [ ] Category breadcrumb (`src/components/features/documents/CategoryBreadcrumb.tsx`)
+       - [ ] Create category pages:
+         - [ ] Categories management page (`src/app/(dashboard)/documents/categories/page.tsx`)
+         - [ ] Category view page (`src/app/(dashboard)/documents/categories/[id]/page.tsx`)
+       - [ ] Implement category API services (`src/lib/documents/categoryService.ts`)
+       - [ ] Create category utilities:
+         - [ ] Category filter hook (`src/hooks/useCategoryFilter.ts`)
+         - [ ] Category navigation helper (`src/lib/documents/categoryNavigation.ts`)
+       - [ ] Integrate with document list for filtered views
      - [ ] Refactoring
        - [ ] Optimize categories
        - [ ] Update documentation
@@ -55,14 +98,25 @@ Each documents task follows the Red-Green-Refactor cycle:
 
    - [ ] Document Tags
      - [ ] Test Setup
-       - [ ] Create test file (documentTags.test.ts)
+       - [ ] Create test file (`src/tests/features/documents/documentTags.test.ts`)
        - [ ] Write failing tests for tag creation
        - [ ] Write failing tests for tag assignment
        - [ ] Write failing tests for tag search
      - [ ] Implementation
-       - [ ] Implement tag creation
-       - [ ] Create tag assignment
-       - [ ] Set up tag search
+       - [ ] Implement tag components:
+         - [ ] Tag creator (`src/components/features/documents/TagCreator.tsx`)
+         - [ ] Tag input (`src/components/features/documents/TagInput.tsx`)
+         - [ ] Tag cloud (`src/components/features/documents/TagCloud.tsx`)
+         - [ ] Tag filter (`src/components/features/documents/TagFilter.tsx`)
+       - [ ] Create tag pages:
+         - [ ] Tags management page (`src/app/(dashboard)/documents/tags/page.tsx`)
+         - [ ] Tag search page (`src/app/(dashboard)/documents/search/tags/page.tsx`)
+       - [ ] Implement tag API services (`src/lib/documents/tagService.ts`)
+       - [ ] Create tag utilities:
+         - [ ] Tag search hook (`src/hooks/useTagSearch.ts`)
+         - [ ] Tag suggestion system (`src/lib/documents/tagSuggestions.ts`)
+       - [ ] Set up tag state management
+         - Either extend documents store or create tags store
      - [ ] Refactoring
        - [ ] Optimize tags
        - [ ] Update documentation
@@ -71,14 +125,26 @@ Each documents task follows the Red-Green-Refactor cycle:
 3. **Document Processing**
    - [ ] Document Conversion
      - [ ] Test Setup
-       - [ ] Create test file (documentConversion.test.ts)
+       - [ ] Create test file (`src/tests/features/documents/documentConversion.test.ts`)
        - [ ] Write failing tests for format conversion
        - [ ] Write failing tests for quality checks
        - [ ] Write failing tests for conversion validation
      - [ ] Implementation
-       - [ ] Implement format conversion
-       - [ ] Create quality checks
-       - [ ] Set up conversion validation
+       - [ ] Implement conversion components:
+         - [ ] Conversion options (`src/components/features/documents/ConversionOptions.tsx`)
+         - [ ] Conversion progress (`src/components/features/documents/ConversionProgress.tsx`)
+         - [ ] Quality settings (`src/components/features/documents/QualitySettings.tsx`)
+         - [ ] Format selector (`src/components/features/documents/FormatSelector.tsx`)
+       - [ ] Create conversion pages:
+         - [ ] Convert document page (`src/app/(dashboard)/documents/[id]/convert/page.tsx`)
+         - [ ] Batch conversion page (`src/app/(dashboard)/documents/convert/batch/page.tsx`)
+       - [ ] Implement conversion services:
+         - [ ] Conversion service (`src/lib/documents/conversionService.ts`)
+         - [ ] Quality verification (`src/lib/documents/qualityVerification.ts`)
+         - [ ] Conversion presets (`src/lib/documents/conversionPresets.ts`)
+       - [ ] Create conversion hooks:
+         - [ ] Conversion progress hook (`src/hooks/useConversionProgress.ts`)
+         - [ ] Conversion options hook (`src/hooks/useConversionOptions.ts`)
      - [ ] Refactoring
        - [ ] Optimize conversion
        - [ ] Update documentation
@@ -86,18 +152,74 @@ Each documents task follows the Red-Green-Refactor cycle:
 
    - [ ] Document Analysis
      - [ ] Test Setup
-       - [ ] Create test file (documentAnalysis.test.ts)
+       - [ ] Create test file (`src/tests/features/documents/documentAnalysis.test.ts`)
        - [ ] Write failing tests for content analysis
        - [ ] Write failing tests for metadata extraction
        - [ ] Write failing tests for analysis reporting
      - [ ] Implementation
-       - [ ] Implement content analysis
-       - [ ] Create metadata extraction
-       - [ ] Set up analysis reporting
+       - [ ] Implement analysis components:
+         - [ ] Analysis dashboard (`src/components/features/documents/AnalysisDashboard.tsx`)
+         - [ ] Content analyzer (`src/components/features/documents/ContentAnalyzer.tsx`)
+         - [ ] Metadata extractor (`src/components/features/documents/MetadataExtractor.tsx`)
+         - [ ] Analysis reports (`src/components/features/documents/AnalysisReports.tsx`)
+       - [ ] Create analysis pages:
+         - [ ] Document analysis page (`src/app/(dashboard)/documents/[id]/analyze/page.tsx`)
+         - [ ] Analysis dashboard page (`src/app/(dashboard)/documents/analysis/page.tsx`)
+         - [ ] Report viewer page (`src/app/(dashboard)/documents/analysis/reports/[id]/page.tsx`)
+       - [ ] Implement analysis services:
+         - [ ] Content analysis service (`src/lib/documents/analysisService.ts`)
+         - [ ] Metadata extraction service (`src/lib/documents/metadataService.ts`)
+         - [ ] Reporting service (`src/lib/documents/reportingService.ts`)
+       - [ ] Create analysis hooks:
+         - [ ] Content analysis hook (`src/hooks/useContentAnalysis.ts`)
+         - [ ] Metadata extraction hook (`src/hooks/useMetadataExtraction.ts`)
+         - [ ] Analysis reporting hook (`src/hooks/useAnalysisReporting.ts`)
      - [ ] Refactoring
        - [ ] Optimize analysis
        - [ ] Update documentation
        - [ ] Review and adjust
+
+## Architecture Integration Points
+- **UI Components**: 
+  - Leverage existing components from `src/components/ui/` and `src/components/forms/`
+  - Use specialized viewers for different document types
+  - Implement responsive document grid/list views
+- **File Handling**:
+  - Implement chunked uploads for large files
+  - Use Web Workers for client-side document processing
+  - Add drag-and-drop support for document management
+- **API Client**: 
+  - Use the established API client from `src/lib/api/axios.ts`
+  - Add upload progress tracking with axios interceptors
+  - Implement document-specific API services with proper error handling
+- **State Management**: 
+  - Follow Zustand patterns in `src/store/slices/documents.ts`
+  - Use React Query for document data caching and prefetching
+  - Implement optimistic updates for document operations
+- **Versioning**:
+  - Track document version history
+  - Implement version comparison
+  - Support rollback to previous versions
+- **Search & Filtering**:
+  - Implement full-text search for documents
+  - Add advanced filtering by metadata
+  - Create saved searches functionality
+- **Document Viewers**:
+  - Implement viewers for different file types (PDF, images, text)
+  - Add annotation capabilities where appropriate
+  - Support print and download operations
+- **Security**:
+  - Implement document access controls
+  - Add watermarking for sensitive documents
+  - Create audit trails for document operations
+- **Performance**:
+  - Use lazy loading for document lists
+  - Implement document thumbnails with proper caching
+  - Stream large documents instead of full downloads
+- **Testing**: 
+  - Maintain minimum 80% test coverage following TDD approach
+  - Mock file uploads and processing for tests
+  - Test various document types and edge cases
 
 Status Indicators:
 - [ ] Not started
@@ -105,4 +227,4 @@ Status Indicators:
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Created with strict test-driven development approach. 
+Last Updated: Enhanced with specific file paths and architecture integration points. 

@@ -9,14 +9,26 @@ Each contacts task follows the Red-Green-Refactor cycle:
 1. **Contact Management**
    - [ ] Contact Creation
      - [ ] Test Setup
-       - [ ] Create test file (contactCreation.test.ts)
+       - [ ] Create test file (`src/tests/features/contacts/contactCreation.test.ts`)
        - [ ] Write failing tests for contact validation
        - [ ] Write failing tests for contact storage
        - [ ] Write failing tests for contact relationships
      - [ ] Implementation
-       - [ ] Implement contact validation
-       - [ ] Create contact storage
-       - [ ] Set up contact relationships
+       - [ ] Implement contact components:
+         - [ ] Contact form (`src/components/features/contacts/ContactForm.tsx`)
+           - Leverage existing Form and Input components
+         - [ ] Contact type selector (`src/components/features/contacts/ContactTypeSelector.tsx`)
+         - [ ] Contact details form (`src/components/features/contacts/ContactDetails.tsx`)
+         - [ ] Address form (`src/components/features/contacts/AddressForm.tsx`)
+       - [ ] Create contact pages:
+         - [ ] Create contact page (`src/app/(dashboard)/contacts/create/page.tsx`)
+         - [ ] Add contact details page (`src/app/(dashboard)/contacts/create/details/page.tsx`)
+       - [ ] Implement contact API services (`src/lib/contacts/contactService.ts`)
+         - Use axios client from `src/lib/api/axios.ts`
+       - [ ] Set up contact state management (`src/store/slices/contacts.ts`)
+         - Implement with Zustand following state pattern
+       - [ ] Create contact validation utilities (`src/lib/contacts/validation.ts`)
+         - Implement email, phone, and address validation
      - [ ] Refactoring
        - [ ] Optimize contact creation
        - [ ] Update documentation
@@ -24,14 +36,28 @@ Each contacts task follows the Red-Green-Refactor cycle:
 
    - [ ] Contact Operations
      - [ ] Test Setup
-       - [ ] Create test file (contactOperations.test.ts)
+       - [ ] Create test file (`src/tests/features/contacts/contactOperations.test.ts`)
        - [ ] Write failing tests for contact updates
        - [ ] Write failing tests for contact deletion
        - [ ] Write failing tests for contact search
      - [ ] Implementation
-       - [ ] Implement contact updates
-       - [ ] Create contact deletion
-       - [ ] Set up contact search
+       - [ ] Implement contact operation components:
+         - [ ] Contact list (`src/components/features/contacts/ContactList.tsx`)
+         - [ ] Contact card (`src/components/features/contacts/ContactCard.tsx`)
+         - [ ] Contact detail view (`src/components/features/contacts/ContactDetail.tsx`)
+         - [ ] Contact search (`src/components/features/contacts/ContactSearch.tsx`)
+         - [ ] Contact actions menu (`src/components/features/contacts/ContactActions.tsx`)
+       - [ ] Create contact operation pages:
+         - [ ] Contacts dashboard (`src/app/(dashboard)/contacts/page.tsx`)
+         - [ ] Contact detail page (`src/app/(dashboard)/contacts/[id]/page.tsx`)
+         - [ ] Contact edit page (`src/app/(dashboard)/contacts/[id]/edit/page.tsx`)
+         - [ ] Contact search page (`src/app/(dashboard)/contacts/search/page.tsx`)
+       - [ ] Implement operations API services (`src/lib/contacts/operations.ts`)
+       - [ ] Create contact hooks:
+         - [ ] Contact query hook (`src/hooks/useContact.ts`)
+         - [ ] Contact list hook (`src/hooks/useContacts.ts`)
+         - [ ] Contact search hook (`src/hooks/useContactSearch.ts`)
+           - Use React Query for efficient data fetching and caching
      - [ ] Refactoring
        - [ ] Optimize operations
        - [ ] Update documentation
@@ -40,14 +66,27 @@ Each contacts task follows the Red-Green-Refactor cycle:
 2. **Contact Organization**
    - [ ] Contact Groups
      - [ ] Test Setup
-       - [ ] Create test file (contactGroups.test.ts)
+       - [ ] Create test file (`src/tests/features/contacts/contactGroups.test.ts`)
        - [ ] Write failing tests for group creation
        - [ ] Write failing tests for group management
        - [ ] Write failing tests for group relationships
      - [ ] Implementation
-       - [ ] Implement group creation
-       - [ ] Create group management
-       - [ ] Set up group relationships
+       - [ ] Implement group components:
+         - [ ] Group creation form (`src/components/features/contacts/GroupForm.tsx`)
+         - [ ] Group list (`src/components/features/contacts/GroupList.tsx`)
+         - [ ] Group detail view (`src/components/features/contacts/GroupDetail.tsx`)
+         - [ ] Group membership manager (`src/components/features/contacts/GroupMembership.tsx`)
+       - [ ] Create group pages:
+         - [ ] Groups dashboard (`src/app/(dashboard)/contacts/groups/page.tsx`)
+         - [ ] Create group page (`src/app/(dashboard)/contacts/groups/create/page.tsx`)
+         - [ ] Group detail page (`src/app/(dashboard)/contacts/groups/[id]/page.tsx`)
+         - [ ] Group members page (`src/app/(dashboard)/contacts/groups/[id]/members/page.tsx`)
+       - [ ] Implement group API services (`src/lib/contacts/groupService.ts`)
+       - [ ] Set up group state management
+         - Either extend contacts store or create group store (`src/store/slices/contactGroups.ts`)
+       - [ ] Create group hooks:
+         - [ ] Group query hook (`src/hooks/useContactGroup.ts`)
+         - [ ] Group membership hook (`src/hooks/useGroupMembers.ts`)
      - [ ] Refactoring
        - [ ] Optimize groups
        - [ ] Update documentation
@@ -55,14 +94,24 @@ Each contacts task follows the Red-Green-Refactor cycle:
 
    - [ ] Contact Categories
      - [ ] Test Setup
-       - [ ] Create test file (contactCategories.test.ts)
+       - [ ] Create test file (`src/tests/features/contacts/contactCategories.test.ts`)
        - [ ] Write failing tests for category creation
        - [ ] Write failing tests for category assignment
        - [ ] Write failing tests for category filtering
      - [ ] Implementation
-       - [ ] Implement category creation
-       - [ ] Create category assignment
-       - [ ] Set up category filtering
+       - [ ] Implement category components:
+         - [ ] Category manager (`src/components/features/contacts/CategoryManager.tsx`)
+         - [ ] Category selector (`src/components/features/contacts/CategorySelector.tsx`)
+         - [ ] Category filter (`src/components/features/contacts/CategoryFilter.tsx`)
+         - [ ] Category tag (`src/components/features/contacts/CategoryTag.tsx`)
+       - [ ] Create category pages:
+         - [ ] Categories management page (`src/app/(dashboard)/contacts/categories/page.tsx`)
+         - [ ] Category detail page (`src/app/(dashboard)/contacts/categories/[id]/page.tsx`)
+       - [ ] Implement category API services (`src/lib/contacts/categoryService.ts`)
+       - [ ] Create category utilities:
+         - [ ] Category filter hook (`src/hooks/useCategoryFilter.ts`)
+         - [ ] Category assignment utility (`src/lib/contacts/categoryAssignment.ts`)
+       - [ ] Integrate with contact list for filtered views
      - [ ] Refactoring
        - [ ] Optimize categories
        - [ ] Update documentation
@@ -71,14 +120,27 @@ Each contacts task follows the Red-Green-Refactor cycle:
 3. **Contact Integration**
    - [ ] Contact Import/Export
      - [ ] Test Setup
-       - [ ] Create test file (contactImportExport.test.ts)
+       - [ ] Create test file (`src/tests/features/contacts/contactImportExport.test.ts`)
        - [ ] Write failing tests for import validation
        - [ ] Write failing tests for export formatting
        - [ ] Write failing tests for data transformation
      - [ ] Implementation
-       - [ ] Implement import validation
-       - [ ] Create export formatting
-       - [ ] Set up data transformation
+       - [ ] Implement import/export components:
+         - [ ] Import wizard (`src/components/features/contacts/ImportWizard.tsx`)
+         - [ ] Field mapper (`src/components/features/contacts/FieldMapper.tsx`)
+         - [ ] Export options (`src/components/features/contacts/ExportOptions.tsx`)
+         - [ ] Import preview (`src/components/features/contacts/ImportPreview.tsx`)
+       - [ ] Create import/export pages:
+         - [ ] Import contacts page (`src/app/(dashboard)/contacts/import/page.tsx`)
+         - [ ] Export contacts page (`src/app/(dashboard)/contacts/export/page.tsx`)
+       - [ ] Implement import/export services:
+         - [ ] Import service (`src/lib/contacts/importService.ts`)
+         - [ ] Export service (`src/lib/contacts/exportService.ts`)
+         - [ ] Data transformer (`src/lib/contacts/dataTransformer.ts`)
+       - [ ] Create file handling utilities:
+         - [ ] CSV parser (`src/lib/utils/csvParser.ts`)
+         - [ ] vCard parser (`src/lib/utils/vcardParser.ts`)
+         - [ ] Excel parser (`src/lib/utils/excelParser.ts`)
      - [ ] Refactoring
        - [ ] Optimize import/export
        - [ ] Update documentation
@@ -86,18 +148,72 @@ Each contacts task follows the Red-Green-Refactor cycle:
 
    - [ ] Contact Synchronization
      - [ ] Test Setup
-       - [ ] Create test file (contactSync.test.ts)
+       - [ ] Create test file (`src/tests/features/contacts/contactSync.test.ts`)
        - [ ] Write failing tests for sync initialization
        - [ ] Write failing tests for conflict resolution
        - [ ] Write failing tests for sync status
      - [ ] Implementation
-       - [ ] Implement sync initialization
-       - [ ] Create conflict resolution
-       - [ ] Set up sync status
+       - [ ] Implement synchronization components:
+         - [ ] Sync settings (`src/components/features/contacts/SyncSettings.tsx`)
+         - [ ] Conflict resolver (`src/components/features/contacts/ConflictResolver.tsx`)
+         - [ ] Sync status indicator (`src/components/features/contacts/SyncStatus.tsx`)
+         - [ ] Sync history (`src/components/features/contacts/SyncHistory.tsx`)
+       - [ ] Create synchronization pages:
+         - [ ] Sync settings page (`src/app/(dashboard)/contacts/sync/page.tsx`)
+         - [ ] Sync history page (`src/app/(dashboard)/contacts/sync/history/page.tsx`)
+         - [ ] Conflict resolution page (`src/app/(dashboard)/contacts/sync/conflicts/page.tsx`)
+       - [ ] Implement synchronization services:
+         - [ ] Sync service (`src/lib/contacts/syncService.ts`)
+         - [ ] Conflict detection service (`src/lib/contacts/conflictService.ts`)
+         - [ ] External service connectors (`src/lib/contacts/connectors/`)
+           - Google Contacts connector
+           - Outlook connector
+           - Generic API connector
+       - [ ] Create sync hooks:
+         - [ ] Sync status hook (`src/hooks/useSyncStatus.ts`)
+         - [ ] Conflict resolution hook (`src/hooks/useConflictResolution.ts`)
      - [ ] Refactoring
        - [ ] Optimize synchronization
        - [ ] Update documentation
        - [ ] Review and adjust
+
+## Architecture Integration Points
+- **UI Components**: 
+  - Leverage existing components from `src/components/ui/` and `src/components/forms/`
+  - Use modular composition for complex contact UIs
+  - Implement responsive design for mobile contact management
+- **API Client**: 
+  - Use the established API client from `src/lib/api/axios.ts`
+  - Implement contact-specific API services with proper error handling
+  - Add support for bulk operations with contacts
+- **State Management**: 
+  - Follow Zustand patterns in `src/store/slices/contacts.ts`
+  - Use React Query for server state management
+  - Implement optimistic updates for better UX during contact operations
+- **Data Validation**:
+  - Create robust validation for contact information
+  - Implement international phone and address format validation
+  - Add duplicate detection for contact information
+- **Import/Export**:
+  - Support multiple data formats (CSV, vCard, Excel)
+  - Implement field mapping for flexible imports
+  - Create customizable export templates
+- **Synchronization**:
+  - Implement bidirectional sync with external services
+  - Provide conflict resolution strategies
+  - Maintain sync history and audit trail
+- **Performance**:
+  - Implement pagination and virtual scrolling for large contact lists
+  - Add indexed search for quick contact lookup
+  - Use proper caching for frequently accessed contacts
+- **Security**:
+  - Enforce contact-level permissions
+  - Implement proper data privacy controls
+  - Add consent management for contact data
+- **Testing**: 
+  - Maintain minimum 80% test coverage following TDD approach
+  - Test edge cases in contact validation thoroughly
+  - Mock external services for testing synchronization
 
 Status Indicators:
 - [ ] Not started
@@ -105,4 +221,4 @@ Status Indicators:
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Created with strict test-driven development approach. 
+Last Updated: Enhanced with specific file paths and architecture integration points. 

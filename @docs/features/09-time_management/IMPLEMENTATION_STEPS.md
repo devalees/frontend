@@ -9,14 +9,31 @@ Each time management task follows the Red-Green-Refactor cycle:
 1. **Time Tracking**
    - [ ] Time Entry
      - [ ] Test Setup
-       - [ ] Create test file (timeEntry.test.ts)
+       - [ ] Create test file (`src/tests/features/timeManagement/timeEntry.test.ts`)
        - [ ] Write failing tests for entry validation
        - [ ] Write failing tests for entry duration
        - [ ] Write failing tests for entry categorization
      - [ ] Implementation
-       - [ ] Implement entry validation
-       - [ ] Create duration calculation
-       - [ ] Set up categorization
+       - [ ] Implement time entry components:
+         - [ ] Time entry form (`src/components/features/timeManagement/TimeEntryForm.tsx`)
+           - Leverage existing Form and Input components
+         - [ ] Timer control (`src/components/features/timeManagement/TimerControl.tsx`)
+         - [ ] Category selector (`src/components/features/timeManagement/CategorySelector.tsx`)
+         - [ ] Activity selector (`src/components/features/timeManagement/ActivitySelector.tsx`)
+         - [ ] Duration input (`src/components/features/timeManagement/DurationInput.tsx`)
+       - [ ] Create time entry pages:
+         - [ ] Time tracking page (`src/app/(dashboard)/time/page.tsx`)
+         - [ ] Manual entry page (`src/app/(dashboard)/time/manual/page.tsx`)
+         - [ ] Timer page (`src/app/(dashboard)/time/timer/page.tsx`)
+       - [ ] Implement time entry API services (`src/lib/timeManagement/timeEntryService.ts`)
+         - Use axios client from `src/lib/api/axios.ts`
+       - [ ] Set up time entry state management (`src/store/slices/timeEntries.ts`)
+         - Implement with Zustand following state pattern
+       - [ ] Create time entry validation utilities (`src/lib/timeManagement/validation.ts`)
+         - Duration validation
+         - Overlap detection
+         - Required fields validation
+       - [ ] Implement active timer functionality (`src/lib/timeManagement/activeTimer.ts`)
      - [ ] Refactoring
        - [ ] Optimize time entry
        - [ ] Update documentation
@@ -24,14 +41,27 @@ Each time management task follows the Red-Green-Refactor cycle:
 
    - [ ] Time Analysis
      - [ ] Test Setup
-       - [ ] Create test file (timeAnalysis.test.ts)
+       - [ ] Create test file (`src/tests/features/timeManagement/timeAnalysis.test.ts`)
        - [ ] Write failing tests for time patterns
        - [ ] Write failing tests for productivity metrics
        - [ ] Write failing tests for time distribution
      - [ ] Implementation
-       - [ ] Implement pattern analysis
-       - [ ] Create productivity metrics
-       - [ ] Set up distribution tracking
+       - [ ] Implement time analysis components:
+         - [ ] Time distribution chart (`src/components/features/timeManagement/TimeDistributionChart.tsx`)
+         - [ ] Productivity metrics (`src/components/features/timeManagement/ProductivityMetrics.tsx`)
+         - [ ] Pattern visualization (`src/components/features/timeManagement/PatternVisualization.tsx`)
+         - [ ] Time heatmap (`src/components/features/timeManagement/TimeHeatmap.tsx`)
+       - [ ] Create time analysis pages:
+         - [ ] Analysis dashboard (`src/app/(dashboard)/time/analysis/page.tsx`)
+         - [ ] Productivity report (`src/app/(dashboard)/time/analysis/productivity/page.tsx`)
+         - [ ] Pattern analysis (`src/app/(dashboard)/time/analysis/patterns/page.tsx`)
+       - [ ] Implement analysis API services (`src/lib/timeManagement/analysisService.ts`)
+       - [ ] Create analysis hooks:
+         - [ ] Time distribution hook (`src/hooks/useTimeDistribution.ts`)
+         - [ ] Productivity metrics hook (`src/hooks/useProductivityMetrics.ts`)
+         - [ ] Pattern analysis hook (`src/hooks/useTimePatterns.ts`)
+           - Use React Query for efficient data fetching and caching
+       - [ ] Implement data visualization utilities (`src/lib/timeManagement/visualization.ts`)
      - [ ] Refactoring
        - [ ] Optimize analysis
        - [ ] Update documentation
@@ -40,14 +70,31 @@ Each time management task follows the Red-Green-Refactor cycle:
 2. **Schedule Management**
    - [ ] Calendar Integration
      - [ ] Test Setup
-       - [ ] Create test file (calendarIntegration.test.ts)
+       - [ ] Create test file (`src/tests/features/timeManagement/calendarIntegration.test.ts`)
        - [ ] Write failing tests for event creation
        - [ ] Write failing tests for event updates
        - [ ] Write failing tests for event synchronization
      - [ ] Implementation
-       - [ ] Implement event creation
-       - [ ] Create event updates
-       - [ ] Set up synchronization
+       - [ ] Implement calendar components:
+         - [ ] Calendar view (`src/components/features/timeManagement/CalendarView.tsx`)
+         - [ ] Event creator (`src/components/features/timeManagement/EventCreator.tsx`)
+         - [ ] Event editor (`src/components/features/timeManagement/EventEditor.tsx`)
+         - [ ] Calendar settings (`src/components/features/timeManagement/CalendarSettings.tsx`)
+         - [ ] Sync status indicator (`src/components/features/timeManagement/SyncStatusIndicator.tsx`)
+       - [ ] Create calendar pages:
+         - [ ] Calendar dashboard (`src/app/(dashboard)/calendar/page.tsx`)
+         - [ ] Event creation page (`src/app/(dashboard)/calendar/events/create/page.tsx`)
+         - [ ] Event detail page (`src/app/(dashboard)/calendar/events/[id]/page.tsx`)
+         - [ ] Calendar settings page (`src/app/(dashboard)/calendar/settings/page.tsx`)
+       - [ ] Implement calendar API services (`src/lib/timeManagement/calendarService.ts`)
+       - [ ] Create external calendar connectors:
+         - [ ] Google Calendar connector (`src/lib/timeManagement/connectors/googleCalendar.ts`)
+         - [ ] Outlook Calendar connector (`src/lib/timeManagement/connectors/outlookCalendar.ts`)
+         - [ ] iCalendar import/export (`src/lib/timeManagement/connectors/iCalendar.ts`)
+       - [ ] Implement calendar hooks:
+         - [ ] Calendar events hook (`src/hooks/useCalendarEvents.ts`)
+         - [ ] Calendar sync hook (`src/hooks/useCalendarSync.ts`)
+       - [ ] Set up calendar state management (`src/store/slices/calendar.ts`)
      - [ ] Refactoring
        - [ ] Optimize integration
        - [ ] Update documentation
@@ -55,14 +102,29 @@ Each time management task follows the Red-Green-Refactor cycle:
 
    - [ ] Schedule Optimization
      - [ ] Test Setup
-       - [ ] Create test file (scheduleOptimization.test.ts)
+       - [ ] Create test file (`src/tests/features/timeManagement/scheduleOptimization.test.ts`)
        - [ ] Write failing tests for conflict detection
        - [ ] Write failing tests for schedule balancing
        - [ ] Write failing tests for priority scheduling
      - [ ] Implementation
-       - [ ] Implement conflict detection
-       - [ ] Create schedule balancing
-       - [ ] Set up priority scheduling
+       - [ ] Implement optimization components:
+         - [ ] Conflict detector (`src/components/features/timeManagement/ConflictDetector.tsx`)
+         - [ ] Schedule balancer (`src/components/features/timeManagement/ScheduleBalancer.tsx`)
+         - [ ] Priority scheduler (`src/components/features/timeManagement/PriorityScheduler.tsx`)
+         - [ ] Suggestion widget (`src/components/features/timeManagement/SchedulingSuggestions.tsx`)
+       - [ ] Create optimization pages:
+         - [ ] Schedule optimizer page (`src/app/(dashboard)/calendar/optimize/page.tsx`)
+         - [ ] Conflict resolution page (`src/app/(dashboard)/calendar/conflicts/page.tsx`)
+         - [ ] Priority settings page (`src/app/(dashboard)/calendar/priorities/page.tsx`)
+       - [ ] Implement optimization services:
+         - [ ] Conflict detection service (`src/lib/timeManagement/conflictService.ts`)
+         - [ ] Schedule balancing service (`src/lib/timeManagement/balancingService.ts`)
+         - [ ] Priority scheduling service (`src/lib/timeManagement/priorityService.ts`)
+       - [ ] Create optimization hooks:
+         - [ ] Conflict detection hook (`src/hooks/useConflictDetection.ts`)
+         - [ ] Schedule balancing hook (`src/hooks/useScheduleBalancing.ts`)
+         - [ ] Priority scheduling hook (`src/hooks/usePriorityScheduling.ts`)
+       - [ ] Implement optimization algorithms (`src/lib/timeManagement/optimizationAlgorithms.ts`)
      - [ ] Refactoring
        - [ ] Optimize scheduling
        - [ ] Update documentation
@@ -71,14 +133,33 @@ Each time management task follows the Red-Green-Refactor cycle:
 3. **Time Reporting**
    - [ ] Report Generation
      - [ ] Test Setup
-       - [ ] Create test file (reportGeneration.test.ts)
+       - [ ] Create test file (`src/tests/features/timeManagement/reportGeneration.test.ts`)
        - [ ] Write failing tests for report templates
        - [ ] Write failing tests for data aggregation
        - [ ] Write failing tests for report formatting
      - [ ] Implementation
-       - [ ] Implement report templates
-       - [ ] Create data aggregation
-       - [ ] Set up report formatting
+       - [ ] Implement reporting components:
+         - [ ] Report creator (`src/components/features/timeManagement/ReportCreator.tsx`)
+         - [ ] Report template selector (`src/components/features/timeManagement/TemplateSelector.tsx`)
+         - [ ] Report preview (`src/components/features/timeManagement/ReportPreview.tsx`)
+         - [ ] Export options (`src/components/features/timeManagement/ExportOptions.tsx`)
+         - [ ] Data filter controls (`src/components/features/timeManagement/DataFilterControls.tsx`)
+       - [ ] Create reporting pages:
+         - [ ] Reports dashboard (`src/app/(dashboard)/time/reports/page.tsx`)
+         - [ ] Create report page (`src/app/(dashboard)/time/reports/create/page.tsx`)
+         - [ ] Report templates page (`src/app/(dashboard)/time/reports/templates/page.tsx`)
+         - [ ] Report detail page (`src/app/(dashboard)/time/reports/[id]/page.tsx`)
+       - [ ] Implement reporting services:
+         - [ ] Report generation service (`src/lib/timeManagement/reportService.ts`)
+         - [ ] Data aggregation service (`src/lib/timeManagement/aggregationService.ts`)
+         - [ ] Export service (`src/lib/timeManagement/exportService.ts`)
+       - [ ] Create report templates:
+         - [ ] Weekly summary template (`src/lib/timeManagement/templates/weeklySummary.ts`)
+         - [ ] Project breakdown template (`src/lib/timeManagement/templates/projectBreakdown.ts`)
+         - [ ] Time distribution template (`src/lib/timeManagement/templates/timeDistribution.ts`)
+       - [ ] Implement reporting hooks:
+         - [ ] Report generation hook (`src/hooks/useReportGeneration.ts`)
+         - [ ] Report templates hook (`src/hooks/useReportTemplates.ts`)
      - [ ] Refactoring
        - [ ] Optimize reporting
        - [ ] Update documentation
@@ -86,18 +167,89 @@ Each time management task follows the Red-Green-Refactor cycle:
 
    - [ ] Analytics Dashboard
      - [ ] Test Setup
-       - [ ] Create test file (analyticsDashboard.test.ts)
+       - [ ] Create test file (`src/tests/features/timeManagement/analyticsDashboard.test.ts`)
        - [ ] Write failing tests for data visualization
        - [ ] Write failing tests for trend analysis
        - [ ] Write failing tests for performance metrics
      - [ ] Implementation
-       - [ ] Implement data visualization
-       - [ ] Create trend analysis
-       - [ ] Set up performance metrics
+       - [ ] Implement analytics components:
+         - [ ] Analytics dashboard (`src/components/features/timeManagement/AnalyticsDashboard.tsx`)
+         - [ ] Trend chart (`src/components/features/timeManagement/TrendChart.tsx`)
+         - [ ] Performance indicators (`src/components/features/timeManagement/PerformanceIndicators.tsx`)
+         - [ ] Time breakdown chart (`src/components/features/timeManagement/TimeBreakdownChart.tsx`)
+         - [ ] Custom metrics widget (`src/components/features/timeManagement/CustomMetricsWidget.tsx`)
+       - [ ] Create analytics pages:
+         - [ ] Analytics dashboard page (`src/app/(dashboard)/time/analytics/page.tsx`)
+         - [ ] Trends page (`src/app/(dashboard)/time/analytics/trends/page.tsx`)
+         - [ ] Performance page (`src/app/(dashboard)/time/analytics/performance/page.tsx`)
+         - [ ] Custom dashboard page (`src/app/(dashboard)/time/analytics/custom/page.tsx`)
+       - [ ] Implement analytics services:
+         - [ ] Analytics service (`src/lib/timeManagement/analyticsService.ts`)
+         - [ ] Trend analysis service (`src/lib/timeManagement/trendService.ts`)
+         - [ ] Performance metrics service (`src/lib/timeManagement/performanceService.ts`)
+       - [ ] Create analytics hooks:
+         - [ ] Dashboard data hook (`src/hooks/useAnalyticsDashboard.ts`)
+         - [ ] Trend analysis hook (`src/hooks/useTrendAnalysis.ts`)
+         - [ ] Performance metrics hook (`src/hooks/usePerformanceMetrics.ts`)
+       - [ ] Implement data visualization library (`src/lib/timeManagement/dataVisualization.ts`)
      - [ ] Refactoring
        - [ ] Optimize dashboard
        - [ ] Update documentation
        - [ ] Review and adjust
+
+## Architecture Integration Points
+- **UI Components**: 
+  - Leverage existing components from `src/components/ui/` and `src/components/forms/`
+  - Create specialized time tracking and calendar components
+  - Implement responsive design for desktop and mobile time tracking
+  - Use chart libraries with consistent styling
+- **Timer Functionality**:
+  - Create persistent timer across page navigation
+  - Implement background tracking capability
+  - Add idle time detection and handling
+  - Support manual time adjustments
+- **API Client**: 
+  - Use the established API client from `src/lib/api/axios.ts`
+  - Implement time management-specific API services
+  - Add efficient batch operations for time entries
+- **State Management**: 
+  - Follow Zustand patterns in `src/store/slices/` for time entries and calendar
+  - Use React Query for analytics data with appropriate caching
+  - Implement optimistic updates for real-time timer feedback
+- **Calendar Integration**:
+  - Connect with external calendar services (Google, Outlook)
+  - Implement two-way synchronization with conflict resolution
+  - Support iCalendar import/export
+  - Add recurring event handling
+- **Data Visualization**:
+  - Create reusable chart components
+  - Implement responsive visualizations
+  - Support different time granularities (day, week, month, year)
+  - Add interactive filtering and drilling down
+- **Reporting**:
+  - Create flexible report template system
+  - Support multiple export formats (PDF, CSV, Excel)
+  - Implement saved report configurations
+  - Add scheduled report generation
+- **Optimization Algorithms**:
+  - Implement conflict detection algorithms
+  - Create smart scheduling suggestions
+  - Add priority-based scheduling
+  - Support work-life balance optimization
+- **Performance**:
+  - Optimize data aggregation for reports
+  - Implement pagination and lazy loading for time entries
+  - Create efficient date-range queries
+  - Use memoization for expensive calculations
+- **Offline Support**:
+  - Add offline time tracking capability
+  - Implement sync when back online
+  - Cache recent time entries and calendar events
+- **Testing**: 
+  - Maintain minimum 80% test coverage following TDD approach
+  - Test timer accuracy and edge cases
+  - Test date/time calculations thoroughly across timezones
+  - Create comprehensive tests for reporting accuracy
 
 Status Indicators:
 - [ ] Not started
@@ -105,4 +257,4 @@ Status Indicators:
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Created with strict test-driven development approach. 
+Last Updated: Enhanced with specific file paths and architecture integration points. 
