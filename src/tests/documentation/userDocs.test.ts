@@ -7,9 +7,9 @@
  */
 
 // Import the centralized testing utilities
-import { describe, it, expect, vi } from '../utils/testingFramework';
-import { render } from '../utils/testUtils';
-import { createErrorResponse } from '../utils/fixtures';
+import { describe, it, expect, vi } from '../../tests/utils';
+import { render, screen, act, waitFor } from '../../tests/utils';
+import { createErrorResponse } from '../../tests/utils/fixtures';
 
 // Import the function implementations that will be developed later
 import { 

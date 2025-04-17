@@ -5,15 +5,15 @@
  * It follows the test-driven development approach with failing tests first.
  */
 
-// Import the centralized testing utilities - NO direct testing library imports
-import { describe, it, expect, vi, beforeEach, afterEach } from '../utils/testingFramework';
-import { render } from '../utils/testUtils';
+// Import the centralized testing utilities
+import { describe, it, expect, vi, beforeEach, afterEach } from '../../tests/utils';
+import { render, screen, act, waitFor } from '../../tests/utils';
 import { 
   createErrorResponse, 
   createUserFixture, 
   createProjectFixture,
   createPaginatedResponse
-} from '../utils/fixtures';
+} from '../../tests/utils/fixtures';
 
 // Import the function implementations that will be developed later
 import { 

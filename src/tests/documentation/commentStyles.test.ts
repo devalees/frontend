@@ -6,9 +6,9 @@
  */
 
 // Import the centralized testing utilities
-import { describe, it, expect } from '../utils/testingFramework';
-import { render } from '../utils/testUtils';
-import { createErrorResponse } from '../utils/fixtures';
+import { describe, it, expect } from '../../tests/utils';
+import { render, screen } from '../../tests/utils';
+import { createErrorResponse } from '../../tests/utils/fixtures';
 
 // Import the actual implementations
 import { validateCommentStyle, checkCommentFormat, checkCommentCompleteness } from '../../lib/documentation/commentStyles';
