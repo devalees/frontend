@@ -5,7 +5,7 @@
  * for immediately reflecting changes in the UI while waiting for server confirmation.
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from '../../tests/utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { createStore } from 'zustand/vanilla';

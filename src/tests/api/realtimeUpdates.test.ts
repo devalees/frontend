@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from '../../tests/utils';
 import { Socket } from 'socket.io-client';
 import { create, StoreApi } from 'zustand';
 

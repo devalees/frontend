@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest';
+import { describe, it, expect } from './utils';
 import fs from 'fs';
 import path from 'path';
 
@@ -43,7 +43,7 @@ describe('Project Structure', () => {
   };
 
   describe('Directory Structure', () => {
-    test('should have required root directories', () => {
+    it('should have required root directories', () => {
       const requiredDirs = [
         'src',
         'src/components',
@@ -57,7 +57,7 @@ describe('Project Structure', () => {
       });
     });
 
-    test('should have required component subdirectories', () => {
+    it('should have required component subdirectories', () => {
       const componentDirs = [
         'src/components/ui',
         'src/components/layout',
@@ -70,7 +70,7 @@ describe('Project Structure', () => {
       });
     });
 
-    test('should have required lib subdirectories', () => {
+    it('should have required lib subdirectories', () => {
       const libDirs = [
         'src/lib/components',
         'src/lib/hooks'
@@ -81,7 +81,7 @@ describe('Project Structure', () => {
       });
     });
 
-    test('should have required style subdirectories', () => {
+    it('should have required style subdirectories', () => {
       const styleDirs = [
         'src/styles/components',
         'src/styles/themes'
@@ -94,7 +94,7 @@ describe('Project Structure', () => {
   });
 
   describe('File Naming Conventions', () => {
-    test('UI components should follow PascalCase naming convention', () => {
+    it('UI components should follow PascalCase naming convention', () => {
       const uiComponents = [
         'src/components/ui/Button.tsx',
         'src/components/ui/Input.tsx',
@@ -107,7 +107,7 @@ describe('Project Structure', () => {
       });
     });
 
-    test('Layout components should follow PascalCase naming convention', () => {
+    it('Layout components should follow PascalCase naming convention', () => {
       const layoutComponents = [
         'src/components/layout/Header.tsx',
         'src/components/layout/Sidebar.tsx',
@@ -120,7 +120,7 @@ describe('Project Structure', () => {
       });
     });
 
-    test('Form components should follow PascalCase naming convention', () => {
+    it('Form components should follow PascalCase naming convention', () => {
       const formComponents = [
         'src/components/forms/Form.tsx',
         'src/components/forms/Select.tsx',
@@ -133,7 +133,7 @@ describe('Project Structure', () => {
       });
     });
 
-    test('Loading components should follow PascalCase naming convention', () => {
+    it('Loading components should follow PascalCase naming convention', () => {
       const loadingComponents = [
         'src/components/loading/Spinner.tsx',
         'src/components/loading/Skeleton.tsx'
@@ -145,7 +145,7 @@ describe('Project Structure', () => {
       });
     });
 
-    test('Utility functions should follow camelCase naming convention', () => {
+    it('Utility functions should follow camelCase naming convention', () => {
       const utils = [
         'src/lib/components/button.ts',
         'src/lib/components/input.ts',
@@ -158,7 +158,7 @@ describe('Project Structure', () => {
       });
     });
 
-    test('Hooks should follow useXxx naming convention', () => {
+    it('Hooks should follow useXxx naming convention', () => {
       const hooks = [
         'src/lib/hooks/useButton.ts',
         'src/lib/hooks/useInput.ts',
@@ -173,7 +173,7 @@ describe('Project Structure', () => {
   });
 
   describe('Module Organization', () => {
-    test('should have proper component organization', () => {
+    it('should have proper component organization', () => {
       const components = {
         ui: ['Button.tsx', 'Input.tsx', 'Modal.tsx'],
         layout: ['Header.tsx', 'Sidebar.tsx', 'Grid.tsx'],
@@ -190,7 +190,7 @@ describe('Project Structure', () => {
       });
     });
 
-    test('should have proper utility organization', () => {
+    it('should have proper utility organization', () => {
       const utils = {
         components: ['button.ts', 'input.ts', 'modal.ts'],
         hooks: ['useButton.ts', 'useInput.ts', 'useModal.ts']
@@ -205,7 +205,7 @@ describe('Project Structure', () => {
       });
     });
 
-    test('should have proper style organization', () => {
+    it('should have proper style organization', () => {
       const styles = {
         components: ['button.css', 'input.css', 'modal.css'],
         themes: ['light.css', 'dark.css']

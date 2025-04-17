@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest';
+import { describe, it, expect } from './utils';
 import fs from 'fs';
 import path from 'path';
 
@@ -24,7 +24,7 @@ describe('Development Tools', () => {
   };
 
   describe('Tool Integration', () => {
-    test('should have TypeScript configuration', () => {
+    it('should have TypeScript configuration', () => {
       const tsConfig = readJsonFile('tsconfig.json');
       expect(tsConfig).not.toBeNull();
       expect(tsConfig.compilerOptions).toBeDefined();
@@ -32,14 +32,14 @@ describe('Development Tools', () => {
       expect(tsConfig.include).toContain('src/**/*');
     });
 
-    test('should have ESLint configuration', () => {
+    it('should have ESLint configuration', () => {
       const eslintConfig = readJsonFile('.eslintrc.json');
       expect(eslintConfig).not.toBeNull();
       expect(eslintConfig.extends).toContain('next/core-web-vitals');
       expect(eslintConfig.plugins).toContain('@typescript-eslint');
     });
 
-    test('should have Prettier configuration', () => {
+    it('should have Prettier configuration', () => {
       const prettierConfig = readJsonFile('.prettierrc');
       expect(prettierConfig).not.toBeNull();
       expect(prettierConfig.semi).toBeDefined();
@@ -49,7 +49,7 @@ describe('Development Tools', () => {
   });
 
   describe('Tool Configuration', () => {
-    test('should have correct TypeScript compiler options', () => {
+    it('should have correct TypeScript compiler options', () => {
       const tsConfig = readJsonFile('tsconfig.json');
       expect(tsConfig.compilerOptions).toEqual(expect.objectContaining({
         target: 'ES2020',
@@ -69,7 +69,7 @@ describe('Development Tools', () => {
       }));
     });
 
-    test('should have correct ESLint rules', () => {
+    it('should have correct ESLint rules', () => {
       const eslintConfig = readJsonFile('.eslintrc.json');
       expect(eslintConfig.rules).toEqual(expect.objectContaining({
         '@typescript-eslint/no-unused-vars': 'error',
@@ -79,7 +79,7 @@ describe('Development Tools', () => {
       }));
     });
 
-    test('should have correct Prettier options', () => {
+    it('should have correct Prettier options', () => {
       const prettierConfig = readJsonFile('.prettierrc');
       expect(prettierConfig).toEqual(expect.objectContaining({
         semi: true,
@@ -92,7 +92,7 @@ describe('Development Tools', () => {
   });
 
   describe('Tool Functionality', () => {
-    test('should have script commands for development tools', () => {
+    it('should have script commands for development tools', () => {
       const pkg = readJsonFile('package.json');
       expect(pkg.scripts).toEqual(expect.objectContaining({
         'lint': 'eslint . --ext .ts,.tsx',
@@ -102,14 +102,14 @@ describe('Development Tools', () => {
       }));
     });
 
-    test('should have pre-commit hooks configuration', () => {
+    it('should have pre-commit hooks configuration', () => {
       const hookContent = readTextFile('.husky/pre-commit');
       expect(hookContent).not.toBeNull();
       expect(hookContent).toContain('npm run lint');
       expect(hookContent).toContain('npm run type-check');
     });
 
-    test('should have lint-staged configuration', () => {
+    it('should have lint-staged configuration', () => {
       const lintStagedConfig = readJsonFile('.lintstagedrc.json');
       expect(lintStagedConfig).toEqual({
         '*.{ts,tsx}': [

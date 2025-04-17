@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from '../../tests/utils';
 import { ApiError, NetworkError, ValidationError, AuthenticationError, AuthorizationError, NotFoundError, ServerError } from '../../api/errors';
 import { formatError, logError } from '../../api/errorHandling';
 

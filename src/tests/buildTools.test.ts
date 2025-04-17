@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest';
+import { describe, it, expect } from './utils';
 import fs from 'fs';
 import path from 'path';
 
@@ -47,12 +47,12 @@ describe('Build Tools', () => {
   };
 
   describe('Build Process', () => {
-    test('should have Vite configuration', () => {
+    it('should have Vite configuration', () => {
       const viteConfig = readConfigFile('vite.config.ts');
       expect(viteConfig).not.toBeNull();
     });
 
-    test('should have build scripts in package.json', () => {
+    it('should have build scripts in package.json', () => {
       const pkg = readConfigFile('package.json');
       expect(pkg.scripts).toEqual(expect.objectContaining({
         'build': 'vite build',
@@ -61,7 +61,7 @@ describe('Build Tools', () => {
       }));
     });
 
-    test('should have proper build output configuration', () => {
+    it('should have proper build output configuration', () => {
       const viteConfig = readConfigFile('vite.config.ts');
       expect(viteConfig.build).toBeDefined();
       expect(viteConfig.build.outDir).toBe(true);
@@ -70,7 +70,7 @@ describe('Build Tools', () => {
   });
 
   describe('Asset Handling', () => {
-    test('should have proper asset handling configuration', () => {
+    it('should have proper asset handling configuration', () => {
       const viteConfig = readConfigFile('vite.config.ts');
       expect(viteConfig.assetsInclude).toBeDefined();
       expect(viteConfig.assetsInclude).toContain('**/*.svg');
@@ -80,7 +80,7 @@ describe('Build Tools', () => {
       expect(viteConfig.assetsInclude).toContain('**/*.gif');
     });
 
-    test('should have proper static assets directory setup', () => {
+    it('should have proper static assets directory setup', () => {
       // Check for src/styles directory which contains component styles
       const stylesDir = path.join(rootDir, 'src', 'styles');
       expect(fs.existsSync(stylesDir)).toBe(true);
@@ -90,7 +90,7 @@ describe('Build Tools', () => {
       expect(fs.existsSync(componentsDir)).toBe(true);
     });
 
-    test('should have proper static file handling', () => {
+    it('should have proper static file handling', () => {
       const viteConfig = readConfigFile('vite.config.ts');
       // We're not checking for publicDir anymore since it's not in our project structure
       expect(viteConfig.resolve).toBeDefined();
@@ -99,20 +99,20 @@ describe('Build Tools', () => {
   });
 
   describe('Optimization', () => {
-    test('should have proper code splitting configuration', () => {
+    it('should have proper code splitting configuration', () => {
       const viteConfig = readConfigFile('vite.config.ts');
       expect(viteConfig.build.rollupOptions).toBeDefined();
       expect(viteConfig.build.rollupOptions.output).toBeDefined();
       expect(viteConfig.build.rollupOptions.output.manualChunks).toBeDefined();
     });
 
-    test('should have proper minification configuration', () => {
+    it('should have proper minification configuration', () => {
       const viteConfig = readConfigFile('vite.config.ts');
       expect(viteConfig.build.minify).toBe(true);
       expect(viteConfig.build.terserOptions).toBeDefined();
     });
 
-    test('should have proper caching configuration', () => {
+    it('should have proper caching configuration', () => {
       const viteConfig = readConfigFile('vite.config.ts');
       expect(viteConfig.build.rollupOptions.output.entryFileNames).toBe(true);
       expect(viteConfig.build.rollupOptions.output.chunkFileNames).toBe(true);

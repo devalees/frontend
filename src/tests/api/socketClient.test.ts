@@ -1,4 +1,12 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { vi } from 'vitest';
+
+// Mock Socket.io client needs to be before imports
+vi.mock('socket.io-client', () => ({
+  io: vi.fn(),
+  Socket: vi.fn()
+}));
+
+import { describe, it, expect, beforeEach, afterEach } from '../../tests/utils';
 import { Socket } from 'socket.io-client';
 
 // Define the socket client interface for testing
@@ -154,12 +162,6 @@ function createMockSocketClient(socket: MockSocket): SocketClient {
     getSocket: vi.fn().mockImplementation(() => socket as unknown as Socket)
   };
 }
-
-// Mock Socket.io client
-vi.mock('socket.io-client', () => ({
-  io: vi.fn(),
-  Socket: vi.fn()
-}));
 
 // Mock createSocketClient function
 const createSocketClient = vi.fn();

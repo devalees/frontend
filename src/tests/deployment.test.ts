@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest';
+import { describe, it, expect } from './utils';
 import fs from 'fs';
 import path from 'path';
 
@@ -56,19 +56,19 @@ describe('Deployment Setup', () => {
   };
 
   describe('Deployment Process', () => {
-    test('should have deployment configuration', () => {
+    it('should have deployment configuration', () => {
       const viteConfig = readConfigFile('vite.config.ts');
       expect(viteConfig).not.toBeNull();
       expect(viteConfig.build).toBeDefined();
     });
 
-    test('should have proper build output configuration', () => {
+    it('should have proper build output configuration', () => {
       const viteConfig = readConfigFile('vite.config.ts');
       expect(viteConfig.build.outDir).toBe(true);
       expect(viteConfig.build.sourcemap).toBe(true);
     });
 
-    test('should have proper environment handling', () => {
+    it('should have proper environment handling', () => {
       const envFiles = [
         '.env',
         '.env.development',
@@ -85,29 +85,29 @@ describe('Deployment Setup', () => {
   });
 
   describe('Environment Handling', () => {
-    test('should have proper environment variable loading', () => {
+    it('should have proper environment variable loading', () => {
       const envConfig = readConfigFile('src/config/env.ts');
       expect(envConfig).not.toBeNull();
     });
 
-    test('should have proper environment validation', () => {
+    it('should have proper environment validation', () => {
       const envConfig = readConfigFile('src/config/env.ts');
       expect(envConfig.validate).toBeDefined();
     });
 
-    test('should have proper environment type definitions', () => {
+    it('should have proper environment type definitions', () => {
       const envTypes = readConfigFile('src/types/env.d.ts');
       expect(envTypes).not.toBeNull();
     });
   });
 
   describe('Deployment Validation', () => {
-    test('should have proper build validation', () => {
+    it('should have proper build validation', () => {
       const buildScript = readConfigFile('scripts/validate-build.js');
       expect(buildScript).not.toBeNull();
     });
 
-    test('should have proper deployment scripts', () => {
+    it('should have proper deployment scripts', () => {
       const pkg = readConfigFile('package.json');
       expect(pkg.scripts).toEqual(expect.objectContaining({
         'build': 'vite build',
@@ -116,7 +116,7 @@ describe('Deployment Setup', () => {
       }));
     });
 
-    test('should have proper CI/CD configuration', () => {
+    it('should have proper CI/CD configuration', () => {
       const ciConfig = readConfigFile('.github/workflows/deploy.yml');
       expect(ciConfig).not.toBeNull();
     });

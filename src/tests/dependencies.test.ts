@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest';
+import { describe, it, expect } from './utils';
 import fs from 'fs';
 import path from 'path';
 
@@ -16,7 +16,7 @@ describe('Dependencies', () => {
   };
 
   describe('Package Versions', () => {
-    test('should have required core dependencies with specific versions', () => {
+    it('should have required core dependencies with specific versions', () => {
       const pkg = getPackageJson();
       expect(pkg).not.toBeNull();
       
@@ -30,7 +30,7 @@ describe('Dependencies', () => {
       });
     });
 
-    test('should have required development dependencies with specific versions', () => {
+    it('should have required development dependencies with specific versions', () => {
       const pkg = getPackageJson();
       expect(pkg).not.toBeNull();
 
@@ -48,7 +48,7 @@ describe('Dependencies', () => {
   });
 
   describe('Dependency Conflicts', () => {
-    test('should not have conflicting React versions', () => {
+    it('should not have conflicting React versions', () => {
       const pkg = getPackageJson();
       expect(pkg).not.toBeNull();
 
@@ -58,7 +58,7 @@ describe('Dependencies', () => {
       expect(pkg.devDependencies['@types/react-dom']).toBe(reactVersion);
     });
 
-    test('should not have duplicate dependencies', () => {
+    it('should not have duplicate dependencies', () => {
       const pkg = getPackageJson();
       expect(pkg).not.toBeNull();
 
@@ -74,7 +74,7 @@ describe('Dependencies', () => {
   });
 
   describe('Peer Dependencies', () => {
-    test('should have correct peer dependencies for React packages', () => {
+    it('should have correct peer dependencies for React packages', () => {
       const pkg = getPackageJson();
       expect(pkg).not.toBeNull();
 
@@ -84,7 +84,7 @@ describe('Dependencies', () => {
       expect(pkg.peerDependencies['react-dom']).toBe(reactVersion);
     });
 
-    test('should have compatible peer dependency ranges', () => {
+    it('should have compatible peer dependency ranges', () => {
       const pkg = getPackageJson();
       expect(pkg).not.toBeNull();
 

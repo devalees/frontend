@@ -7,7 +7,7 @@
  * - Environment variable usage
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from '../../tests/utils';
 import { getEnvironmentConfig } from '../../lib/api/axiosConfig';
 
 // Save original process.env

@@ -7,20 +7,9 @@
  * - Input validation
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import axios from 'axios';
+import { vi } from 'vitest';
 
-// These imports will fail as the implementation doesn't exist yet
-// This is intentional to create failing tests as per the test-driven development approach
-import { 
-  createRequest, 
-  buildUrlWithParams, 
-  validateRequestParams,
-  RequestMethod,
-  RequestConfig
-} from '../../lib/api/requestBuilders';
-
-// Mock axios
+// Mock axios needs to be before other imports
 vi.mock('axios', () => ({
   default: {
     request: vi.fn().mockImplementation((config) => {
@@ -35,6 +24,19 @@ vi.mock('axios', () => ({
     })
   },
 }));
+
+import { describe, it, expect, beforeEach } from '../../tests/utils';
+import axios from 'axios';
+
+// These imports will fail as the implementation doesn't exist yet
+// This is intentional to create failing tests as per the test-driven development approach
+import { 
+  createRequest, 
+  buildUrlWithParams, 
+  validateRequestParams,
+  RequestMethod,
+  RequestConfig
+} from '../../lib/api/requestBuilders';
 
 // Define test types for request parameters
 interface TestUser {

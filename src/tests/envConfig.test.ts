@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect } from './utils';
 import fs from 'fs';
 import path from 'path';
 
@@ -37,15 +37,15 @@ describe('Environment Configuration', () => {
   };
 
   describe('Environment Files', () => {
-    test('should have .env.example file', () => {
+    it('should have .env.example file', () => {
       expect(fileExists(envExamplePath)).toBe(true);
     });
 
-    test('should have .env file', () => {
+    it('should have .env file', () => {
       expect(fileExists(envPath)).toBe(true);
     });
 
-    test('should have required environment variables', () => {
+    it('should have required environment variables', () => {
       const env = readEnvFile(envPath);
       const requiredVars = [
         'NODE_ENV',
@@ -61,13 +61,13 @@ describe('Environment Configuration', () => {
   });
 
   describe('Configuration Loading', () => {
-    test('should load environment variables correctly', () => {
+    it('should load environment variables correctly', () => {
       const env = readEnvFile(envPath);
       expect(env.NODE_ENV).toBe('development');
       expect(env.API_URL).toMatch(/^https?:\/\//);
     });
 
-    test('should have consistent environment variables between .env and .env.example', () => {
+    it('should have consistent environment variables between .env and .env.example', () => {
       const env = readEnvFile(envPath);
       const envExample = readEnvFile(envExamplePath);
       
@@ -79,18 +79,18 @@ describe('Environment Configuration', () => {
   });
 
   describe('Environment Validation', () => {
-    test('should validate NODE_ENV value', () => {
+    it('should validate NODE_ENV value', () => {
       const env = readEnvFile(envPath);
       const validEnvs = ['development', 'test', 'production'];
       expect(validEnvs).toContain(env.NODE_ENV);
     });
 
-    test('should validate API_URL format', () => {
+    it('should validate API_URL format', () => {
       const env = readEnvFile(envPath);
       expect(env.API_URL).toMatch(/^https?:\/\/.+/);
     });
 
-    test('should validate required environment variables are not empty', () => {
+    it('should validate required environment variables are not empty', () => {
       const env = readEnvFile(envPath);
       Object.entries(env).forEach(([key, value]) => {
         if (key.startsWith('REQUIRED_')) {

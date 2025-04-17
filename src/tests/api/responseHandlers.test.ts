@@ -7,7 +7,7 @@
  * - Error handling
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from '../../tests/utils';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 
 // These imports will fail as the implementation doesn't exist yet

@@ -5,7 +5,7 @@
  * for handling expired JWT tokens and refreshing them transparently.
  */
 
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from '../../tests/utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
