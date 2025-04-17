@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from '../../tests/utils';
 import { createStore } from '../../lib/store/createStore';
 import { createTodoSlice } from '../../lib/store/slices/todoSlice';
 import { createUserSlice } from '../../lib/store/slices/userSlice';

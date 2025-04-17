@@ -1,6 +1,6 @@
+import { create } from 'zustand';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createStore } from '../../lib/store/createStore';
-import { create } from 'zustand';
 
 // Global array for tracking middleware execution
 let executionOrder = [];

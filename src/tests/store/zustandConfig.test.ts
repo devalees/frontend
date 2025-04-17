@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { createJSONStorage, persist, PersistOptions, StateStorage } from 'zustand/middleware';
 import { create } from 'zustand';
-import { createJSONStorage, persist } from 'zustand/middleware';
 import { createStore } from '../../lib/store/createStore';
 
 // Mock zustand and its middleware
@@ -16,7 +16,7 @@ vi.mock('zustand/middleware', async () => {
   const actual = await vi.importActual('zustand/middleware');
   return {
     ...actual,
-    persist: vi.fn().mockImplementation(() => (fn) => fn),
+    persist: vi.fn().mockImplementation(() => (fn: any) => fn),
     createJSONStorage: vi.fn(),
   };
 });
@@ -111,13 +111,13 @@ describe('Zustand Store Configuration', () => {
       // Arrange
       const persistConfig = {
         name: 'test-store',
-        storage: createJSONStorage(() => localStorage),
+        storage: createJSONStorage(() => localStorage) as StateStorage,
       };
       
       // Act
       createStore({ 
         initialState: { count: 0 },
-        persist: persistConfig
+        persist: persistConfig as PersistOptions<object, object>
       });
       
       // Assert
@@ -129,7 +129,7 @@ describe('Zustand Store Configuration', () => {
       // Arrange
       const persistConfig = {
         name: 'test-store',
-        storage: createJSONStorage(() => localStorage),
+        storage: createJSONStorage(() => localStorage) as StateStorage,
         version: 1,
         partialize: (state: any) => ({ count: state.count }),
       };
@@ -137,7 +137,7 @@ describe('Zustand Store Configuration', () => {
       // Act
       createStore({ 
         initialState: { count: 0 },
-        persist: persistConfig
+        persist: persistConfig as PersistOptions<object, object>
       });
       
       // Assert

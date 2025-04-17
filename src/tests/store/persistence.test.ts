@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { withPersistence, PersistenceOptions } from '../../lib/store/middleware';
 
 // Mock localStorage and sessionStorage

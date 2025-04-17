@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from '../../tests/utils';
 import { create } from 'zustand';
 import { withLogger } from '../../lib/store/middleware/logger';
 

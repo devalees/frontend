@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from '../../tests/utils';
 import { StoreApi } from 'zustand';
 import { createStore } from '../../lib/store/createStore';
 import { RootState } from '../../lib/store/slices';

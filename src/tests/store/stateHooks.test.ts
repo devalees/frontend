@@ -1,7 +1,7 @@
-import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { useEffect } from 'react';
-import { useCustomHook } from '../../lib/hooks/useCustomHook';
+import { renderHook, act } from '@testing-library/react';
+import { useEffect } from "react";
+import { useCustomHook } from "../../lib/hooks/useCustomHook";
 
 // Mock the store to avoid actual state changes during tests
 vi.mock('../../lib/store', () => ({
@@ -134,10 +134,11 @@ describe('State Hooks', () => {
     it('should batch updates efficiently', async () => {
       const { result } = renderHook(() => useCustomHook());
       
+      // Define updates with a more specific type that matches what the hook expects
       const updates = [
-        { type: 'update', data: 1 },
-        { type: 'update', data: 2 },
-        { type: 'update', data: 3 },
+        { type: 'update' as const, data: 1 },
+        { type: 'update' as const, data: 2 },
+        { type: 'update' as const, data: 3 },
       ];
       
       await act(async () => {

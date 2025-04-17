@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from '../../tests/utils';
 import { create, StoreApi } from 'zustand';
 import { withDebugger, DebugLevel, createDebugTools, DebugState } from '../../lib/store/middleware/debugger';
 
