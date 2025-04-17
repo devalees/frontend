@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { render as rtlRender, RenderOptions } from '@testing-library/react';
+import { render as rtlRender, RenderOptions, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import React from 'react';
 
 /**
@@ -14,6 +14,9 @@ export const mockPerformance = {
   clearMeasures: vi.fn(),
   now: vi.fn().mockReturnValue(Date.now()),
 };
+
+// Re-export testing-library utilities
+export { screen, fireEvent, waitFor, act };
 
 /**
  * Custom render function that wraps the testing-library render

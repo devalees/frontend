@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DebugPanel } from '../../components/debug/DebugPanel';
 import { useDebugger } from '../../lib/hooks/useDebugger';
-import { expect, vi, describe, it, beforeEach } from 'vitest';
 
 // Mock the useDebugger hook
 vi.mock('../../lib/hooks/useDebugger', () => ({

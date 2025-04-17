@@ -6,8 +6,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent, describe, it, expect, vi } from '../../tests/utils';
 
 // Import the Header component
 import { Header } from '../../components/layout/Header';

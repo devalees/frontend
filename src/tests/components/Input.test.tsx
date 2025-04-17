@@ -1,6 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { vi } from 'vitest';
+import { render, screen, fireEvent, describe, it, expect, vi } from '../../tests/utils';
 import { Input } from '../../components/ui/Input';
 
 describe('Input Component', () => {

@@ -6,8 +6,7 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { render, screen, describe, it, expect } from '../../tests/utils';
 
 // Import the Grid component (this will be created later)
 import { Grid, GridItem } from '../../components/layout/Grid';

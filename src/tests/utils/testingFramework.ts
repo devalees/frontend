@@ -7,7 +7,7 @@
  */
 
 // Re-export testing functions from vitest
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi, test } from 'vitest';
 
 // Export the testing functions
 export {
@@ -16,5 +16,6 @@ export {
   expect,
   beforeEach,
   afterEach,
-  vi
+  vi,
+  test
 }; 
