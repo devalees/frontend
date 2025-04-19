@@ -10,212 +10,310 @@ Each automation task follows the Red-Green-Refactor cycle:
    - [ ] Workflow Creation
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/automation/workflowCreation.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for workflow validation
        - [ ] Write failing tests for step configuration
        - [ ] Write failing tests for trigger setup
+       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
      - [ ] Implementation
        - [ ] Implement workflow components:
          - [ ] Workflow builder (`src/components/features/automation/WorkflowBuilder.tsx`)
            - Visual drag-and-drop interface for workflow creation
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Step configurator (`src/components/features/automation/StepConfigurator.tsx`)
+           - Implement dynamic validation for each step type
          - [ ] Trigger selector (`src/components/features/automation/TriggerSelector.tsx`)
+           - Add support for event-based and scheduled triggers
          - [ ] Action configurator (`src/components/features/automation/ActionConfigurator.tsx`)
+           - Implement context-aware action configuration
          - [ ] Condition editor (`src/components/features/automation/ConditionEditor.tsx`)
+           - Add natural language processing for condition creation
        - [ ] Create workflow pages:
          - [ ] Workflows dashboard (`src/app/(dashboard)/automation/workflows/page.tsx`)
          - [ ] Workflow editor (`src/app/(dashboard)/automation/workflows/editor/page.tsx`)
          - [ ] Trigger configuration (`src/app/(dashboard)/automation/workflows/triggers/page.tsx`)
          - [ ] Step library (`src/app/(dashboard)/automation/workflows/steps/page.tsx`)
        - [ ] Implement workflow API services:
-         - [ ] Workflow service (`src/lib/automation/workflowService.ts`)
-         - [ ] Trigger service (`src/lib/automation/triggerService.ts`)
-         - [ ] Step service (`src/lib/automation/stepService.ts`)
-       - [ ] Set up workflow state management (`src/store/slices/workflowAutomation.ts`)
+         - [ ] Workflow service (`src/lib/features/automation/workflowService.ts`)
+           - Use axios client from `src/lib/api/axiosConfig.ts`
+           - Implement error handling with `src/lib/api/responseHandlers.ts`
+         - [ ] Trigger service (`src/lib/features/automation/triggerService.ts`)
+           - Add WebSocket support for real-time trigger monitoring
+         - [ ] Step service (`src/lib/features/automation/stepService.ts`)
+           - Implement step template library and customization
+       - [ ] Set up workflow state management (`src/lib/store/slices/workflowAutomation.ts`)
          - Implement with Zustand following state pattern
+         - Integrate with browser cache using `src/lib/cache/browserCache.ts`
        - [ ] Create workflow validation utilities:
-         - [ ] Workflow validators (`src/lib/automation/workflowValidators.ts`)
-         - [ ] Step validators (`src/lib/automation/stepValidators.ts`)
-         - [ ] Trigger validators (`src/lib/automation/triggerValidators.ts`)
+         - [ ] Workflow validators (`src/lib/features/automation/workflowValidators.ts`)
+           - Implement cycle detection and dependency validation
+         - [ ] Step validators (`src/lib/features/automation/stepValidators.ts`)
+           - Add context-aware input validation
+         - [ ] Trigger validators (`src/lib/features/automation/triggerValidators.ts`)
+           - Implement scheduling validation and conflict detection
      - [ ] Refactoring
-       - [ ] Optimize workflow creation
-       - [ ] Update documentation
+       - [ ] Optimize workflow creation with intelligent suggestions
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Workflow Execution
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/automation/workflowExecution.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for execution engine
        - [ ] Write failing tests for state management
        - [ ] Write failing tests for error handling
+       - [ ] Write failing tests for performance with complex workflows
      - [ ] Implementation
        - [ ] Implement execution components:
          - [ ] Execution monitor (`src/components/features/automation/ExecutionMonitor.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] State viewer (`src/components/features/automation/StateViewer.tsx`)
+           - Implement step-by-step execution visualization
          - [ ] Error handler (`src/components/features/automation/ErrorHandler.tsx`)
+           - Add intelligent recovery suggestion system
          - [ ] Execution log (`src/components/features/automation/ExecutionLog.tsx`)
+           - Implement searchable and filterable log viewer
        - [ ] Create execution pages:
          - [ ] Execution dashboard (`src/app/(dashboard)/automation/execution/page.tsx`)
          - [ ] History viewer (`src/app/(dashboard)/automation/execution/history/page.tsx`)
          - [ ] Logs page (`src/app/(dashboard)/automation/execution/logs/page.tsx`)
          - [ ] Debug page (`src/app/(dashboard)/automation/execution/debug/page.tsx`)
        - [ ] Implement execution API services:
-         - [ ] Execution service (`src/lib/automation/executionService.ts`)
-         - [ ] State service (`src/lib/automation/stateService.ts`)
-         - [ ] Error service (`src/lib/automation/errorService.ts`)
+         - [ ] Execution service (`src/lib/features/automation/executionService.ts`)
+           - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+           - Use request builders from `src/lib/api/requestBuilders.ts`
+         - [ ] State service (`src/lib/features/automation/stateService.ts`)
+           - Implement transaction-based state management
+         - [ ] Error service (`src/lib/features/automation/errorService.ts`)
+           - Add comprehensive error classification and recovery
        - [ ] Create execution hooks:
-         - [ ] Execution hook (`src/hooks/useWorkflowExecution.ts`)
-         - [ ] State management hook (`src/hooks/useWorkflowState.ts`)
-         - [ ] Error handling hook (`src/hooks/useWorkflowErrors.ts`)
+         - [ ] Execution hook (`src/lib/hooks/automation/useWorkflowExecution.ts`)
+         - [ ] State management hook (`src/lib/hooks/automation/useWorkflowState.ts`)
+         - [ ] Error handling hook (`src/lib/hooks/automation/useWorkflowErrors.ts`)
+           - Implement with React Query for efficient caching
+           - Add WebSocket integration for real-time updates
        - [ ] Implement execution engine utilities:
-         - [ ] Workflow runner (`src/lib/automation/execution/workflowRunner.ts`)
-         - [ ] State manager (`src/lib/automation/execution/stateManager.ts`)
-         - [ ] Step executor (`src/lib/automation/execution/stepExecutor.ts`)
+         - [ ] Workflow runner (`src/lib/features/automation/execution/workflowRunner.ts`)
+           - Add parallel step execution for independent steps
+         - [ ] State manager (`src/lib/features/automation/execution/stateManager.ts`)
+           - Implement transaction rollback for failed executions
+         - [ ] Step executor (`src/lib/features/automation/execution/stepExecutor.ts`)
+           - Monitor execution performance with `src/lib/performance/performanceAnalysis.ts`
      - [ ] Refactoring
-       - [ ] Optimize execution
-       - [ ] Update documentation
+       - [ ] Optimize execution with caching frequently used workflows
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 2. **Rule Engine**
    - [ ] Rule Definition
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/automation/ruleDefinition.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for rule validation
        - [ ] Write failing tests for condition setup
        - [ ] Write failing tests for action configuration
+       - [ ] Write failing tests for rule performance with complex conditions
      - [ ] Implementation
        - [ ] Implement rule components:
          - [ ] Rule editor (`src/components/features/automation/RuleEditor.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Condition builder (`src/components/features/automation/ConditionBuilder.tsx`)
+           - Implement visual condition builder with logic operators
          - [ ] Action selector (`src/components/features/automation/ActionSelector.tsx`)
+           - Add context-aware action suggestions
          - [ ] Rule validator (`src/components/features/automation/RuleValidator.tsx`)
+           - Implement real-time validation feedback
        - [ ] Create rule pages:
          - [ ] Rules dashboard (`src/app/(dashboard)/automation/rules/page.tsx`)
          - [ ] Rule editor page (`src/app/(dashboard)/automation/rules/editor/page.tsx`)
          - [ ] Condition page (`src/app/(dashboard)/automation/rules/conditions/page.tsx`)
          - [ ] Actions library (`src/app/(dashboard)/automation/rules/actions/page.tsx`)
        - [ ] Implement rule API services:
-         - [ ] Rule service (`src/lib/automation/ruleService.ts`)
-         - [ ] Condition service (`src/lib/automation/conditionService.ts`)
-         - [ ] Action service (`src/lib/automation/actionService.ts`)
-       - [ ] Set up rule state management (`src/store/slices/ruleEngine.ts`)
+         - [ ] Rule service (`src/lib/features/automation/ruleService.ts`)
+           - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+           - Use axios client from `src/lib/api/axiosConfig.ts`
+         - [ ] Condition service (`src/lib/features/automation/conditionService.ts`)
+           - Add support for complex nested conditions
+         - [ ] Action service (`src/lib/features/automation/actionService.ts`)
+           - Implement action templating and parameterization
+       - [ ] Set up rule state management (`src/lib/store/slices/ruleEngine.ts`)
+         - Implement with Zustand following state pattern
+         - Integrate with browser cache using `src/lib/cache/browserCache.ts`
        - [ ] Create rule definition utilities:
-         - [ ] Rule validators (`src/lib/automation/rules/ruleValidators.ts`)
-         - [ ] Condition builders (`src/lib/automation/rules/conditionBuilders.ts`)
-         - [ ] Action configurators (`src/lib/automation/rules/actionConfigurators.ts`)
+         - [ ] Rule validators (`src/lib/features/automation/rules/ruleValidators.ts`)
+           - Add cycle detection and infinite loop prevention
+         - [ ] Condition builders (`src/lib/features/automation/rules/conditionBuilders.ts`)
+           - Implement advanced condition composition
+         - [ ] Action configurators (`src/lib/features/automation/rules/actionConfigurators.ts`)
+           - Add dynamic field validation based on action type
      - [ ] Refactoring
-       - [ ] Optimize rules
-       - [ ] Update documentation
+       - [ ] Optimize rules with condition pre-computation
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Rule Processing
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/automation/ruleProcessing.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for rule evaluation
        - [ ] Write failing tests for action execution
        - [ ] Write failing tests for result handling
+       - [ ] Write failing tests for processing performance
      - [ ] Implementation
        - [ ] Implement processing components:
          - [ ] Rule processor (`src/components/features/automation/RuleProcessor.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Evaluation monitor (`src/components/features/automation/EvaluationMonitor.tsx`)
+           - Implement step-by-step evaluation visualization
          - [ ] Result handler (`src/components/features/automation/ResultHandler.tsx`)
+           - Add intelligent result analysis and visualization
          - [ ] Processing log (`src/components/features/automation/ProcessingLog.tsx`)
+           - Implement searchable and filterable log viewer
        - [ ] Create processing pages:
          - [ ] Processing dashboard (`src/app/(dashboard)/automation/processing/page.tsx`)
          - [ ] Evaluation page (`src/app/(dashboard)/automation/processing/evaluation/page.tsx`)
          - [ ] Results page (`src/app/(dashboard)/automation/processing/results/page.tsx`)
          - [ ] Log viewer (`src/app/(dashboard)/automation/processing/logs/page.tsx`)
        - [ ] Implement processing API services:
-         - [ ] Processing service (`src/lib/automation/processingService.ts`)
-         - [ ] Evaluation service (`src/lib/automation/evaluationService.ts`)
-         - [ ] Result service (`src/lib/automation/resultService.ts`)
+         - [ ] Processing service (`src/lib/features/automation/processingService.ts`)
+           - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+           - Use request builders from `src/lib/api/requestBuilders.ts`
+         - [ ] Evaluation service (`src/lib/features/automation/evaluationService.ts`)
+           - Add support for partial and incremental evaluation
+         - [ ] Result service (`src/lib/features/automation/resultService.ts`)
+           - Implement result history and comparison
        - [ ] Create processing hooks:
-         - [ ] Rule processing hook (`src/hooks/useRuleProcessing.ts`)
-         - [ ] Evaluation hook (`src/hooks/useRuleEvaluation.ts`)
-         - [ ] Result handling hook (`src/hooks/useRuleResults.ts`)
+         - [ ] Rule processing hook (`src/lib/hooks/automation/useRuleProcessing.ts`)
+         - [ ] Evaluation hook (`src/lib/hooks/automation/useRuleEvaluation.ts`)
+         - [ ] Result handling hook (`src/lib/hooks/automation/useRuleResults.ts`)
+           - Implement with React Query for efficient caching
+           - Add WebSocket integration for real-time updates
        - [ ] Implement rule engine utilities:
-         - [ ] Rule evaluator (`src/lib/automation/rules/ruleEvaluator.ts`)
-         - [ ] Action executor (`src/lib/automation/rules/actionExecutor.ts`)
-         - [ ] Result handler (`src/lib/automation/rules/resultHandler.ts`)
+         - [ ] Rule evaluator (`src/lib/features/automation/rules/ruleEvaluator.ts`)
+           - Add support for custom functions and expressions
+         - [ ] Action executor (`src/lib/features/automation/rules/actionExecutor.ts`)
+           - Implement transaction-based execution with rollback
+         - [ ] Result handler (`src/lib/features/automation/rules/resultHandler.ts`)
+           - Monitor execution with `src/lib/performance/performanceAnalysis.ts`
      - [ ] Refactoring
-       - [ ] Optimize processing
-       - [ ] Update documentation
+       - [ ] Optimize processing with condition short-circuiting
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 3. **Automation Monitoring**
    - [ ] Performance Tracking
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/automation/performanceTracking.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for execution metrics
        - [ ] Write failing tests for resource usage
        - [ ] Write failing tests for optimization rules
+       - [ ] Write failing tests for long-term performance analysis
      - [ ] Implementation
        - [ ] Implement tracking components:
          - [ ] Performance dashboard (`src/components/features/automation/PerformanceDashboard.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Metrics viewer (`src/components/features/automation/MetricsViewer.tsx`)
+           - Implement interactive charts and visualizations
          - [ ] Resource monitor (`src/components/features/automation/ResourceMonitor.tsx`)
+           - Add real-time resource usage visualization
          - [ ] Optimization advisor (`src/components/features/automation/OptimizationAdvisor.tsx`)
+           - Implement intelligent optimization suggestions
        - [ ] Create tracking pages:
          - [ ] Performance dashboard (`src/app/(dashboard)/automation/monitoring/performance/page.tsx`)
          - [ ] Metrics page (`src/app/(dashboard)/automation/monitoring/metrics/page.tsx`)
          - [ ] Resources page (`src/app/(dashboard)/automation/monitoring/resources/page.tsx`)
          - [ ] Optimization page (`src/app/(dashboard)/automation/monitoring/optimization/page.tsx`)
        - [ ] Implement tracking API services:
-         - [ ] Performance service (`src/lib/automation/performanceService.ts`)
-         - [ ] Metrics service (`src/lib/automation/metricsService.ts`)
-         - [ ] Resource service (`src/lib/automation/resourceService.ts`)
-       - [ ] Set up monitoring state management (`src/store/slices/automationMonitoring.ts`)
+         - [ ] Performance service (`src/lib/features/automation/performanceService.ts`)
+           - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+           - Use WebSockets via `src/lib/api/socketClient.ts` for real-time updates
+         - [ ] Metrics service (`src/lib/features/automation/metricsService.ts`)
+           - Implement time-series data collection and analysis
+         - [ ] Resource service (`src/lib/features/automation/resourceService.ts`)
+           - Add resource prediction and optimization
+       - [ ] Set up monitoring state management (`src/lib/store/slices/automationMonitoring.ts`)
+         - Implement with Zustand following state pattern
+         - Integrate with browser cache using `src/lib/cache/browserCache.ts`
        - [ ] Create tracking hooks:
-         - [ ] Performance tracking hook (`src/hooks/usePerformanceTracking.ts`)
-         - [ ] Metrics hook (`src/hooks/useAutomationMetrics.ts`)
-         - [ ] Resource usage hook (`src/hooks/useResourceUsage.ts`)
+         - [ ] Performance tracking hook (`src/lib/hooks/automation/usePerformanceTracking.ts`)
+         - [ ] Metrics hook (`src/lib/hooks/automation/useAutomationMetrics.ts`)
+         - [ ] Resource usage hook (`src/lib/hooks/automation/useResourceUsage.ts`)
+           - Implement with React Query for efficient caching
+           - Add real-time updates with WebSockets
        - [ ] Implement tracking utilities:
-         - [ ] Metrics collectors (`src/lib/automation/monitoring/metricsCollectors.ts`)
-         - [ ] Resource monitors (`src/lib/automation/monitoring/resourceMonitors.ts`)
-         - [ ] Optimization analyzers (`src/lib/automation/monitoring/optimizationAnalyzers.ts`)
+         - [ ] Metrics collectors (`src/lib/features/automation/monitoring/metricsCollectors.ts`)
+           - Add statistical analysis and aggregation
+         - [ ] Resource monitors (`src/lib/features/automation/monitoring/resourceMonitors.ts`)
+           - Implement threshold-based monitoring
+         - [ ] Optimization analyzers (`src/lib/features/automation/monitoring/optimizationAnalyzers.ts`)
+           - Add machine learning for pattern detection
      - [ ] Refactoring
-       - [ ] Optimize tracking
-       - [ ] Update documentation
+       - [ ] Optimize tracking with adaptive sampling rates
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Alert System
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/automation/alertSystem.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for alert conditions
        - [ ] Write failing tests for notification delivery
        - [ ] Write failing tests for alert management
+       - [ ] Write failing tests for alert prioritization
      - [ ] Implementation
        - [ ] Implement alert components:
          - [ ] Alert configurator (`src/components/features/automation/AlertConfigurator.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Notification manager (`src/components/features/automation/NotificationManager.tsx`)
+           - Implement multi-channel notification support
          - [ ] Alert dashboard (`src/components/features/automation/AlertDashboard.tsx`)
+           - Add real-time alert monitoring and management
          - [ ] Alert history (`src/components/features/automation/AlertHistory.tsx`)
+           - Implement searchable alert history with filtering
        - [ ] Create alert pages:
          - [ ] Alert dashboard (`src/app/(dashboard)/automation/alerts/page.tsx`)
          - [ ] Configuration page (`src/app/(dashboard)/automation/alerts/configuration/page.tsx`)
          - [ ] Notifications page (`src/app/(dashboard)/automation/alerts/notifications/page.tsx`)
          - [ ] History page (`src/app/(dashboard)/automation/alerts/history/page.tsx`)
        - [ ] Implement alert API services:
-         - [ ] Alert service (`src/lib/automation/alertService.ts`)
-         - [ ] Notification service (`src/lib/automation/notificationService.ts`)
-         - [ ] Alert history service (`src/lib/automation/alertHistoryService.ts`)
+         - [ ] Alert service (`src/lib/features/automation/alertService.ts`)
+           - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+           - Use request builders from `src/lib/api/requestBuilders.ts`
+         - [ ] Notification service (`src/lib/features/automation/notificationService.ts`)
+           - Add support for email, SMS, and in-app notifications
+         - [ ] Alert history service (`src/lib/features/automation/alertHistoryService.ts`)
+           - Implement time-series based alert analysis
        - [ ] Create alert hooks:
-         - [ ] Alert management hook (`src/hooks/useAlertManagement.ts`)
-         - [ ] Notification hook (`src/hooks/useNotifications.ts`)
-         - [ ] Alert history hook (`src/hooks/useAlertHistory.ts`)
+         - [ ] Alert management hook (`src/lib/hooks/automation/useAlertManagement.ts`)
+         - [ ] Notification hook (`src/lib/hooks/automation/useNotifications.ts`)
+         - [ ] Alert history hook (`src/lib/hooks/automation/useAlertHistory.ts`)
+           - Implement with React Query for efficient caching
+           - Add WebSocket integration for real-time alerts
        - [ ] Implement alert system utilities:
-         - [ ] Alert condition evaluators (`src/lib/automation/alerts/conditionEvaluators.ts`)
-         - [ ] Notification senders (`src/lib/automation/alerts/notificationSenders.ts`)
-         - [ ] Alert managers (`src/lib/automation/alerts/alertManagers.ts`)
+         - [ ] Alert condition evaluators (`src/lib/features/automation/alerts/conditionEvaluators.ts`)
+           - Add support for complex condition expressions
+         - [ ] Notification senders (`src/lib/features/automation/alerts/notificationSenders.ts`)
+           - Implement throttling and batching for notifications
+         - [ ] Alert managers (`src/lib/features/automation/alerts/alertManagers.ts`)
+           - Add intelligent alert correlation and deduplication
      - [ ] Refactoring
-       - [ ] Optimize alerts
-       - [ ] Update documentation
+       - [ ] Optimize alerts with priority-based processing
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 ## Key Implementation Details
 
 1. **Workflow Builder System**
    - [ ] Create workflow store
-     - Implement Zustand store for workflow state (`src/store/slices/workflowBuilder.ts`)
+     - Implement Zustand store for workflow state (`src/lib/store/slices/workflowBuilder.ts`)
      - Add workflow CRUD operations
      - Set up workflow validation
      - Add TypeScript types for workflows (`src/types/workflowTypes.ts`)
@@ -225,13 +323,13 @@ Each automation task follows the Red-Green-Refactor cycle:
      - Implement connection editor (`src/components/features/automation/ConnectionEditor.tsx`)
      - Create workflow validation (`src/components/features/automation/WorkflowValidation.tsx`)
    - [ ] Set up workflow hooks
-     - Create useWorkflow hook for workflow state (`src/hooks/useWorkflow.ts`)
-     - Add useWorkflowSteps hook for step management (`src/hooks/useWorkflowSteps.ts`)
-     - Implement useWorkflowValidation hook (`src/hooks/useWorkflowValidation.ts`)
+     - Create useWorkflow hook for workflow state (`src/lib/hooks/automation/useWorkflow.ts`)
+     - Add useWorkflowSteps hook for step management (`src/lib/hooks/automation/useWorkflowSteps.ts`)
+     - Implement useWorkflowValidation hook (`src/lib/hooks/automation/useWorkflowValidation.ts`)
 
 2. **Rule Engine System**
    - [ ] Create rules store
-     - Implement Zustand store for rules state (`src/store/slices/ruleBuilder.ts`)
+     - Implement Zustand store for rules state (`src/lib/store/slices/ruleBuilder.ts`)
      - Add rule CRUD operations
      - Set up rule validation
      - Add TypeScript types for rules (`src/types/ruleTypes.ts`)
@@ -241,13 +339,13 @@ Each automation task follows the Red-Green-Refactor cycle:
      - Implement action selector (`src/components/features/automation/ActionSelector.tsx`)
      - Create rule testing interface (`src/components/features/automation/RuleTester.tsx`)
    - [ ] Set up rule hooks
-     - Create useRule hook for rule state (`src/hooks/useRule.ts`)
-     - Add useRuleConditions hook for condition management (`src/hooks/useRuleConditions.ts`)
-     - Implement useRuleActions hook (`src/hooks/useRuleActions.ts`)
+     - Create useRule hook for rule state (`src/lib/hooks/automation/useRule.ts`)
+     - Add useRuleConditions hook for condition management (`src/lib/hooks/automation/useRuleConditions.ts`)
+     - Implement useRuleActions hook (`src/lib/hooks/automation/useRuleActions.ts`)
 
 3. **Execution Engine**
    - [ ] Create execution store
-     - Implement Zustand store for execution state (`src/store/slices/executionEngine.ts`)
+     - Implement Zustand store for execution state (`src/lib/store/slices/executionEngine.ts`)
      - Add execution operations
      - Set up state persistence
      - Add TypeScript types for execution (`src/types/executionTypes.ts`)
@@ -257,13 +355,13 @@ Each automation task follows the Red-Green-Refactor cycle:
      - Implement debugging tools (`src/components/features/automation/DebuggingTools.tsx`)
      - Create history viewer (`src/components/features/automation/HistoryViewer.tsx`)
    - [ ] Set up execution hooks
-     - Create useExecution hook for execution state (`src/hooks/useExecution.ts`)
-     - Add useExecutionHistory hook (`src/hooks/useExecutionHistory.ts`)
-     - Implement useExecutionDebug hook (`src/hooks/useExecutionDebug.ts`)
+     - Create useExecution hook for execution state (`src/lib/hooks/automation/useExecution.ts`)
+     - Add useExecutionHistory hook (`src/lib/hooks/automation/useExecutionHistory.ts`)
+     - Implement useExecutionDebug hook (`src/lib/hooks/automation/useExecutionDebug.ts`)
 
 4. **Action Library**
    - [ ] Create actions store
-     - Implement Zustand store for action state (`src/store/slices/actionLibrary.ts`)
+     - Implement Zustand store for action state (`src/lib/store/slices/actionLibrary.ts`)
      - Add action registry
      - Set up action configuration
      - Add TypeScript types for actions (`src/types/actionTypes.ts`)
@@ -273,13 +371,13 @@ Each automation task follows the Red-Green-Refactor cycle:
      - Implement custom action builder (`src/components/features/automation/CustomActionBuilder.tsx`)
      - Create action testing interface (`src/components/features/automation/ActionTester.tsx`)
    - [ ] Set up action hooks
-     - Create useActions hook for action state (`src/hooks/useActions.ts`)
-     - Add useActionConfiguration hook (`src/hooks/useActionConfiguration.ts`)
-     - Implement useCustomActions hook (`src/hooks/useCustomActions.ts`)
+     - Create useActions hook for action state (`src/lib/hooks/automation/useActions.ts`)
+     - Add useActionConfiguration hook (`src/lib/hooks/automation/useActionConfiguration.ts`)
+     - Implement useCustomActions hook (`src/lib/hooks/automation/useCustomActions.ts`)
 
 5. **Monitoring System**
    - [ ] Create monitoring store
-     - Implement Zustand store for monitoring state (`src/store/slices/automationMonitoring.ts`)
+     - Implement Zustand store for monitoring state (`src/lib/store/slices/automationMonitoring.ts`)
      - Add metric collection
      - Set up alert configuration
      - Add TypeScript types for monitoring (`src/types/monitoringTypes.ts`)
@@ -289,9 +387,9 @@ Each automation task follows the Red-Green-Refactor cycle:
      - Implement alert management (`src/components/features/automation/AlertManagement.tsx`)
      - Create resource usage viewer (`src/components/features/automation/ResourceUsage.tsx`)
    - [ ] Set up monitoring hooks
-     - Create useMonitoring hook (`src/hooks/useMonitoring.ts`)
-     - Add useAlerts hook (`src/hooks/useAlerts.ts`)
-     - Implement usePerformanceMetrics hook (`src/hooks/usePerformanceMetrics.ts`)
+     - Create useMonitoring hook (`src/lib/hooks/automation/useMonitoring.ts`)
+     - Add useAlerts hook (`src/lib/hooks/automation/useAlerts.ts`)
+     - Implement usePerformanceMetrics hook (`src/lib/hooks/automation/usePerformanceMetrics.ts`)
 
 ## Architecture Integration Points
 - **UI Components**: 
@@ -299,51 +397,80 @@ Each automation task follows the Red-Green-Refactor cycle:
   - Create specialized automation components with consistent design
   - Implement drag-and-drop interfaces for workflow and rule building
   - Use modular components for different automation steps and actions
+  - Apply error boundaries with `src/lib/utils/TestErrorBoundary.tsx`
 - **Visual Builder**:
   - Implement canvas-based workflow editor with nodes and connections
   - Create intuitive drag-and-drop interfaces for automation design
   - Add step/action library with categorized components
   - Build interactive validation feedback system
+  - Monitor builder performance with `src/lib/performance/performanceAnalysis.ts`
 - **Rules DSL (Domain-Specific Language)**:
   - Create expressive condition builder with support for complex logic
   - Implement template system for quick rule creation
   - Add natural language parsing for rule definitions
   - Support for integrating with external data sources
+  - Validate rule expressions with `src/lib/features/automation/ruleValidator.ts`
 - **API Client**: 
-  - Use the established API client from `src/lib/api/axios.ts`
-  - Implement specialized services for automation features
+  - Use the established API client from `src/lib/api/axiosConfig.ts` for RESTful operations
+  - Implement error handling with `src/lib/api/responseHandlers.ts`
+  - Build requests with `src/lib/api/requestBuilders.ts`
   - Add progress tracking for long-running automation tasks
   - Create proper error handling for automation operations
 - **State Management**: 
-  - Follow Zustand patterns in `src/store/slices/` for automation state
+  - Follow Zustand patterns in `src/lib/store/slices/` for automation state
+  - Use React Query for server state with `src/lib/api/queryConfig.ts`
   - Implement specialized stores for different automation features
-  - Use persistence for automation designs and configurations
+  - Use persistence with browser cache using `src/lib/cache/browserCache.ts`
   - Create reactive state updates for execution monitoring
 - **Integration System**:
   - Build connector library for external system integration
   - Implement webhook support for event-driven automation
   - Create OAuth flow for third-party service connections
   - Add system event listeners for internal triggers
+  - Monitor integration performance with `src/lib/performance/performanceAnalysis.ts`
 - **Execution Engine**:
   - Implement async workflow execution with state persistence
   - Create transaction management for multi-step operations
   - Add rollback capability for failed workflows
   - Build robust error handling and retry mechanisms
+  - Support parallel execution of independent workflow steps
+- **Real-time Updates**:
+  - Integrate with Socket.io via `src/lib/api/socketClient.ts` for execution status
+  - Add real-time progress visualization
+  - Implement collaborative workflow monitoring
+  - Create presence awareness for team automation
+  - Monitor WebSocket performance with `src/lib/performance/performanceAnalysis.ts`
 - **Monitoring and Metrics**:
   - Implement performance tracking for automation execution
   - Create dashboards for resource utilization and execution times
   - Add historical data analysis for optimization opportunities
   - Build alert system for automation failures and performance issues
+  - Support custom metrics with `src/lib/features/automation/customMetrics.ts`
 - **Rule Evaluation**:
   - Implement efficient rule evaluation engine
   - Create expression parser for complex conditions
   - Add context management for rule evaluation
   - Build extensible action execution framework
+  - Monitor evaluation performance with `src/lib/performance/performanceAnalysis.ts`
+- **Security**:
+  - Implement proper authentication for automation operations
+  - Add fine-grained permission controls
+  - Create audit logging for all automation activities
+  - Validate all automation inputs against expected schemas
+  - Implement rate limiting to prevent abuse
 - **Testing**: 
   - Maintain minimum 80% test coverage following TDD approach
+  - Use test utilities from `src/tests/utils/testUtils.ts`
+  - Mock API calls with `src/tests/utils/mockApi.ts`
   - Test various automation scenarios and edge cases
   - Create unit tests for individual components and services
   - Implement integration tests for end-to-end workflow execution
+  - Test performance with `src/tests/utils/mockPerformance.ts`
+- **Documentation**:
+  - Update API reference in `src/lib/documentation/apiReference.ts`
+  - Create user documentation in `src/lib/documentation/userDocs.ts`
+  - Document component usage in `src/lib/documentation/apiExamples.ts`
+  - Generate automation best practices guide
 
 Status Indicators:
 - [ ] Not started
@@ -351,4 +478,4 @@ Status Indicators:
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Enhanced with specific file paths and architecture integration points. 
+Last Updated: Enhanced with comprehensive infrastructure integration and fixed path inconsistencies. 

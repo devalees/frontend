@@ -10,173 +10,244 @@ Each documents task follows the Red-Green-Refactor cycle:
    - [ ] Document Creation
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/documents/documentCreation.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for document validation
        - [ ] Write failing tests for document storage
        - [ ] Write failing tests for document metadata
+       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
      - [ ] Implementation
        - [ ] Implement document components:
          - [ ] Document upload form (`src/components/features/documents/DocumentUploadForm.tsx`)
            - Leverage existing Form and Input components
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Document creator (`src/components/features/documents/DocumentCreator.tsx`)
+           - Implement loading states using UI components
          - [ ] Document metadata form (`src/components/features/documents/MetadataForm.tsx`)
+           - Add validation with descriptive error messages
          - [ ] File preview (`src/components/features/documents/FilePreview.tsx`)
+           - Implement lazy loading for large files
        - [ ] Create document pages:
          - [ ] Upload document page (`src/app/(dashboard)/documents/upload/page.tsx`)
          - [ ] Create document page (`src/app/(dashboard)/documents/create/page.tsx`)
          - [ ] Edit metadata page (`src/app/(dashboard)/documents/[id]/metadata/page.tsx`)
-       - [ ] Implement document API services (`src/lib/documents/documentService.ts`)
-         - Use axios client from `src/lib/api/axios.ts`
+       - [ ] Implement document API services (`src/lib/features/documents/documentService.ts`)
+         - Use axios client from `src/lib/api/axiosConfig.ts`
+         - Implement error handling with `src/lib/api/responseHandlers.ts`
+         - Use request builders from `src/lib/api/requestBuilders.ts`
          - Implement file upload with progress tracking
-       - [ ] Set up document state management (`src/store/slices/documents.ts`)
+       - [ ] Set up document state management (`src/lib/store/slices/documents.ts`)
          - Implement with Zustand following state pattern
-       - [ ] Create document validation utilities (`src/lib/documents/validation.ts`)
+         - Integrate with browser cache using `src/lib/cache/browserCache.ts`
+       - [ ] Create document validation utilities (`src/lib/features/documents/validation.ts`)
          - File type validation
          - Size limit validation
          - Security scanning integration
+         - Monitor validation performance with `src/lib/performance/performanceAnalysis.ts`
      - [ ] Refactoring
-       - [ ] Optimize document creation
-       - [ ] Update documentation
+       - [ ] Optimize document creation with chunked uploads
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Document Operations
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/documents/documentOperations.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for document updates
        - [ ] Write failing tests for document deletion
        - [ ] Write failing tests for document versioning
+       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
      - [ ] Implementation
        - [ ] Implement document operation components:
          - [ ] Document list (`src/components/features/documents/DocumentList.tsx`)
+           - Implement virtual scrolling for large document lists
          - [ ] Document grid view (`src/components/features/documents/DocumentGrid.tsx`)
+           - Implement responsive grid with lazy loading
          - [ ] Document card (`src/components/features/documents/DocumentCard.tsx`)
+           - Implement thumbnail generation and caching
          - [ ] Document detail view (`src/components/features/documents/DocumentDetail.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Document viewer (`src/components/features/documents/DocumentViewer.tsx`)
+           - Implement streaming for large documents
          - [ ] Version history (`src/components/features/documents/VersionHistory.tsx`)
+           - Implement virtualized list for many versions
        - [ ] Create document operation pages:
          - [ ] Document library page (`src/app/(dashboard)/documents/page.tsx`)
          - [ ] Document detail page (`src/app/(dashboard)/documents/[id]/page.tsx`)
          - [ ] Document edit page (`src/app/(dashboard)/documents/[id]/edit/page.tsx`)
          - [ ] Version history page (`src/app/(dashboard)/documents/[id]/versions/page.tsx`)
-       - [ ] Implement operations API services (`src/lib/documents/operations.ts`)
-         - Handle document versioning with optimistic updates
+       - [ ] Implement operations API services (`src/lib/features/documents/operations.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Handle document versioning with `src/lib/api/optimisticUpdates.ts`
        - [ ] Create document hooks:
-         - [ ] Document query hook (`src/hooks/useDocument.ts`)
-         - [ ] Document list hook (`src/hooks/useDocuments.ts`)
-         - [ ] Document version hook (`src/hooks/useDocumentVersions.ts`)
+         - [ ] Document query hook (`src/lib/hooks/documents/useDocument.ts`)
+         - [ ] Document list hook (`src/lib/hooks/documents/useDocuments.ts`)
+         - [ ] Document version hook (`src/lib/hooks/documents/useDocumentVersions.ts`)
            - Use React Query for efficient data fetching and caching
-       - [ ] Implement document search utility (`src/lib/documents/search.ts`)
+           - Implement proper caching with `src/lib/cache/browserCache.ts`
+       - [ ] Implement document search utility (`src/lib/features/documents/search.ts`)
      - [ ] Refactoring
-       - [ ] Optimize operations
-       - [ ] Update documentation
+       - [ ] Optimize operations with memoization
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 2. **Document Organization**
    - [ ] Document Categories
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/documents/documentCategories.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for category creation
        - [ ] Write failing tests for category assignment
        - [ ] Write failing tests for category filtering
+       - [ ] Write failing performance tests for large category trees
      - [ ] Implementation
        - [ ] Implement category components:
          - [ ] Category manager (`src/components/features/documents/CategoryManager.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Category tree (`src/components/features/documents/CategoryTree.tsx`)
+           - Implement virtualization for large category trees
          - [ ] Category selector (`src/components/features/documents/CategorySelector.tsx`)
+           - Implement search within categories
          - [ ] Category breadcrumb (`src/components/features/documents/CategoryBreadcrumb.tsx`)
+           - Add responsive design for mobile devices
        - [ ] Create category pages:
          - [ ] Categories management page (`src/app/(dashboard)/documents/categories/page.tsx`)
          - [ ] Category view page (`src/app/(dashboard)/documents/categories/[id]/page.tsx`)
-       - [ ] Implement category API services (`src/lib/documents/categoryService.ts`)
+       - [ ] Implement category API services (`src/lib/features/documents/categoryService.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Use request builders from `src/lib/api/requestBuilders.ts`
        - [ ] Create category utilities:
-         - [ ] Category filter hook (`src/hooks/useCategoryFilter.ts`)
-         - [ ] Category navigation helper (`src/lib/documents/categoryNavigation.ts`)
+         - [ ] Category filter hook (`src/lib/hooks/documents/useCategoryFilter.ts`)
+         - [ ] Category navigation helper (`src/lib/features/documents/categoryNavigation.ts`)
+           - Implement with React Query for efficient caching
        - [ ] Integrate with document list for filtered views
      - [ ] Refactoring
-       - [ ] Optimize categories
-       - [ ] Update documentation
+       - [ ] Optimize categories with memoization
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Document Tags
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/documents/documentTags.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for tag creation
        - [ ] Write failing tests for tag assignment
        - [ ] Write failing tests for tag search
+       - [ ] Write failing tests for performance with many tags
      - [ ] Implementation
        - [ ] Implement tag components:
          - [ ] Tag creator (`src/components/features/documents/TagCreator.tsx`)
+           - Add validation with debounced API checking
          - [ ] Tag input (`src/components/features/documents/TagInput.tsx`)
+           - Implement autocomplete with virtualized list
          - [ ] Tag cloud (`src/components/features/documents/TagCloud.tsx`)
+           - Implement weighted display algorithm
          - [ ] Tag filter (`src/components/features/documents/TagFilter.tsx`)
+           - Implement multi-select with optimized performance
        - [ ] Create tag pages:
          - [ ] Tags management page (`src/app/(dashboard)/documents/tags/page.tsx`)
          - [ ] Tag search page (`src/app/(dashboard)/documents/search/tags/page.tsx`)
-       - [ ] Implement tag API services (`src/lib/documents/tagService.ts`)
+       - [ ] Implement tag API services (`src/lib/features/documents/tagService.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Implement optimistic updates with `src/lib/api/optimisticUpdates.ts`
        - [ ] Create tag utilities:
-         - [ ] Tag search hook (`src/hooks/useTagSearch.ts`)
-         - [ ] Tag suggestion system (`src/lib/documents/tagSuggestions.ts`)
+         - [ ] Tag search hook (`src/lib/hooks/documents/useTagSearch.ts`)
+         - [ ] Tag suggestion system (`src/lib/features/documents/tagSuggestions.ts`)
+           - Implement with React Query for caching
        - [ ] Set up tag state management
-         - Either extend documents store or create tags store
+         - Either extend documents store or create tags store in `src/lib/store/slices/documentTags.ts`
+         - Integrate with browser cache using `src/lib/cache/browserCache.ts`
      - [ ] Refactoring
-       - [ ] Optimize tags
-       - [ ] Update documentation
+       - [ ] Optimize tag operations with memoization
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 3. **Document Processing**
    - [ ] Document Conversion
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/documents/documentConversion.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for format conversion
        - [ ] Write failing tests for quality checks
        - [ ] Write failing tests for conversion validation
+       - [ ] Write failing tests for performance with large documents
      - [ ] Implementation
        - [ ] Implement conversion components:
          - [ ] Conversion options (`src/components/features/documents/ConversionOptions.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Conversion progress (`src/components/features/documents/ConversionProgress.tsx`)
+           - Implement real-time progress with WebSockets
          - [ ] Quality settings (`src/components/features/documents/QualitySettings.tsx`)
+           - Add preview functionality
          - [ ] Format selector (`src/components/features/documents/FormatSelector.tsx`)
+           - Implement smart format suggestions
        - [ ] Create conversion pages:
          - [ ] Convert document page (`src/app/(dashboard)/documents/[id]/convert/page.tsx`)
          - [ ] Batch conversion page (`src/app/(dashboard)/documents/convert/batch/page.tsx`)
        - [ ] Implement conversion services:
-         - [ ] Conversion service (`src/lib/documents/conversionService.ts`)
-         - [ ] Quality verification (`src/lib/documents/qualityVerification.ts`)
-         - [ ] Conversion presets (`src/lib/documents/conversionPresets.ts`)
+         - [ ] Conversion service (`src/lib/features/documents/conversionService.ts`)
+           - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+           - Use WebSockets via `src/lib/api/socketClient.ts` for real-time status
+         - [ ] Quality verification (`src/lib/features/documents/qualityVerification.ts`)
+           - Implement progressive quality checks
+         - [ ] Conversion presets (`src/lib/features/documents/conversionPresets.ts`)
+           - Store presets in browser cache using `src/lib/cache/browserCache.ts`
        - [ ] Create conversion hooks:
-         - [ ] Conversion progress hook (`src/hooks/useConversionProgress.ts`)
-         - [ ] Conversion options hook (`src/hooks/useConversionOptions.ts`)
+         - [ ] Conversion progress hook (`src/lib/hooks/documents/useConversionProgress.ts`)
+           - Integrate with WebSockets for real-time updates
+         - [ ] Conversion options hook (`src/lib/hooks/documents/useConversionOptions.ts`)
+           - Implement with React Query for caching
      - [ ] Refactoring
-       - [ ] Optimize conversion
-       - [ ] Update documentation
+       - [ ] Optimize conversion with worker threads
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Document Analysis
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/documents/documentAnalysis.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for content analysis
        - [ ] Write failing tests for metadata extraction
        - [ ] Write failing tests for analysis reporting
+       - [ ] Write failing tests for performance with large documents
      - [ ] Implementation
        - [ ] Implement analysis components:
          - [ ] Analysis dashboard (`src/components/features/documents/AnalysisDashboard.tsx`)
+           - Implement data visualization with lazy loading
          - [ ] Content analyzer (`src/components/features/documents/ContentAnalyzer.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Metadata extractor (`src/components/features/documents/MetadataExtractor.tsx`)
+           - Implement progress indicators
          - [ ] Analysis reports (`src/components/features/documents/AnalysisReports.tsx`)
+           - Implement virtualized list for large reports
        - [ ] Create analysis pages:
          - [ ] Document analysis page (`src/app/(dashboard)/documents/[id]/analyze/page.tsx`)
          - [ ] Analysis dashboard page (`src/app/(dashboard)/documents/analysis/page.tsx`)
          - [ ] Report viewer page (`src/app/(dashboard)/documents/analysis/reports/[id]/page.tsx`)
        - [ ] Implement analysis services:
-         - [ ] Content analysis service (`src/lib/documents/analysisService.ts`)
-         - [ ] Metadata extraction service (`src/lib/documents/metadataService.ts`)
-         - [ ] Reporting service (`src/lib/documents/reportingService.ts`)
+         - [ ] Content analysis service (`src/lib/features/documents/analysisService.ts`)
+           - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+           - Monitor performance with `src/lib/performance/performanceAnalysis.ts`
+         - [ ] Metadata extraction service (`src/lib/features/documents/metadataService.ts`)
+           - Use WebSockets for real-time extraction progress
+         - [ ] Reporting service (`src/lib/features/documents/reportingService.ts`)
+           - Implement report caching with `src/lib/cache/browserCache.ts`
        - [ ] Create analysis hooks:
-         - [ ] Content analysis hook (`src/hooks/useContentAnalysis.ts`)
-         - [ ] Metadata extraction hook (`src/hooks/useMetadataExtraction.ts`)
-         - [ ] Analysis reporting hook (`src/hooks/useAnalysisReporting.ts`)
+         - [ ] Content analysis hook (`src/lib/hooks/documents/useContentAnalysis.ts`)
+           - Implement React Query for efficient caching
+         - [ ] Metadata extraction hook (`src/lib/hooks/documents/useMetadataExtraction.ts`)
+           - Integrate with WebSockets for real-time updates
+         - [ ] Analysis reporting hook (`src/lib/hooks/documents/useAnalysisReporting.ts`)
+           - Implement report data virtualization
      - [ ] Refactoring
-       - [ ] Optimize analysis
-       - [ ] Update documentation
+       - [ ] Optimize analysis with worker-based processing
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
+       - [ ] Create user documentation in `src/lib/documentation/userDocs.ts`
        - [ ] Review and adjust
 
 ## Architecture Integration Points
@@ -184,42 +255,65 @@ Each documents task follows the Red-Green-Refactor cycle:
   - Leverage existing components from `src/components/ui/` and `src/components/forms/`
   - Use specialized viewers for different document types
   - Implement responsive document grid/list views
+  - Apply error boundaries with `src/lib/utils/TestErrorBoundary.tsx`
 - **File Handling**:
   - Implement chunked uploads for large files
   - Use Web Workers for client-side document processing
   - Add drag-and-drop support for document management
+  - Monitor upload/download performance with `src/lib/performance/performanceAnalysis.ts`
 - **API Client**: 
-  - Use the established API client from `src/lib/api/axios.ts`
+  - Use the established API client from `src/lib/api/axiosConfig.ts`
+  - Implement error handling with `src/lib/api/responseHandlers.ts`
+  - Build requests with `src/lib/api/requestBuilders.ts`
   - Add upload progress tracking with axios interceptors
   - Implement document-specific API services with proper error handling
 - **State Management**: 
-  - Follow Zustand patterns in `src/store/slices/documents.ts`
+  - Follow Zustand patterns in `src/lib/store/slices/documents.ts`
   - Use React Query for document data caching and prefetching
-  - Implement optimistic updates for document operations
+  - Implement optimistic updates with `src/lib/api/optimisticUpdates.ts`
+  - Integrate with browser cache using `src/lib/cache/browserCache.ts` for offline support
+- **Real-time Updates**:
+  - Use WebSockets via `src/lib/api/socketClient.ts` for conversion status
+  - Implement real-time notifications with `src/lib/api/realtimeUpdates.ts`
+  - Provide progress indicators for long-running operations
 - **Versioning**:
   - Track document version history
   - Implement version comparison
   - Support rollback to previous versions
+  - Cache version metadata for quick access
 - **Search & Filtering**:
   - Implement full-text search for documents
   - Add advanced filtering by metadata
   - Create saved searches functionality
+  - Optimize search performance with proper indexing
 - **Document Viewers**:
   - Implement viewers for different file types (PDF, images, text)
   - Add annotation capabilities where appropriate
   - Support print and download operations
+  - Implement lazy loading for large documents
 - **Security**:
   - Implement document access controls
   - Add watermarking for sensitive documents
   - Create audit trails for document operations
+  - Validate all uploads server-side
 - **Performance**:
-  - Use lazy loading for document lists
+  - Use lazy loading and virtualization for document lists
   - Implement document thumbnails with proper caching
   - Stream large documents instead of full downloads
+  - Monitor performance with `src/lib/performance/performanceAnalysis.ts`
+  - Use web workers for CPU-intensive operations
 - **Testing**: 
   - Maintain minimum 80% test coverage following TDD approach
+  - Use test utilities from `src/tests/utils/testUtils.ts`
+  - Mock API calls with `src/tests/utils/mockApi.ts`
   - Mock file uploads and processing for tests
   - Test various document types and edge cases
+  - Test performance with `src/tests/utils/mockPerformance.ts`
+- **Documentation**:
+  - Update API reference in `src/lib/documentation/apiReference.ts`
+  - Create user documentation in `src/lib/documentation/userDocs.ts`
+  - Document component usage in `src/lib/documentation/apiExamples.ts`
+  - Generate file format compatibility documentation
 
 Status Indicators:
 - [ ] Not started
@@ -227,4 +321,4 @@ Status Indicators:
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Enhanced with specific file paths and architecture integration points. 
+Last Updated: Enhanced with comprehensive infrastructure integration and fixed path inconsistencies. 

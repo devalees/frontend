@@ -10,174 +10,253 @@ Each tasks task follows the Red-Green-Refactor cycle:
    - [ ] Task Creation
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/tasks/taskCreation.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for task validation
        - [ ] Write failing tests for task assignment
        - [ ] Write failing tests for task dependencies
+       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
      - [ ] Implementation
        - [ ] Implement task components:
          - [ ] Task form (`src/components/features/tasks/TaskForm.tsx`)
            - Leverage existing Form and Input components
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Task creator (`src/components/features/tasks/TaskCreator.tsx`)
+           - Implement loading states for better UX
          - [ ] Assignment selector (`src/components/features/tasks/AssignmentSelector.tsx`)
+           - Implement virtualized list for many users
          - [ ] Dependency selector (`src/components/features/tasks/DependencySelector.tsx`)
+           - Add cycle detection to prevent invalid dependencies
        - [ ] Create task pages:
          - [ ] Create task page (`src/app/(dashboard)/tasks/create/page.tsx`)
          - [ ] Bulk task creation page (`src/app/(dashboard)/tasks/create/bulk/page.tsx`)
-       - [ ] Implement task API services (`src/lib/tasks/taskService.ts`)
-         - Use axios client from `src/lib/api/axios.ts`
-       - [ ] Set up task state management (`src/store/slices/tasks.ts`)
+       - [ ] Implement task API services (`src/lib/features/tasks/taskService.ts`)
+         - Use axios client from `src/lib/api/axiosConfig.ts`
+         - Implement error handling with `src/lib/api/responseHandlers.ts`
+         - Use request builders from `src/lib/api/requestBuilders.ts`
+         - Add support for bulk operations
+       - [ ] Set up task state management (`src/lib/store/slices/tasks.ts`)
          - Implement with Zustand following state pattern
-       - [ ] Create task validation utilities (`src/lib/tasks/validation.ts`)
-         - Title and description validation
-         - Date and deadline validation
-         - Dependency cycle prevention
+         - Integrate with browser cache using `src/lib/cache/browserCache.ts`
+       - [ ] Create task validation utilities (`src/lib/features/tasks/validation.ts`)
+         - Title and description validation with detailed error messages
+         - Date and deadline validation with timezone awareness
+         - Dependency cycle prevention and validation
+         - Monitor validation performance with `src/lib/performance/performanceAnalysis.ts`
      - [ ] Refactoring
-       - [ ] Optimize task creation
-       - [ ] Update documentation
+       - [ ] Optimize task creation with debounced saves
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Task Operations
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/tasks/taskOperations.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for task updates
        - [ ] Write failing tests for task deletion
        - [ ] Write failing tests for task status changes
+       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
      - [ ] Implementation
        - [ ] Implement task operation components:
          - [ ] Task list (`src/components/features/tasks/TaskList.tsx`)
+           - Implement virtual scrolling for large task lists
          - [ ] Task card (`src/components/features/tasks/TaskCard.tsx`)
+           - Add responsive design for all viewports
          - [ ] Task board view (`src/components/features/tasks/TaskBoard.tsx`)
+           - Implement drag-and-drop with accessibility support
          - [ ] Task detail view (`src/components/features/tasks/TaskDetail.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Task status changer (`src/components/features/tasks/StatusChanger.tsx`)
+           - Add animation for status transitions
          - [ ] Task actions menu (`src/components/features/tasks/TaskActions.tsx`)
+           - Implement context-aware action visibility
        - [ ] Create task operation pages:
          - [ ] Tasks dashboard (`src/app/(dashboard)/tasks/page.tsx`)
          - [ ] Task board page (`src/app/(dashboard)/tasks/board/page.tsx`)
          - [ ] Task detail page (`src/app/(dashboard)/tasks/[id]/page.tsx`)
          - [ ] Task edit page (`src/app/(dashboard)/tasks/[id]/edit/page.tsx`)
-       - [ ] Implement operations API services (`src/lib/tasks/operations.ts`)
+       - [ ] Implement operations API services (`src/lib/features/tasks/operations.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Implement optimistic updates with `src/lib/api/optimisticUpdates.ts`
        - [ ] Create task hooks:
-         - [ ] Task query hook (`src/hooks/useTask.ts`)
-         - [ ] Task list hook (`src/hooks/useTasks.ts`)
-         - [ ] Task mutation hook (`src/hooks/useTaskMutation.ts`)
+         - [ ] Task query hook (`src/lib/hooks/tasks/useTask.ts`)
+         - [ ] Task list hook (`src/lib/hooks/tasks/useTasks.ts`)
+         - [ ] Task mutation hook (`src/lib/hooks/tasks/useTaskMutation.ts`)
            - Use React Query for efficient data fetching and caching
-       - [ ] Implement drag-and-drop functionality (`src/lib/tasks/dragAndDrop.ts`)
+           - Implement proper caching with `src/lib/cache/browserCache.ts`
+       - [ ] Implement drag-and-drop functionality (`src/lib/features/tasks/dragAndDrop.ts`)
+         - Add accessibility support for keyboard navigation
+         - Implement touch support for mobile devices
+         - Add real-time updates using `src/lib/api/socketClient.ts`
      - [ ] Refactoring
-       - [ ] Optimize operations
-       - [ ] Update documentation
+       - [ ] Optimize operations with memoization
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 2. **Task Organization**
    - [ ] Task Lists
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/tasks/taskLists.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for list creation
        - [ ] Write failing tests for list management
        - [ ] Write failing tests for list filtering
+       - [ ] Write failing tests for performance with many lists
      - [ ] Implementation
        - [ ] Implement list components:
          - [ ] List creator (`src/components/features/tasks/ListCreator.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] List manager (`src/components/features/tasks/ListManager.tsx`)
+           - Implement drag-and-drop for list reordering
          - [ ] List filter (`src/components/features/tasks/ListFilter.tsx`)
+           - Add saved filters functionality
          - [ ] List view switcher (`src/components/features/tasks/ListViewSwitcher.tsx`)
+           - Support for different view modes (list, board, calendar)
        - [ ] Create list pages:
          - [ ] Lists dashboard (`src/app/(dashboard)/tasks/lists/page.tsx`)
          - [ ] List detail page (`src/app/(dashboard)/tasks/lists/[id]/page.tsx`)
          - [ ] Create list page (`src/app/(dashboard)/tasks/lists/create/page.tsx`)
-       - [ ] Implement list API services (`src/lib/tasks/listService.ts`)
+       - [ ] Implement list API services (`src/lib/features/tasks/listService.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Use request builders from `src/lib/api/requestBuilders.ts`
        - [ ] Set up list state management
-         - Either extend tasks store or create lists store (`src/store/slices/taskLists.ts`)
+         - Either extend tasks store or create lists store (`src/lib/store/slices/taskLists.ts`)
+         - Integrate with browser cache using `src/lib/cache/browserCache.ts`
        - [ ] Create list hooks:
-         - [ ] List query hook (`src/hooks/useTaskList.ts`)
-         - [ ] List filtering hook (`src/hooks/useListFilter.ts`)
+         - [ ] List query hook (`src/lib/hooks/tasks/useTaskList.ts`)
+         - [ ] List filtering hook (`src/lib/hooks/tasks/useListFilter.ts`)
+           - Implement with React Query for efficient caching
+           - Add support for complex filter combinations
      - [ ] Refactoring
-       - [ ] Optimize lists
-       - [ ] Update documentation
+       - [ ] Optimize lists with memoization
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Task Categories
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/tasks/taskCategories.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for category creation
        - [ ] Write failing tests for category assignment
        - [ ] Write failing tests for category filtering
+       - [ ] Write failing tests for performance with many categories
      - [ ] Implementation
        - [ ] Implement category components:
          - [ ] Category manager (`src/components/features/tasks/CategoryManager.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Category selector (`src/components/features/tasks/CategorySelector.tsx`)
+           - Implement search within categories
          - [ ] Category filter (`src/components/features/tasks/CategoryFilter.tsx`)
+           - Support multi-category filtering
          - [ ] Category tag (`src/components/features/tasks/CategoryTag.tsx`)
+           - Add color coding for visual distinction
        - [ ] Create category pages:
          - [ ] Categories management page (`src/app/(dashboard)/tasks/categories/page.tsx`)
          - [ ] Category detail page (`src/app/(dashboard)/tasks/categories/[id]/page.tsx`)
-       - [ ] Implement category API services (`src/lib/tasks/categoryService.ts`)
+       - [ ] Implement category API services (`src/lib/features/tasks/categoryService.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Use request builders from `src/lib/api/requestBuilders.ts`
        - [ ] Create category utilities:
-         - [ ] Category filter hook (`src/hooks/useCategoryFilter.ts`)
-         - [ ] Category assignment utility (`src/lib/tasks/categoryAssignment.ts`)
+         - [ ] Category filter hook (`src/lib/hooks/tasks/useCategoryFilter.ts`)
+         - [ ] Category assignment utility (`src/lib/features/tasks/categoryAssignment.ts`)
+           - Implement with React Query for efficient caching
        - [ ] Integrate with task list for filtered views
+         - Add real-time filter updates using `src/lib/api/socketClient.ts`
      - [ ] Refactoring
-       - [ ] Optimize categories
-       - [ ] Update documentation
+       - [ ] Optimize categories with memoization
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
 3. **Task Tracking**
    - [ ] Progress Monitoring
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/tasks/progressMonitoring.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for progress calculation
        - [ ] Write failing tests for milestone tracking
        - [ ] Write failing tests for completion status
+       - [ ] Write failing tests for performance with complex progress calculations
      - [ ] Implementation
        - [ ] Implement progress components:
          - [ ] Progress bar (`src/components/features/tasks/ProgressBar.tsx`)
+           - Add animated transitions between states
          - [ ] Milestone tracker (`src/components/features/tasks/MilestoneTracker.tsx`)
+           - Implement interactive timeline view
          - [ ] Completion status (`src/components/features/tasks/CompletionStatus.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Task burndown chart (`src/components/features/tasks/BurndownChart.tsx`)
+           - Implement dynamic data visualization
        - [ ] Create progress pages:
          - [ ] Progress dashboard (`src/app/(dashboard)/tasks/progress/page.tsx`)
          - [ ] Milestone view (`src/app/(dashboard)/tasks/milestones/page.tsx`)
          - [ ] Progress reports (`src/app/(dashboard)/tasks/reports/progress/page.tsx`)
        - [ ] Implement progress services:
-         - [ ] Progress calculation service (`src/lib/tasks/progressService.ts`)
-         - [ ] Milestone service (`src/lib/tasks/milestoneService.ts`)
-         - [ ] Completion service (`src/lib/tasks/completionService.ts`)
+         - [ ] Progress calculation service (`src/lib/features/tasks/progressService.ts`)
+           - Implement algorithm for weighted progress calculation
+         - [ ] Milestone service (`src/lib/features/tasks/milestoneService.ts`)
+           - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - [ ] Completion service (`src/lib/features/tasks/completionService.ts`)
+           - Add support for partial completion tracking
        - [ ] Create progress hooks:
-         - [ ] Progress tracking hook (`src/hooks/useTaskProgress.ts`)
-         - [ ] Milestone hook (`src/hooks/useMilestones.ts`)
-       - [ ] Implement data visualization utilities (`src/lib/tasks/visualization.ts`)
+         - [ ] Progress tracking hook (`src/lib/hooks/tasks/useTaskProgress.ts`)
+         - [ ] Milestone hook (`src/lib/hooks/tasks/useMilestones.ts`)
+           - Implement with React Query for efficient caching
+           - Add real-time updates using `src/lib/api/socketClient.ts`
+       - [ ] Implement data visualization utilities (`src/lib/features/tasks/visualization.ts`)
+         - Add support for different chart types
+         - Implement responsive visualization
      - [ ] Refactoring
-       - [ ] Optimize monitoring
-       - [ ] Update documentation
+       - [ ] Optimize monitoring with cached calculations
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Time Tracking
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/tasks/timeTracking.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for time logging
        - [ ] Write failing tests for time analysis
        - [ ] Write failing tests for time reporting
+       - [ ] Write failing tests for performance with large time datasets
      - [ ] Implementation
        - [ ] Implement time tracking components:
          - [ ] Time logger (`src/components/features/tasks/TimeLogger.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Time tracker (`src/components/features/tasks/TimeTracker.tsx`)
+           - Implement real-time tracking with background persistence
          - [ ] Time reports (`src/components/features/tasks/TimeReports.tsx`)
+           - Add export options (CSV, PDF, Excel)
          - [ ] Time analysis charts (`src/components/features/tasks/TimeAnalysisCharts.tsx`)
+           - Implement interactive data exploration
        - [ ] Create time tracking pages:
          - [ ] Time tracking dashboard (`src/app/(dashboard)/tasks/time/page.tsx`)
          - [ ] Time log page (`src/app/(dashboard)/tasks/time/log/page.tsx`)
          - [ ] Time reports page (`src/app/(dashboard)/tasks/reports/time/page.tsx`)
        - [ ] Implement time tracking services:
-         - [ ] Time logging service (`src/lib/tasks/timeLoggingService.ts`)
-         - [ ] Time analysis service (`src/lib/tasks/timeAnalysisService.ts`)
-         - [ ] Reporting service (`src/lib/tasks/reportingService.ts`)
+         - [ ] Time logging service (`src/lib/features/tasks/timeLoggingService.ts`)
+           - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+           - Implement offline support with sync on reconnect
+         - [ ] Time analysis service (`src/lib/features/tasks/timeAnalysisService.ts`)
+           - Add efficient aggregation algorithms
+         - [ ] Reporting service (`src/lib/features/tasks/reportingService.ts`)
+           - Implement configurable report generation
        - [ ] Create time tracking hooks:
-         - [ ] Time logging hook (`src/hooks/useTimeLogging.ts`)
-         - [ ] Time analysis hook (`src/hooks/useTimeAnalysis.ts`)
-         - [ ] Active timer hook (`src/hooks/useActiveTimer.ts`)
-       - [ ] Implement timer functionality (`src/lib/tasks/timer.ts`)
+         - [ ] Time logging hook (`src/lib/hooks/tasks/useTimeLogging.ts`)
+         - [ ] Time analysis hook (`src/lib/hooks/tasks/useTimeAnalysis.ts`)
+         - [ ] Active timer hook (`src/lib/hooks/tasks/useActiveTimer.ts`)
+           - Implement with React Query for efficient caching
+           - Add background synchronization
+       - [ ] Implement timer functionality (`src/lib/features/tasks/timer.ts`)
+         - Add accurate time tracking even during browser sleep
+         - Implement timer persistence using `src/lib/cache/browserCache.ts`
      - [ ] Refactoring
-       - [ ] Optimize tracking
-       - [ ] Update documentation
+       - [ ] Optimize tracking with web workers
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
 ## Architecture Integration Points
@@ -186,47 +265,73 @@ Each tasks task follows the Red-Green-Refactor cycle:
   - Use drag-and-drop for task organization
   - Implement kanban board view for task management
   - Create responsive task cards and lists
+  - Apply error boundaries with `src/lib/utils/TestErrorBoundary.tsx`
 - **API Client**: 
-  - Use the established API client from `src/lib/api/axios.ts`
+  - Use the established API client from `src/lib/api/axiosConfig.ts`
+  - Implement error handling with `src/lib/api/responseHandlers.ts`
+  - Build requests with `src/lib/api/requestBuilders.ts`
   - Implement task-specific API services with proper error handling
   - Add support for bulk operations with tasks
 - **State Management**: 
-  - Follow Zustand patterns in `src/store/slices/tasks.ts`
-  - Use React Query for server state management
-  - Implement optimistic updates for faster task state changes
+  - Follow Zustand patterns in `src/lib/store/slices/` for tasks and related data
+  - Use React Query for server state with optimistic updates from `src/lib/api/optimisticUpdates.ts`
+  - Implement efficient caching strategies for task data
+  - Integrate with browser cache using `src/lib/cache/browserCache.ts` for offline support
 - **Task Organization**:
   - Create flexible category and list systems
   - Implement filters and sorting mechanisms
   - Support custom views and saved filters
   - Add tagging system for task categorization
+  - Implement hierarchical task structures
 - **Task Relationships**:
   - Implement parent-child relationships
-  - Create dependency tracking system
+  - Create dependency tracking system with cycle detection
   - Add blockers and dependencies visualization
   - Support task linking across projects
+  - Implement impact analysis for dependency changes
 - **Progress Tracking**:
-  - Implement milestone tracking
-  - Create burndown/burnup charts
-  - Add progress calculation algorithms
-  - Support custom progress metrics
+  - Implement milestone tracking with notifications
+  - Create burndown/burnup charts with projections
+  - Add progress calculation algorithms with weighting
+  - Support custom progress metrics and KPIs
+  - Implement real-time progress updates using `src/lib/api/socketClient.ts`
 - **Time Management**:
-  - Create time estimation system
+  - Create time estimation system with confidence levels
   - Implement time tracking with start/stop functionality
-  - Add time reporting and analysis
-  - Support timesheet generation
+  - Add time reporting and analysis with visualizations
+  - Support timesheet generation and export
+  - Implement offline time tracking with synchronization
 - **Real-time Updates**:
-  - Integrate with Socket.io for task status changes
+  - Integrate with Socket.io via `src/lib/api/socketClient.ts` for task status changes
   - Add notifications for assigned tasks and updates
-  - Implement collaborative task editing
+  - Implement collaborative task editing with conflict resolution
+  - Create presence awareness for collaborative work
+  - Monitor WebSocket performance with `src/lib/performance/performanceAnalysis.ts`
 - **Performance**:
   - Use virtualization for large task lists
   - Implement pagination for task queries
-  - Create efficient filtering mechanisms
-  - Add proper caching strategies
+  - Create efficient filtering mechanisms with memoization
+  - Add proper caching strategies for task data
+  - Use Web Workers for CPU-intensive calculations
+  - Monitor performance with `src/lib/performance/performanceAnalysis.ts`
+- **Security**:
+  - Implement proper authentication for task operations
+  - Add fine-grained permission controls for tasks
+  - Create audit logging for task activities
+  - Validate all task data on client and server
+  - Implement rate limiting to prevent abuse
 - **Testing**: 
   - Maintain minimum 80% test coverage following TDD approach
+  - Use test utilities from `src/tests/utils/testUtils.ts`
+  - Mock API calls with `src/tests/utils/mockApi.ts`
   - Test drag-and-drop functionality thoroughly
   - Test time tracking and progress calculation accuracy
+  - Test performance with `src/tests/utils/mockPerformance.ts`
+- **Documentation**:
+  - Update API reference in `src/lib/documentation/apiReference.ts`
+  - Create user documentation in `src/lib/documentation/userDocs.ts`
+  - Document component usage in `src/lib/documentation/apiExamples.ts`
+  - Generate task management best practices guide
 
 Status Indicators:
 - [ ] Not started
@@ -234,4 +339,4 @@ Status Indicators:
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Enhanced with specific file paths and architecture integration points. 
+Last Updated: Enhanced with comprehensive infrastructure integration and fixed path inconsistencies. 

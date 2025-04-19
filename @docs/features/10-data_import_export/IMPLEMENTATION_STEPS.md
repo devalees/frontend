@@ -10,189 +10,272 @@ Each data import/export task follows the Red-Green-Refactor cycle:
    - [ ] Import Validation
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/dataImportExport/importValidation.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for file format validation
        - [ ] Write failing tests for data structure validation
        - [ ] Write failing tests for data integrity checks
+       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
      - [ ] Implementation
        - [ ] Implement validation components:
          - [ ] Format validator (`src/components/features/dataImportExport/FormatValidator.tsx`)
            - Leverage existing Form and Input components
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Structure validator (`src/components/features/dataImportExport/StructureValidator.tsx`)
+           - Implement intelligent schema detection
          - [ ] Integrity checker (`src/components/features/dataImportExport/IntegrityChecker.tsx`)
+           - Add business rule validation support
          - [ ] Validation summary (`src/components/features/dataImportExport/ValidationSummary.tsx`)
+           - Implement expandable error details
        - [ ] Create validation pages:
          - [ ] Import validation page (`src/app/(dashboard)/data/import/validate/page.tsx`)
          - [ ] Validation rules page (`src/app/(dashboard)/data/import/rules/page.tsx`)
-       - [ ] Implement validation API services (`src/lib/dataImportExport/validationService.ts`)
-         - Use axios client from `src/lib/api/axios.ts`
-       - [ ] Set up validation state management (`src/store/slices/importValidation.ts`)
+       - [ ] Implement validation API services (`src/lib/features/dataImportExport/validationService.ts`)
+         - Use axios client from `src/lib/api/axiosConfig.ts`
+         - Implement error handling with `src/lib/api/responseHandlers.ts`
+         - Use request builders from `src/lib/api/requestBuilders.ts`
+       - [ ] Set up validation state management (`src/lib/store/slices/importValidation.ts`)
          - Implement with Zustand following state pattern
+         - Integrate with browser cache using `src/lib/cache/browserCache.ts`
        - [ ] Create validation utilities:
-         - [ ] File format validators (`src/lib/dataImportExport/formatValidators.ts`)
-         - [ ] Schema validators (`src/lib/dataImportExport/schemaValidators.ts`)
-         - [ ] Data integrity checks (`src/lib/dataImportExport/integrityChecks.ts`)
+         - [ ] File format validators (`src/lib/features/dataImportExport/formatValidators.ts`)
+           - Support multiple file formats (CSV, Excel, JSON, XML)
+         - [ ] Schema validators (`src/lib/features/dataImportExport/schemaValidators.ts`)
+           - Implement JSON schema validation
+         - [ ] Data integrity checks (`src/lib/features/dataImportExport/integrityChecks.ts`)
+           - Monitor validation performance with `src/lib/performance/performanceAnalysis.ts`
      - [ ] Refactoring
-       - [ ] Optimize validation
-       - [ ] Update documentation
+       - [ ] Optimize validation with stream processing
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Import Processing
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/dataImportExport/importProcessing.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for data transformation
        - [ ] Write failing tests for batch processing
        - [ ] Write failing tests for error handling
+       - [ ] Write failing tests for performance with large datasets
      - [ ] Implementation
        - [ ] Implement processing components:
          - [ ] Import wizard (`src/components/features/dataImportExport/ImportWizard.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Field mapper (`src/components/features/dataImportExport/FieldMapper.tsx`)
+           - Implement intelligent field matching
          - [ ] Batch processor (`src/components/features/dataImportExport/BatchProcessor.tsx`)
+           - Add chunked processing for large datasets
          - [ ] Error handler (`src/components/features/dataImportExport/ErrorHandler.tsx`)
+           - Implement error recovery strategies
          - [ ] Progress tracker (`src/components/features/dataImportExport/ProgressTracker.tsx`)
+           - Add real-time progress updates with WebSockets
        - [ ] Create processing pages:
          - [ ] Import dashboard (`src/app/(dashboard)/data/import/page.tsx`)
          - [ ] Field mapping page (`src/app/(dashboard)/data/import/mapping/page.tsx`)
          - [ ] Import status page (`src/app/(dashboard)/data/import/status/page.tsx`)
          - [ ] Error resolution page (`src/app/(dashboard)/data/import/errors/page.tsx`)
-       - [ ] Implement processing API services (`src/lib/dataImportExport/processingService.ts`)
+       - [ ] Implement processing API services (`src/lib/features/dataImportExport/processingService.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Implement optimistic updates with `src/lib/api/optimisticUpdates.ts`
        - [ ] Create processing hooks:
-         - [ ] Import processor hook (`src/hooks/useImportProcessor.ts`)
-         - [ ] Field mapping hook (`src/hooks/useFieldMapping.ts`)
-         - [ ] Import progress hook (`src/hooks/useImportProgress.ts`)
-         - [ ] Error handling hook (`src/hooks/useImportErrors.ts`)
+         - [ ] Import processor hook (`src/lib/hooks/dataImportExport/useImportProcessor.ts`)
+         - [ ] Field mapping hook (`src/lib/hooks/dataImportExport/useFieldMapping.ts`)
+         - [ ] Import progress hook (`src/lib/hooks/dataImportExport/useImportProgress.ts`)
+         - [ ] Error handling hook (`src/lib/hooks/dataImportExport/useImportErrors.ts`)
            - Use React Query for efficient data processing and state management
-       - [ ] Implement transformation utilities (`src/lib/dataImportExport/transformation.ts`)
+           - Implement proper caching with `src/lib/cache/browserCache.ts`
+       - [ ] Implement transformation utilities (`src/lib/features/dataImportExport/transformation.ts`)
+         - Create pluggable transformation pipeline
+         - Add data normalization utilities
      - [ ] Refactoring
-       - [ ] Optimize processing
-       - [ ] Update documentation
+       - [ ] Optimize processing with Web Workers
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 2. **Data Export**
    - [ ] Export Formatting
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/dataImportExport/exportFormatting.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for format conversion
        - [ ] Write failing tests for data formatting
        - [ ] Write failing tests for file generation
+       - [ ] Write failing tests for performance with large exports
      - [ ] Implementation
        - [ ] Implement formatting components:
          - [ ] Format selector (`src/components/features/dataImportExport/FormatSelector.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Data formatter (`src/components/features/dataImportExport/DataFormatter.tsx`)
+           - Implement customizable formatting options
          - [ ] File generator (`src/components/features/dataImportExport/FileGenerator.tsx`)
+           - Add streaming file generation for large exports
          - [ ] Format preview (`src/components/features/dataImportExport/FormatPreview.tsx`)
+           - Implement virtual rendering for large previews
        - [ ] Create formatting pages:
          - [ ] Export format page (`src/app/(dashboard)/data/export/format/page.tsx`)
          - [ ] Format preview page (`src/app/(dashboard)/data/export/preview/page.tsx`)
-       - [ ] Implement formatting API services (`src/lib/dataImportExport/formattingService.ts`)
+       - [ ] Implement formatting API services (`src/lib/features/dataImportExport/formattingService.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Use request builders from `src/lib/api/requestBuilders.ts`
        - [ ] Create formatting hooks:
-         - [ ] Format selection hook (`src/hooks/useFormatSelection.ts`)
-         - [ ] Data formatting hook (`src/hooks/useDataFormatting.ts`)
-         - [ ] File generation hook (`src/hooks/useFileGeneration.ts`)
+         - [ ] Format selection hook (`src/lib/hooks/dataImportExport/useFormatSelection.ts`)
+         - [ ] Data formatting hook (`src/lib/hooks/dataImportExport/useDataFormatting.ts`)
+         - [ ] File generation hook (`src/lib/hooks/dataImportExport/useFileGeneration.ts`)
+           - Implement with React Query for efficient caching
+           - Add support for cancellation and resuming
        - [ ] Implement format converters:
-         - [ ] CSV converter (`src/lib/dataImportExport/converters/csvConverter.ts`)
-         - [ ] Excel converter (`src/lib/dataImportExport/converters/excelConverter.ts`) 
-         - [ ] JSON converter (`src/lib/dataImportExport/converters/jsonConverter.ts`)
-         - [ ] XML converter (`src/lib/dataImportExport/converters/xmlConverter.ts`)
+         - [ ] CSV converter (`src/lib/features/dataImportExport/converters/csvConverter.ts`)
+           - Add support for custom delimiters and quoting
+         - [ ] Excel converter (`src/lib/features/dataImportExport/converters/excelConverter.ts`)
+           - Implement styling and formatting options
+         - [ ] JSON converter (`src/lib/features/dataImportExport/converters/jsonConverter.ts`)
+           - Add support for different JSON structures
+         - [ ] XML converter (`src/lib/features/dataImportExport/converters/xmlConverter.ts`)
+           - Implement XML schema generation
      - [ ] Refactoring
-       - [ ] Optimize formatting
-       - [ ] Update documentation
+       - [ ] Optimize formatting with streaming transformations
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Export Configuration
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/dataImportExport/exportConfiguration.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for export settings
        - [ ] Write failing tests for field selection
        - [ ] Write failing tests for format options
+       - [ ] Write failing tests for configuration management
      - [ ] Implementation
        - [ ] Implement configuration components:
          - [ ] Configuration form (`src/components/features/dataImportExport/ConfigurationForm.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Field selector (`src/components/features/dataImportExport/FieldSelector.tsx`)
+           - Implement search and filtering for many fields
          - [ ] Options selector (`src/components/features/dataImportExport/OptionsSelector.tsx`)
+           - Add context-aware options based on format
          - [ ] Configuration manager (`src/components/features/dataImportExport/ConfigurationManager.tsx`)
+           - Implement saving and loading configurations
        - [ ] Create configuration pages:
          - [ ] Export dashboard (`src/app/(dashboard)/data/export/page.tsx`)
          - [ ] Export configuration page (`src/app/(dashboard)/data/export/configure/page.tsx`)
          - [ ] Saved configurations page (`src/app/(dashboard)/data/export/configurations/page.tsx`)
          - [ ] Field selection page (`src/app/(dashboard)/data/export/fields/page.tsx`)
-       - [ ] Implement configuration API services (`src/lib/dataImportExport/configurationService.ts`)
-       - [ ] Set up configuration state management (`src/store/slices/exportConfiguration.ts`)
+       - [ ] Implement configuration API services (`src/lib/features/dataImportExport/configurationService.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Use request builders from `src/lib/api/requestBuilders.ts`
+       - [ ] Set up configuration state management (`src/lib/store/slices/exportConfiguration.ts`)
+         - Implement with Zustand following state pattern
+         - Integrate with browser cache using `src/lib/cache/browserCache.ts`
        - [ ] Create configuration hooks:
-         - [ ] Configuration hook (`src/hooks/useExportConfiguration.ts`)
-         - [ ] Field selection hook (`src/hooks/useFieldSelection.ts`)
-         - [ ] Options selection hook (`src/hooks/useOptionsSelection.ts`)
-       - [ ] Implement configuration utilities (`src/lib/dataImportExport/configurationUtils.ts`)
+         - [ ] Configuration hook (`src/lib/hooks/dataImportExport/useExportConfiguration.ts`)
+         - [ ] Field selection hook (`src/lib/hooks/dataImportExport/useFieldSelection.ts`)
+         - [ ] Options selection hook (`src/lib/hooks/dataImportExport/useOptionsSelection.ts`)
+           - Implement with React Query for efficient caching
+       - [ ] Implement configuration utilities (`src/lib/features/dataImportExport/configurationUtils.ts`)
+         - Add template management functionality
+         - Create shareable configuration exports
      - [ ] Refactoring
-       - [ ] Optimize configuration
-       - [ ] Update documentation
+       - [ ] Optimize configuration with memoization
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 3. **Data Migration**
    - [ ] Migration Planning
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/dataImportExport/migrationPlanning.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for migration strategy
        - [ ] Write failing tests for data mapping
        - [ ] Write failing tests for validation rules
+       - [ ] Write failing tests for strategy optimization
      - [ ] Implementation
        - [ ] Implement planning components:
          - [ ] Migration planner (`src/components/features/dataImportExport/MigrationPlanner.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Strategy selector (`src/components/features/dataImportExport/StrategySelector.tsx`)
+           - Implement strategy comparison
          - [ ] Data mapper (`src/components/features/dataImportExport/DataMapper.tsx`)
+           - Add visual mapping interface
          - [ ] Rules editor (`src/components/features/dataImportExport/RulesEditor.tsx`)
+           - Implement rule testing functionality
        - [ ] Create planning pages:
          - [ ] Migration dashboard (`src/app/(dashboard)/data/migration/page.tsx`)
          - [ ] Strategy page (`src/app/(dashboard)/data/migration/strategy/page.tsx`)
          - [ ] Mapping page (`src/app/(dashboard)/data/migration/mapping/page.tsx`)
          - [ ] Rules page (`src/app/(dashboard)/data/migration/rules/page.tsx`)
-       - [ ] Implement planning API services (`src/lib/dataImportExport/planningService.ts`)
-       - [ ] Set up planning state management (`src/store/slices/migrationPlanning.ts`)
+       - [ ] Implement planning API services (`src/lib/features/dataImportExport/planningService.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Use request builders from `src/lib/api/requestBuilders.ts`
+       - [ ] Set up planning state management (`src/lib/store/slices/migrationPlanning.ts`)
+         - Implement with Zustand following state pattern
+         - Integrate with browser cache using `src/lib/cache/browserCache.ts`
        - [ ] Create planning hooks:
-         - [ ] Strategy hook (`src/hooks/useMigrationStrategy.ts`)
-         - [ ] Data mapping hook (`src/hooks/useDataMapping.ts`)
-         - [ ] Rules hook (`src/hooks/useValidationRules.ts`)
-       - [ ] Implement planning utilities (`src/lib/dataImportExport/planningUtils.ts`)
+         - [ ] Strategy hook (`src/lib/hooks/dataImportExport/useMigrationStrategy.ts`)
+         - [ ] Data mapping hook (`src/lib/hooks/dataImportExport/useDataMapping.ts`)
+         - [ ] Rules hook (`src/lib/hooks/dataImportExport/useValidationRules.ts`)
+           - Implement with React Query for efficient caching
+       - [ ] Implement planning utilities (`src/lib/features/dataImportExport/planningUtils.ts`)
+         - Add strategy analysis tools
+         - Create prediction models for migration time
      - [ ] Refactoring
-       - [ ] Optimize planning
-       - [ ] Update documentation
+       - [ ] Optimize planning with dependency analysis
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Migration Execution
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/dataImportExport/migrationExecution.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for data transfer
        - [ ] Write failing tests for progress tracking
        - [ ] Write failing tests for rollback procedures
+       - [ ] Write failing tests for performance with large migrations
      - [ ] Implementation
        - [ ] Implement execution components:
          - [ ] Migration executor (`src/components/features/dataImportExport/MigrationExecutor.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Transfer monitor (`src/components/features/dataImportExport/TransferMonitor.tsx`)
+           - Implement real-time monitoring with WebSockets
          - [ ] Progress dashboard (`src/components/features/dataImportExport/ProgressDashboard.tsx`)
+           - Add visualizations for progress metrics
          - [ ] Rollback manager (`src/components/features/dataImportExport/RollbackManager.tsx`)
+           - Implement point-in-time recovery options
        - [ ] Create execution pages:
          - [ ] Migration execution page (`src/app/(dashboard)/data/migration/execute/page.tsx`)
          - [ ] Progress page (`src/app/(dashboard)/data/migration/progress/page.tsx`)
          - [ ] Rollback page (`src/app/(dashboard)/data/migration/rollback/page.tsx`)
          - [ ] Results page (`src/app/(dashboard)/data/migration/results/page.tsx`)
-       - [ ] Implement execution API services (`src/lib/dataImportExport/executionService.ts`)
+       - [ ] Implement execution API services (`src/lib/features/dataImportExport/executionService.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Use WebSockets via `src/lib/api/socketClient.ts` for real-time updates
        - [ ] Create execution hooks:
-         - [ ] Transfer hook (`src/hooks/useDataTransfer.ts`)
-         - [ ] Progress hook (`src/hooks/useMigrationProgress.ts`)
-         - [ ] Rollback hook (`src/hooks/useRollbackProcedure.ts`)
+         - [ ] Transfer hook (`src/lib/hooks/dataImportExport/useDataTransfer.ts`)
+         - [ ] Progress hook (`src/lib/hooks/dataImportExport/useMigrationProgress.ts`)
+         - [ ] Rollback hook (`src/lib/hooks/dataImportExport/useRollbackProcedure.ts`)
+           - Implement with React Query for efficient caching
+           - Add WebSocket integration for real-time updates
        - [ ] Implement execution utilities:
-         - [ ] Transfer manager (`src/lib/dataImportExport/transferManager.ts`)
-         - [ ] Checkpoint system (`src/lib/dataImportExport/checkpointSystem.ts`)
-         - [ ] Rollback procedures (`src/lib/dataImportExport/rollbackProcedures.ts`)
+         - [ ] Transfer manager (`src/lib/features/dataImportExport/transferManager.ts`)
+           - Add resumable transfers support
+         - [ ] Checkpoint system (`src/lib/features/dataImportExport/checkpointSystem.ts`)
+           - Implement transaction-based checkpoints
+         - [ ] Rollback procedures (`src/lib/features/dataImportExport/rollbackProcedures.ts`)
+           - Add granular rollback functionality
      - [ ] Refactoring
-       - [ ] Optimize execution
-       - [ ] Update documentation
+       - [ ] Optimize execution with parallel processing
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 ## Key Implementation Details
 
 1. **Import/Export Configuration**
    - [ ] Create configuration store
-     - Implement Zustand store for config state (`src/store/slices/importExportConfig.ts`)
+     - Implement Zustand store for config state (`src/lib/store/slices/importExportConfig.ts`)
      - Add config CRUD operations
      - Set up config validation
      - Add TypeScript types matching ImportExportConfig model (`src/types/importExport.ts`)
@@ -202,14 +285,14 @@ Each data import/export task follows the Red-Green-Refactor cycle:
      - Implement field mapping (`src/components/features/dataImportExport/FieldMapping.tsx`)
      - Create config validation (`src/components/features/dataImportExport/ConfigValidation.tsx`)
    - [ ] Set up configuration hooks
-     - Create useConfig hook for config state (`src/hooks/useConfig.ts`)
-     - Add useConfigList hook with filtering (`src/hooks/useConfigList.ts`)
-     - Implement useFieldMapping hook (`src/hooks/useFieldMapping.ts`)
-     - Create useConfigValidation hook (`src/hooks/useConfigValidation.ts`)
+     - Create useConfig hook for config state (`src/lib/hooks/dataImportExport/useConfig.ts`)
+     - Add useConfigList hook with filtering (`src/lib/hooks/dataImportExport/useConfigList.ts`)
+     - Implement useFieldMapping hook (`src/lib/hooks/dataImportExport/useFieldMapping.ts`)
+     - Create useConfigValidation hook (`src/lib/hooks/dataImportExport/useConfigValidation.ts`)
 
 2. **File Management**
    - [ ] Create file store
-     - Implement file state management (`src/store/slices/fileManagement.ts`)
+     - Implement file state management (`src/lib/store/slices/fileManagement.ts`)
      - Add file operations
      - Set up file validation
      - Add TypeScript types for files (`src/types/fileTypes.ts`)
@@ -219,14 +302,14 @@ Each data import/export task follows the Red-Green-Refactor cycle:
      - Implement file preview (`src/components/features/dataImportExport/FilePreview.tsx`)
      - Create file validation (`src/components/features/dataImportExport/FileValidation.tsx`)
    - [ ] Set up file hooks
-     - Create useFile hook for file state (`src/hooks/useFile.ts`)
-     - Add useFileUpload hook (`src/hooks/useFileUpload.ts`)
-     - Implement useFileDownload hook (`src/hooks/useFileDownload.ts`)
-     - Create useFileValidation hook (`src/hooks/useFileValidation.ts`)
+     - Create useFile hook for file state (`src/lib/hooks/dataImportExport/useFile.ts`)
+     - Add useFileUpload hook (`src/lib/hooks/dataImportExport/useFileUpload.ts`)
+     - Implement useFileDownload hook (`src/lib/hooks/dataImportExport/useFileDownload.ts`)
+     - Create useFileValidation hook (`src/lib/hooks/dataImportExport/useFileValidation.ts`)
 
 3. **Progress Tracking**
    - [ ] Create progress store
-     - Implement progress state management (`src/store/slices/progressTracking.ts`)
+     - Implement progress state management (`src/lib/store/slices/progressTracking.ts`)
      - Add progress operations
      - Set up progress tracking
      - Add TypeScript types for progress (`src/types/progressTypes.ts`)
@@ -236,14 +319,14 @@ Each data import/export task follows the Red-Green-Refactor cycle:
      - Implement progress updates (`src/components/features/dataImportExport/ProgressUpdates.tsx`)
      - Create progress notifications (`src/components/features/dataImportExport/ProgressNotifications.tsx`)
    - [ ] Set up progress hooks
-     - Create useProgress hook for progress state (`src/hooks/useProgress.ts`)
-     - Add useProgressUpdate hook (`src/hooks/useProgressUpdate.ts`)
-     - Implement useProgressNotification hook (`src/hooks/useProgressNotification.ts`)
-     - Create useProgressDetails hook (`src/hooks/useProgressDetails.ts`)
+     - Create useProgress hook for progress state (`src/lib/hooks/dataImportExport/useProgress.ts`)
+     - Add useProgressUpdate hook (`src/lib/hooks/dataImportExport/useProgressUpdate.ts`)
+     - Implement useProgressNotification hook (`src/lib/hooks/dataImportExport/useProgressNotification.ts`)
+     - Create useProgressDetails hook (`src/lib/hooks/dataImportExport/useProgressDetails.ts`)
 
 4. **Error Handling**
    - [ ] Create error store
-     - Implement error state management (`src/store/slices/errorHandling.ts`)
+     - Implement error state management (`src/lib/store/slices/errorHandling.ts`)
      - Add error operations
      - Set up error tracking
      - Add TypeScript types for errors (`src/types/errorTypes.ts`)
@@ -253,14 +336,14 @@ Each data import/export task follows the Red-Green-Refactor cycle:
      - Implement error recovery (`src/components/features/dataImportExport/ErrorRecovery.tsx`)
      - Create error logging (`src/components/features/dataImportExport/ErrorLogging.tsx`)
    - [ ] Set up error hooks
-     - Create useError hook for error state (`src/hooks/useError.ts`)
-     - Add useErrorDisplay hook (`src/hooks/useErrorDisplay.ts`)
-     - Implement useErrorRecovery hook (`src/hooks/useErrorRecovery.ts`)
-     - Create useErrorLogging hook (`src/hooks/useErrorLogging.ts`)
+     - Create useError hook for error state (`src/lib/hooks/dataImportExport/useError.ts`)
+     - Add useErrorDisplay hook (`src/lib/hooks/dataImportExport/useErrorDisplay.ts`)
+     - Implement useErrorRecovery hook (`src/lib/hooks/dataImportExport/useErrorRecovery.ts`)
+     - Create useErrorLogging hook (`src/lib/hooks/dataImportExport/useErrorLogging.ts`)
 
 5. **Operation Logging**
    - [ ] Create logging store
-     - Implement log state management (`src/store/slices/operationLogging.ts`)
+     - Implement log state management (`src/lib/store/slices/operationLogging.ts`)
      - Add log operations
      - Set up log tracking
      - Add TypeScript types for logs (`src/types/logTypes.ts`)
@@ -270,14 +353,14 @@ Each data import/export task follows the Red-Green-Refactor cycle:
      - Implement log filtering (`src/components/features/dataImportExport/LogFiltering.tsx`)
      - Create log export (`src/components/features/dataImportExport/LogExport.tsx`)
    - [ ] Set up logging hooks
-     - Create useLog hook for log state (`src/hooks/useLog.ts`)
-     - Add useLogList hook (`src/hooks/useLogList.ts`)
-     - Implement useLogFilter hook (`src/hooks/useLogFilter.ts`)
-     - Create useLogExport hook (`src/hooks/useLogExport.ts`)
+     - Create useLog hook for log state (`src/lib/hooks/dataImportExport/useLog.ts`)
+     - Add useLogList hook (`src/lib/hooks/dataImportExport/useLogList.ts`)
+     - Implement useLogFilter hook (`src/lib/hooks/dataImportExport/useLogFilter.ts`)
+     - Create useLogExport hook (`src/lib/hooks/dataImportExport/useLogExport.ts`)
 
 6. **Analytics and Reporting**
    - [ ] Create analytics store
-     - Implement analytics state management (`src/store/slices/analyticsReporting.ts`)
+     - Implement analytics state management (`src/lib/store/slices/analyticsReporting.ts`)
      - Add analytics operations
      - Set up analytics tracking
      - Add TypeScript types for analytics (`src/types/analyticsTypes.ts`)
@@ -287,10 +370,10 @@ Each data import/export task follows the Red-Green-Refactor cycle:
      - Implement success rates (`src/components/features/dataImportExport/SuccessRates.tsx`)
      - Create performance metrics (`src/components/features/dataImportExport/PerformanceMetrics.tsx`)
    - [ ] Set up analytics hooks
-     - Create useAnalytics hook for analytics state (`src/hooks/useAnalytics.ts`)
-     - Add useImportStats hook (`src/hooks/useImportStats.ts`)
-     - Implement useExportStats hook (`src/hooks/useExportStats.ts`)
-     - Create usePerformanceMetrics hook (`src/hooks/usePerformanceMetrics.ts`)
+     - Create useAnalytics hook for analytics state (`src/lib/hooks/dataImportExport/useAnalytics.ts`)
+     - Add useImportStats hook (`src/lib/hooks/dataImportExport/useImportStats.ts`)
+     - Implement useExportStats hook (`src/lib/hooks/dataImportExport/useExportStats.ts`)
+     - Create usePerformanceMetrics hook (`src/lib/hooks/dataImportExport/usePerformanceMetrics.ts`)
 
 ## Architecture Integration Points
 - **UI Components**: 
@@ -298,45 +381,68 @@ Each data import/export task follows the Red-Green-Refactor cycle:
   - Create specialized import/export components with consistent design
   - Implement responsive wizard interfaces for import/export flows
   - Use modular components for different file formats and data types
+  - Apply error boundaries with `src/lib/utils/TestErrorBoundary.tsx`
 - **File Handling**:
   - Implement chunked uploads for large data files
   - Create robust file validation system
   - Add preview capability for different file formats
   - Support drag-and-drop file uploads
+  - Monitor upload/download performance with `src/lib/performance/performanceAnalysis.ts`
 - **API Client**: 
-  - Use the established API client from `src/lib/api/axios.ts`
+  - Use the established API client from `src/lib/api/axiosConfig.ts`
+  - Implement error handling with `src/lib/api/responseHandlers.ts`
+  - Build requests with `src/lib/api/requestBuilders.ts`
   - Add progress tracking for uploads and downloads
-  - Implement proper error handling for API failures
   - Create specialized API services for data import/export operations
 - **State Management**: 
-  - Follow Zustand patterns in `src/store/slices/` for import/export state
-  - Use React Query for data processing and caching
-  - Implement optimistic updates where applicable
+  - Follow Zustand patterns in `src/lib/store/slices/` for import/export state
+  - Use React Query for data processing with optimistic updates from `src/lib/api/optimisticUpdates.ts`
+  - Implement efficient caching strategies for import/export data
+  - Integrate with browser cache using `src/lib/cache/browserCache.ts` for offline support
 - **Data Processing**:
   - Create modular data transformation pipeline
   - Implement field mapping with intelligent matching
   - Add data validation at multiple stages
   - Support customizable data processing rules
+  - Use Web Workers for CPU-intensive transformations
+- **Real-time Updates**:
+  - Integrate with Socket.io via `src/lib/api/socketClient.ts` for progress updates
+  - Add notifications for completed operations
+  - Implement collaborative import/export operations
+  - Create presence awareness for team operations
+  - Monitor WebSocket performance with `src/lib/performance/performanceAnalysis.ts`
 - **Performance**:
   - Implement batch processing for large datasets
   - Use Web Workers for CPU-intensive transformations
-  - Add pagination for viewing large import/export results
+  - Add virtualization for viewing large import/export results
   - Create efficient memory management for large files
+  - Implement progressive loading for large datasets
+  - Monitor performance with `src/lib/performance/performanceAnalysis.ts`
 - **Security**:
   - Add content validation and sanitization
   - Implement file type restrictions
   - Create secure storage for temporary import/export data
   - Add audit logging for all import/export operations
+  - Implement rate limiting to prevent abuse
 - **Error Recovery**:
   - Implement checkpointing for long-running operations
   - Create rollback capabilities for failed imports
   - Add detailed error reporting with resolution suggestions
   - Support resumable operations after failure
+  - Implement transaction-based operations
 - **Testing**: 
   - Maintain minimum 80% test coverage following TDD approach
+  - Use test utilities from `src/tests/utils/testUtils.ts`
+  - Mock API calls with `src/tests/utils/mockApi.ts`
   - Test with various file formats and sizes
   - Verify data integrity throughout the import/export process
   - Test error handling and recovery thoroughly
+  - Test performance with `src/tests/utils/mockPerformance.ts`
+- **Documentation**:
+  - Update API reference in `src/lib/documentation/apiReference.ts`
+  - Create user documentation in `src/lib/documentation/userDocs.ts`
+  - Document component usage in `src/lib/documentation/apiExamples.ts`
+  - Generate import/export best practices guide
 
 Status Indicators:
 - [ ] Not started
@@ -344,4 +450,4 @@ Status Indicators:
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Enhanced with specific file paths and architecture integration points. 
+Last Updated: Enhanced with comprehensive infrastructure integration and fixed path inconsistencies. 

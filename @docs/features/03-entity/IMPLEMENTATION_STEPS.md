@@ -10,172 +10,237 @@ Each entity task follows the Red-Green-Refactor cycle:
    - [ ] Entity Creation
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/entity/entityCreation.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for entity validation
        - [ ] Write failing tests for entity persistence
        - [ ] Write failing tests for entity relationships
+       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
      - [ ] Implementation
        - [ ] Implement entity components:
          - [ ] Entity form (`src/components/features/entity/EntityForm.tsx`)
            - Leverage existing Form and Input components
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Entity creator (`src/components/features/entity/EntityCreator.tsx`)
+           - Implement loading states using UI components
          - [ ] Entity type selector (`src/components/features/entity/EntityTypeSelector.tsx`)
        - [ ] Create entity pages:
          - [ ] Create entity (`src/app/(dashboard)/entities/create/page.tsx`)
          - [ ] Entity type selection (`src/app/(dashboard)/entities/types/page.tsx`)
-       - [ ] Implement entity API services (`src/lib/entity/entityService.ts`)
-         - Use axios client from `src/lib/api/axios.ts`
-       - [ ] Set up entity state management (`src/store/slices/entities.ts`)
+       - [ ] Implement entity API services (`src/lib/features/entity/entityService.ts`)
+         - Use axios client from `src/lib/api/axiosConfig.ts`
+         - Implement error handling with `src/lib/api/responseHandlers.ts`
+         - Use request builders from `src/lib/api/requestBuilders.ts`
+       - [ ] Set up entity state management (`src/lib/store/slices/entities.ts`)
          - Implement with Zustand following state pattern
-       - [ ] Create entity validation utilities (`src/lib/entity/validation.ts`)
+         - Integrate with browser cache using `src/lib/cache/browserCache.ts` for offline support
+       - [ ] Create entity validation utilities (`src/lib/features/entity/validation.ts`)
+       - [ ] Set up performance monitoring using `src/lib/performance/performanceAnalysis.ts`
      - [ ] Refactoring
        - [ ] Optimize entity creation
-       - [ ] Update documentation
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Entity Operations
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/entity/entityOperations.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for CRUD operations
        - [ ] Write failing tests for batch operations
        - [ ] Write failing tests for search operations
+       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
      - [ ] Implementation
        - [ ] Implement entity operation components:
          - [ ] Entity list (`src/components/features/entity/EntityList.tsx`)
+           - Implement virtual scrolling for large lists
          - [ ] Entity detail (`src/components/features/entity/EntityDetail.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Entity editor (`src/components/features/entity/EntityEditor.tsx`)
+           - Implement optimistic updates using `src/lib/api/optimisticUpdates.ts`
          - [ ] Entity search (`src/components/features/entity/EntitySearch.tsx`)
          - [ ] Batch operation UI (`src/components/features/entity/BatchOperations.tsx`)
        - [ ] Create entity pages:
          - [ ] Entity list page (`src/app/(dashboard)/entities/page.tsx`)
          - [ ] Entity detail page (`src/app/(dashboard)/entities/[id]/page.tsx`)
          - [ ] Entity edit page (`src/app/(dashboard)/entities/[id]/edit/page.tsx`)
-       - [ ] Implement operations API services (`src/lib/entity/operations.ts`)
-       - [ ] Create entity search hook (`src/hooks/useEntitySearch.ts`)
+       - [ ] Implement operations API services (`src/lib/features/entity/operations.ts`)
+         - Integrate real-time updates using `src/lib/api/socketClient.ts`
+         - Implement optimistic UI with `src/lib/api/optimisticUpdates.ts`
+       - [ ] Create entity search hook (`src/lib/hooks/entity/useEntitySearch.ts`)
          - Use React Query for efficient data fetching and caching
-       - [ ] Implement batch operations utility (`src/lib/entity/batchOperations.ts`)
+         - Implement caching strategy with `src/lib/cache/browserCache.ts`
+       - [ ] Implement batch operations utility (`src/lib/features/entity/batchOperations.ts`)
      - [ ] Refactoring
        - [ ] Optimize operations
-       - [ ] Update documentation
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 2. **Entity Relationships**
    - [ ] Relationship Management
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/entity/relationshipManagement.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for relationship creation
        - [ ] Write failing tests for relationship validation
        - [ ] Write failing tests for relationship traversal
+       - [ ] Write failing performance tests for relationship operations
      - [ ] Implementation
        - [ ] Implement relationship components:
          - [ ] Relationship creator (`src/components/features/entity/RelationshipCreator.tsx`)
+           - Add error handling with descriptive messages
          - [ ] Relationship visualizer (`src/components/features/entity/RelationshipVisualizer.tsx`)
+           - Implement lazy loading for better performance
          - [ ] Entity selector (`src/components/features/entity/EntitySelector.tsx`)
+           - Implement virtualized list for large entity sets
        - [ ] Create relationship pages:
          - [ ] Create relationship (`src/app/(dashboard)/entities/relationships/create/page.tsx`)
          - [ ] View relationships (`src/app/(dashboard)/entities/relationships/page.tsx`)
-       - [ ] Implement relationship API services (`src/lib/entity/relationshipService.ts`)
+       - [ ] Implement relationship API services (`src/lib/features/entity/relationshipService.ts`)
+         - Use standardized request/response handling
+         - Implement real-time updates with `src/lib/api/realtimeUpdates.ts`
        - [ ] Set up relationship state management
          - Extend entities store or create relationships store
-       - [ ] Create relationship validation utilities (`src/lib/entity/relationshipValidation.ts`)
+         - Implement caching strategy with React Query
+       - [ ] Create relationship validation utilities (`src/lib/features/entity/relationshipValidation.ts`)
      - [ ] Refactoring
-       - [ ] Optimize relationships
-       - [ ] Update documentation
+       - [ ] Optimize relationships with memoization
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Relationship Operations
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/entity/relationshipOperations.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for relationship queries
        - [ ] Write failing tests for relationship updates
        - [ ] Write failing tests for relationship deletion
+       - [ ] Write failing tests for collaborative editing
      - [ ] Implementation
        - [ ] Implement relationship operation components:
          - [ ] Relationship list (`src/components/features/entity/RelationshipList.tsx`)
+           - Implement virtual scrolling
          - [ ] Relationship editor (`src/components/features/entity/RelationshipEditor.tsx`)
+           - Add real-time collaboration using WebSockets
          - [ ] Relationship filter (`src/components/features/entity/RelationshipFilter.tsx`)
        - [ ] Create relationship operation pages:
          - [ ] Edit relationship (`src/app/(dashboard)/entities/relationships/[id]/edit/page.tsx`)
          - [ ] View relationship details (`src/app/(dashboard)/entities/relationships/[id]/page.tsx`)
-       - [ ] Implement relationship operations API (`src/lib/entity/relationshipOperations.ts`)
-       - [ ] Create relationship query hook (`src/hooks/useRelationshipQuery.ts`)
+       - [ ] Implement relationship operations API (`src/lib/features/entity/relationshipOperations.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+       - [ ] Create relationship query hook (`src/lib/hooks/entity/useRelationshipQuery.ts`)
          - Use React Query for caching relationship data
+         - Implement optimistic updates for better UX
      - [ ] Refactoring
        - [ ] Optimize operations
-       - [ ] Update documentation
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
+       - [ ] Create entity relationship diagram documentation
        - [ ] Review and adjust
 
 3. **Entity Validation**
    - [ ] Validation Rules
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/entity/validationRules.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
        - [ ] Write failing tests for rule creation
        - [ ] Write failing tests for rule application
        - [ ] Write failing tests for rule validation
+       - [ ] Write failing tests for performance implications
      - [ ] Implementation
        - [ ] Implement validation rule components:
          - [ ] Rule creator (`src/components/features/entity/ValidationRuleCreator.tsx`)
          - [ ] Rule list (`src/components/features/entity/ValidationRuleList.tsx`)
+           - Implement virtualized list for large rule sets
          - [ ] Rule editor (`src/components/features/entity/ValidationRuleEditor.tsx`)
        - [ ] Create validation rule pages:
          - [ ] Manage rules (`src/app/(dashboard)/entities/validation/page.tsx`)
          - [ ] Create rule (`src/app/(dashboard)/entities/validation/create/page.tsx`)
          - [ ] Edit rule (`src/app/(dashboard)/entities/validation/[id]/edit/page.tsx`)
-       - [ ] Implement validation rule services (`src/lib/entity/validationRuleService.ts`)
-       - [ ] Create rule engine (`src/lib/entity/ruleEngine.ts`)
+       - [ ] Implement validation rule services (`src/lib/features/entity/validationRuleService.ts`)
+         - Use standardized API error handling
+       - [ ] Create rule engine (`src/lib/features/entity/ruleEngine.ts`)
          - Build validation processing pipeline
+         - Implement performance monitoring for rule execution
      - [ ] Refactoring
-       - [ ] Optimize validation
+       - [ ] Optimize validation with memoization
        - [ ] Update documentation
+       - [ ] Document validation rules in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Validation Logic
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/entity/validationLogic.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
        - [ ] Write failing tests for logic implementation
        - [ ] Write failing tests for error handling
        - [ ] Write failing tests for validation messages
+       - [ ] Write failing tests for accessibility
      - [ ] Implementation
        - [ ] Implement validation logic components:
          - [ ] Validation feedback (`src/components/features/entity/ValidationFeedback.tsx`)
+           - Ensure accessibility compliance
          - [ ] Error display (`src/components/features/entity/ValidationErrors.tsx`)
+           - Implement descriptive error messages
          - [ ] Custom validators (`src/components/features/entity/CustomValidators.tsx`)
        - [ ] Create validation utilities:
-         - [ ] Validation context provider (`src/lib/entity/ValidationContext.tsx`)
-         - [ ] Validation hook (`src/hooks/useValidation.ts`)
-         - [ ] Error formatter (`src/lib/entity/errorFormatter.ts`)
-       - [ ] Implement validation logic services (`src/lib/entity/validationLogicService.ts`)
-       - [ ] Create validation message system (`src/lib/entity/validationMessages.ts`)
+         - [ ] Validation context provider (`src/lib/features/entity/ValidationContext.tsx`)
+         - [ ] Validation hook (`src/lib/hooks/entity/useValidation.ts`)
+         - [ ] Error formatter (`src/lib/features/entity/errorFormatter.ts`)
+           - Integrate with `src/lib/api/responseHandlers.ts`
+       - [ ] Implement validation logic services (`src/lib/features/entity/validationLogicService.ts`)
+       - [ ] Create validation message system (`src/lib/features/entity/validationMessages.ts`)
          - Support internationalization for validation messages
      - [ ] Refactoring
        - [ ] Optimize logic
-       - [ ] Update documentation
+       - [ ] Update documentation in `src/lib/documentation/`
+       - [ ] Create user documentation in `src/lib/documentation/userDocs.ts`
        - [ ] Review and adjust
 
 ## Architecture Integration Points
 - **UI Components**: 
   - Leverage existing components from `src/components/ui/` and `src/components/forms/`
   - Use modular composition for complex entity UIs
+  - Apply error boundaries with `src/lib/utils/TestErrorBoundary.tsx`
 - **API Client**: 
-  - Use the established API client from `src/lib/api/axios.ts`
+  - Use the established API client from `src/lib/api/axiosConfig.ts`
+  - Implement error handling with `src/lib/api/responseHandlers.ts`
+  - Build requests with `src/lib/api/requestBuilders.ts`
   - Implement entity-specific API services with proper error handling
 - **State Management**: 
-  - Follow Zustand patterns in `src/store/slices/entities.ts`
+  - Follow Zustand patterns in `src/lib/store/slices/entities.ts`
   - Use React Query for server state, especially for relationship data
-  - Implement optimistic updates for better UX
+  - Implement optimistic updates with `src/lib/api/optimisticUpdates.ts`
+  - Integrate with browser cache using `src/lib/cache/browserCache.ts` for offline support
+- **Real-time Updates**:
+  - Use WebSockets via `src/lib/api/socketClient.ts` for collaborative editing
+  - Implement real-time notifications with `src/lib/api/realtimeUpdates.ts`
 - **Validation**: 
   - Create reusable validation rules that can be composed
   - Implement client-side validation for immediate feedback
   - Connect with server-side validation through API services
+  - Ensure accessible error messages and feedback
 - **Data Flow**:
   - Implement clear unidirectional data flow for entity operations
   - Use React Query for automatic cache invalidation on entity changes
+  - Implement offline-first strategy with `src/lib/cache/browserCache.ts`
 - **Performance**:
   - Implement pagination and virtual scrolling for large entity lists
   - Use memoization for expensive entity operations
   - Implement lazy loading for entity relationship visualization
+  - Monitor performance with `src/lib/performance/performanceAnalysis.ts`
 - **Testing**: 
   - Maintain minimum 80% test coverage following TDD approach
+  - Use test utilities from `src/tests/utils/testUtils.ts`
+  - Mock API calls with `src/tests/utils/mockApi.ts`
   - Test complex entity relationships thoroughly
+  - Test performance with `src/tests/utils/mockPerformance.ts`
+- **Documentation**:
+  - Update API reference in `src/lib/documentation/apiReference.ts`
+  - Create user documentation in `src/lib/documentation/userDocs.ts`
+  - Document component usage in `src/lib/documentation/apiExamples.ts`
+  - Generate entity relationship diagrams
 
 Status Indicators:
 - [ ] Not started
@@ -183,4 +248,4 @@ Status Indicators:
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Enhanced with specific file paths and architecture integration points. 
+Last Updated: Enhanced with comprehensive infrastructure integration and fixed path inconsistencies. 

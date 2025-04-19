@@ -10,171 +10,236 @@ Each contacts task follows the Red-Green-Refactor cycle:
    - [ ] Contact Creation
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/contacts/contactCreation.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for contact validation
        - [ ] Write failing tests for contact storage
        - [ ] Write failing tests for contact relationships
+       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
      - [ ] Implementation
        - [ ] Implement contact components:
          - [ ] Contact form (`src/components/features/contacts/ContactForm.tsx`)
            - Leverage existing Form and Input components
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Contact type selector (`src/components/features/contacts/ContactTypeSelector.tsx`)
+           - Implement loading states using UI components
          - [ ] Contact details form (`src/components/features/contacts/ContactDetails.tsx`)
          - [ ] Address form (`src/components/features/contacts/AddressForm.tsx`)
+           - Implement international address validation
        - [ ] Create contact pages:
          - [ ] Create contact page (`src/app/(dashboard)/contacts/create/page.tsx`)
          - [ ] Add contact details page (`src/app/(dashboard)/contacts/create/details/page.tsx`)
-       - [ ] Implement contact API services (`src/lib/contacts/contactService.ts`)
-         - Use axios client from `src/lib/api/axios.ts`
-       - [ ] Set up contact state management (`src/store/slices/contacts.ts`)
+       - [ ] Implement contact API services (`src/lib/features/contacts/contactService.ts`)
+         - Use axios client from `src/lib/api/axiosConfig.ts`
+         - Implement error handling with `src/lib/api/responseHandlers.ts`
+         - Use request builders from `src/lib/api/requestBuilders.ts`
+       - [ ] Set up contact state management (`src/lib/store/slices/contacts.ts`)
          - Implement with Zustand following state pattern
-       - [ ] Create contact validation utilities (`src/lib/contacts/validation.ts`)
+         - Integrate with browser cache using `src/lib/cache/browserCache.ts`
+       - [ ] Create contact validation utilities (`src/lib/features/contacts/validation.ts`)
          - Implement email, phone, and address validation
+         - Add performance monitoring for validation operations
      - [ ] Refactoring
        - [ ] Optimize contact creation
-       - [ ] Update documentation
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Contact Operations
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/contacts/contactOperations.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for contact updates
        - [ ] Write failing tests for contact deletion
        - [ ] Write failing tests for contact search
+       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
      - [ ] Implementation
        - [ ] Implement contact operation components:
          - [ ] Contact list (`src/components/features/contacts/ContactList.tsx`)
+           - Implement virtual scrolling for large lists
          - [ ] Contact card (`src/components/features/contacts/ContactCard.tsx`)
          - [ ] Contact detail view (`src/components/features/contacts/ContactDetail.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Contact search (`src/components/features/contacts/ContactSearch.tsx`)
+           - Implement debounced search with optimized performance
          - [ ] Contact actions menu (`src/components/features/contacts/ContactActions.tsx`)
        - [ ] Create contact operation pages:
          - [ ] Contacts dashboard (`src/app/(dashboard)/contacts/page.tsx`)
          - [ ] Contact detail page (`src/app/(dashboard)/contacts/[id]/page.tsx`)
          - [ ] Contact edit page (`src/app/(dashboard)/contacts/[id]/edit/page.tsx`)
          - [ ] Contact search page (`src/app/(dashboard)/contacts/search/page.tsx`)
-       - [ ] Implement operations API services (`src/lib/contacts/operations.ts`)
+       - [ ] Implement operations API services (`src/lib/features/contacts/operations.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Implement optimistic UI with `src/lib/api/optimisticUpdates.ts`
        - [ ] Create contact hooks:
-         - [ ] Contact query hook (`src/hooks/useContact.ts`)
-         - [ ] Contact list hook (`src/hooks/useContacts.ts`)
-         - [ ] Contact search hook (`src/hooks/useContactSearch.ts`)
+         - [ ] Contact query hook (`src/lib/hooks/contacts/useContact.ts`)
+         - [ ] Contact list hook (`src/lib/hooks/contacts/useContacts.ts`)
+         - [ ] Contact search hook (`src/lib/hooks/contacts/useContactSearch.ts`)
            - Use React Query for efficient data fetching and caching
+           - Implement caching strategy with `src/lib/cache/browserCache.ts`
      - [ ] Refactoring
-       - [ ] Optimize operations
-       - [ ] Update documentation
+       - [ ] Optimize operations with memoization
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 2. **Contact Organization**
    - [ ] Contact Groups
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/contacts/contactGroups.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for group creation
        - [ ] Write failing tests for group management
        - [ ] Write failing tests for group relationships
+       - [ ] Write failing tests for performance with large groups
      - [ ] Implementation
        - [ ] Implement group components:
          - [ ] Group creation form (`src/components/features/contacts/GroupForm.tsx`)
+           - Add validation with descriptive error messages
          - [ ] Group list (`src/components/features/contacts/GroupList.tsx`)
+           - Implement virtualization for large group lists
          - [ ] Group detail view (`src/components/features/contacts/GroupDetail.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Group membership manager (`src/components/features/contacts/GroupMembership.tsx`)
+           - Implement drag-and-drop with optimistic updates
        - [ ] Create group pages:
          - [ ] Groups dashboard (`src/app/(dashboard)/contacts/groups/page.tsx`)
          - [ ] Create group page (`src/app/(dashboard)/contacts/groups/create/page.tsx`)
          - [ ] Group detail page (`src/app/(dashboard)/contacts/groups/[id]/page.tsx`)
          - [ ] Group members page (`src/app/(dashboard)/contacts/groups/[id]/members/page.tsx`)
-       - [ ] Implement group API services (`src/lib/contacts/groupService.ts`)
+       - [ ] Implement group API services (`src/lib/features/contacts/groupService.ts`)
+         - Use standardized request/response handling with `src/lib/api/responseHandlers.ts`
        - [ ] Set up group state management
-         - Either extend contacts store or create group store (`src/store/slices/contactGroups.ts`)
+         - Either extend contacts store or create group store (`src/lib/store/slices/contactGroups.ts`)
+         - Implement with Zustand and React Query for caching
        - [ ] Create group hooks:
-         - [ ] Group query hook (`src/hooks/useContactGroup.ts`)
-         - [ ] Group membership hook (`src/hooks/useGroupMembers.ts`)
+         - [ ] Group query hook (`src/lib/hooks/contacts/useContactGroup.ts`)
+         - [ ] Group membership hook (`src/lib/hooks/contacts/useGroupMembers.ts`)
+           - Implement optimistic updates for better UX
      - [ ] Refactoring
-       - [ ] Optimize groups
-       - [ ] Update documentation
+       - [ ] Optimize groups with memoization
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Contact Categories
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/contacts/contactCategories.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for category creation
        - [ ] Write failing tests for category assignment
        - [ ] Write failing tests for category filtering
+       - [ ] Write failing tests for performance
      - [ ] Implementation
        - [ ] Implement category components:
          - [ ] Category manager (`src/components/features/contacts/CategoryManager.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Category selector (`src/components/features/contacts/CategorySelector.tsx`)
+           - Implement virtual scrolling for large category lists
          - [ ] Category filter (`src/components/features/contacts/CategoryFilter.tsx`)
+           - Implement optimized filter performance
          - [ ] Category tag (`src/components/features/contacts/CategoryTag.tsx`)
        - [ ] Create category pages:
          - [ ] Categories management page (`src/app/(dashboard)/contacts/categories/page.tsx`)
          - [ ] Category detail page (`src/app/(dashboard)/contacts/categories/[id]/page.tsx`)
-       - [ ] Implement category API services (`src/lib/contacts/categoryService.ts`)
+       - [ ] Implement category API services (`src/lib/features/contacts/categoryService.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Use standardized request building with `src/lib/api/requestBuilders.ts`
        - [ ] Create category utilities:
-         - [ ] Category filter hook (`src/hooks/useCategoryFilter.ts`)
-         - [ ] Category assignment utility (`src/lib/contacts/categoryAssignment.ts`)
+         - [ ] Category filter hook (`src/lib/hooks/contacts/useCategoryFilter.ts`)
+         - [ ] Category assignment utility (`src/lib/features/contacts/categoryAssignment.ts`)
+           - Implement optimistic updates with `src/lib/api/optimisticUpdates.ts`
        - [ ] Integrate with contact list for filtered views
      - [ ] Refactoring
        - [ ] Optimize categories
-       - [ ] Update documentation
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 3. **Contact Integration**
    - [ ] Contact Import/Export
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/contacts/contactImportExport.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for import validation
        - [ ] Write failing tests for export formatting
        - [ ] Write failing tests for data transformation
+       - [ ] Write failing tests for performance with large datasets
      - [ ] Implementation
        - [ ] Implement import/export components:
          - [ ] Import wizard (`src/components/features/contacts/ImportWizard.tsx`)
+           - Add progress indicators and error handling
          - [ ] Field mapper (`src/components/features/contacts/FieldMapper.tsx`)
+           - Implement drag-and-drop field mapping
          - [ ] Export options (`src/components/features/contacts/ExportOptions.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Import preview (`src/components/features/contacts/ImportPreview.tsx`)
+           - Implement virtualized preview for large datasets
        - [ ] Create import/export pages:
          - [ ] Import contacts page (`src/app/(dashboard)/contacts/import/page.tsx`)
          - [ ] Export contacts page (`src/app/(dashboard)/contacts/export/page.tsx`)
        - [ ] Implement import/export services:
-         - [ ] Import service (`src/lib/contacts/importService.ts`)
-         - [ ] Export service (`src/lib/contacts/exportService.ts`)
-         - [ ] Data transformer (`src/lib/contacts/dataTransformer.ts`)
+         - [ ] Import service (`src/lib/features/contacts/importService.ts`)
+           - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - [ ] Export service (`src/lib/features/contacts/exportService.ts`)
+           - Use stream processing for large exports
+         - [ ] Data transformer (`src/lib/features/contacts/dataTransformer.ts`)
+           - Monitor performance with `src/lib/performance/performanceAnalysis.ts`
        - [ ] Create file handling utilities:
          - [ ] CSV parser (`src/lib/utils/csvParser.ts`)
          - [ ] vCard parser (`src/lib/utils/vcardParser.ts`)
          - [ ] Excel parser (`src/lib/utils/excelParser.ts`)
+           - Implement worker-based processing for large files
      - [ ] Refactoring
-       - [ ] Optimize import/export
-       - [ ] Update documentation
+       - [ ] Optimize import/export with streaming and chunking
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Contact Synchronization
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/contacts/contactSync.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
+         - [ ] Mock external service APIs
        - [ ] Write failing tests for sync initialization
        - [ ] Write failing tests for conflict resolution
        - [ ] Write failing tests for sync status
+       - [ ] Write failing tests for performance
      - [ ] Implementation
        - [ ] Implement synchronization components:
          - [ ] Sync settings (`src/components/features/contacts/SyncSettings.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Conflict resolver (`src/components/features/contacts/ConflictResolver.tsx`)
+           - Implement diff visualization for conflicts
          - [ ] Sync status indicator (`src/components/features/contacts/SyncStatus.tsx`)
+           - Integrate with WebSockets for real-time updates
          - [ ] Sync history (`src/components/features/contacts/SyncHistory.tsx`)
+           - Implement virtual scrolling for large history lists
        - [ ] Create synchronization pages:
          - [ ] Sync settings page (`src/app/(dashboard)/contacts/sync/page.tsx`)
          - [ ] Sync history page (`src/app/(dashboard)/contacts/sync/history/page.tsx`)
          - [ ] Conflict resolution page (`src/app/(dashboard)/contacts/sync/conflicts/page.tsx`)
        - [ ] Implement synchronization services:
-         - [ ] Sync service (`src/lib/contacts/syncService.ts`)
-         - [ ] Conflict detection service (`src/lib/contacts/conflictService.ts`)
-         - [ ] External service connectors (`src/lib/contacts/connectors/`)
+         - [ ] Sync service (`src/lib/features/contacts/syncService.ts`)
+           - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+           - Use WebSockets via `src/lib/api/socketClient.ts` for real-time status
+         - [ ] Conflict detection service (`src/lib/features/contacts/conflictService.ts`)
+           - Implement advanced diff algorithms
+         - [ ] External service connectors (`src/lib/features/contacts/connectors/`)
            - Google Contacts connector
            - Outlook connector
            - Generic API connector
+           - Implement rate limiting and retry logic
        - [ ] Create sync hooks:
-         - [ ] Sync status hook (`src/hooks/useSyncStatus.ts`)
-         - [ ] Conflict resolution hook (`src/hooks/useConflictResolution.ts`)
+         - [ ] Sync status hook (`src/lib/hooks/contacts/useSyncStatus.ts`)
+           - Integrate with WebSockets for real-time updates
+         - [ ] Conflict resolution hook (`src/lib/hooks/contacts/useConflictResolution.ts`)
+           - Implement React Query for efficient data handling
+           - Cache resolutions in `src/lib/cache/browserCache.ts`
      - [ ] Refactoring
-       - [ ] Optimize synchronization
-       - [ ] Update documentation
+       - [ ] Optimize synchronization with incremental syncing
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
+       - [ ] Create user documentation in `src/lib/documentation/userDocs.ts`
        - [ ] Review and adjust
 
 ## Architecture Integration Points
@@ -182,38 +247,60 @@ Each contacts task follows the Red-Green-Refactor cycle:
   - Leverage existing components from `src/components/ui/` and `src/components/forms/`
   - Use modular composition for complex contact UIs
   - Implement responsive design for mobile contact management
+  - Apply error boundaries with `src/lib/utils/TestErrorBoundary.tsx`
 - **API Client**: 
-  - Use the established API client from `src/lib/api/axios.ts`
+  - Use the established API client from `src/lib/api/axiosConfig.ts`
+  - Implement error handling with `src/lib/api/responseHandlers.ts`
+  - Build requests with `src/lib/api/requestBuilders.ts`
   - Implement contact-specific API services with proper error handling
   - Add support for bulk operations with contacts
 - **State Management**: 
-  - Follow Zustand patterns in `src/store/slices/contacts.ts`
+  - Follow Zustand patterns in `src/lib/store/slices/contacts.ts`
   - Use React Query for server state management
-  - Implement optimistic updates for better UX during contact operations
+  - Implement optimistic updates with `src/lib/api/optimisticUpdates.ts`
+  - Integrate with browser cache using `src/lib/cache/browserCache.ts` for offline support
+- **Real-time Updates**:
+  - Use WebSockets via `src/lib/api/socketClient.ts` for sync status
+  - Implement real-time notifications with `src/lib/api/realtimeUpdates.ts`
+  - Provide real-time contact status indicators
 - **Data Validation**:
   - Create robust validation for contact information
   - Implement international phone and address format validation
   - Add duplicate detection for contact information
+  - Provide clear, descriptive validation error messages
 - **Import/Export**:
   - Support multiple data formats (CSV, vCard, Excel)
   - Implement field mapping for flexible imports
   - Create customizable export templates
+  - Use worker-based processing for large files
 - **Synchronization**:
   - Implement bidirectional sync with external services
   - Provide conflict resolution strategies
   - Maintain sync history and audit trail
+  - Use WebSockets for real-time sync status updates
 - **Performance**:
   - Implement pagination and virtual scrolling for large contact lists
   - Add indexed search for quick contact lookup
   - Use proper caching for frequently accessed contacts
+  - Monitor performance with `src/lib/performance/performanceAnalysis.ts`
+  - Implement streaming for large data operations
 - **Security**:
   - Enforce contact-level permissions
   - Implement proper data privacy controls
   - Add consent management for contact data
+  - Validate all input data server-side
 - **Testing**: 
   - Maintain minimum 80% test coverage following TDD approach
+  - Use test utilities from `src/tests/utils/testUtils.ts`
+  - Mock API calls with `src/tests/utils/mockApi.ts`
   - Test edge cases in contact validation thoroughly
   - Mock external services for testing synchronization
+  - Test performance with `src/tests/utils/mockPerformance.ts`
+- **Documentation**:
+  - Update API reference in `src/lib/documentation/apiReference.ts`
+  - Create user documentation in `src/lib/documentation/userDocs.ts`
+  - Document component usage in `src/lib/documentation/apiExamples.ts`
+  - Generate import/export format documentation
 
 Status Indicators:
 - [ ] Not started
@@ -221,4 +308,4 @@ Status Indicators:
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Enhanced with specific file paths and architecture integration points. 
+Last Updated: Enhanced with comprehensive infrastructure integration and fixed path inconsistencies. 

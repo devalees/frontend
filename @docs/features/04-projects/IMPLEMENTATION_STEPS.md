@@ -10,176 +10,242 @@ Each projects task follows the Red-Green-Refactor cycle:
    - [ ] Project Creation
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/projects/projectCreation.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for project setup
        - [ ] Write failing tests for project validation
        - [ ] Write failing tests for project initialization
+       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
      - [ ] Implementation
        - [ ] Implement project creation components:
          - [ ] Project form (`src/components/features/projects/ProjectForm.tsx`)
            - Leverage existing Form and Input components
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Project templates (`src/components/features/projects/ProjectTemplates.tsx`)
+           - Implement loading states using UI components
          - [ ] Project settings form (`src/components/features/projects/ProjectSettings.tsx`)
        - [ ] Create project pages:
          - [ ] Project creation page (`src/app/(dashboard)/projects/create/page.tsx`)
          - [ ] Template selection page (`src/app/(dashboard)/projects/templates/page.tsx`)
-       - [ ] Implement project API services (`src/lib/projects/projectService.ts`)
-         - Use axios client from `src/lib/api/axios.ts`
-       - [ ] Set up project state management (`src/store/slices/projects.ts`)
+       - [ ] Implement project API services (`src/lib/features/projects/projectService.ts`)
+         - Use axios client from `src/lib/api/axiosConfig.ts`
+         - Implement error handling with `src/lib/api/responseHandlers.ts`
+         - Use request builders from `src/lib/api/requestBuilders.ts`
+       - [ ] Set up project state management (`src/lib/store/slices/projects.ts`)
          - Implement with Zustand following state pattern
-       - [ ] Create project validation utilities (`src/lib/projects/validation.ts`)
+         - Integrate with browser cache using `src/lib/cache/browserCache.ts`
+       - [ ] Create project validation utilities (`src/lib/features/projects/validation.ts`)
+       - [ ] Set up performance monitoring using `src/lib/performance/performanceAnalysis.ts`
      - [ ] Refactoring
        - [ ] Optimize project creation
-       - [ ] Update documentation
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Project Operations
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/projects/projectOperations.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for project updates
        - [ ] Write failing tests for project deletion
        - [ ] Write failing tests for project archiving
+       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
      - [ ] Implementation
        - [ ] Implement project operation components:
          - [ ] Project list (`src/components/features/projects/ProjectList.tsx`)
+           - Implement virtual scrolling for large lists
          - [ ] Project card (`src/components/features/projects/ProjectCard.tsx`)
          - [ ] Project detail view (`src/components/features/projects/ProjectDetail.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Project actions menu (`src/components/features/projects/ProjectActions.tsx`)
        - [ ] Create project operation pages:
          - [ ] Projects dashboard (`src/app/(dashboard)/projects/page.tsx`)
          - [ ] Project detail page (`src/app/(dashboard)/projects/[id]/page.tsx`)
          - [ ] Project edit page (`src/app/(dashboard)/projects/[id]/edit/page.tsx`)
          - [ ] Project archive page (`src/app/(dashboard)/projects/archived/page.tsx`)
-       - [ ] Implement project operations API (`src/lib/projects/operations.ts`)
+       - [ ] Implement project operations API (`src/lib/features/projects/operations.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Implement optimistic UI with `src/lib/api/optimisticUpdates.ts`
        - [ ] Create project hooks:
-         - [ ] Project query hook (`src/hooks/useProject.ts`)
-         - [ ] Project list hook (`src/hooks/useProjects.ts`)
-         - [ ] Project mutation hook (`src/hooks/useProjectMutation.ts`)
+         - [ ] Project query hook (`src/lib/hooks/projects/useProject.ts`)
+         - [ ] Project list hook (`src/lib/hooks/projects/useProjects.ts`)
+         - [ ] Project mutation hook (`src/lib/hooks/projects/useProjectMutation.ts`)
            - Use React Query for efficient data fetching and caching
+           - Implement caching strategy with `src/lib/cache/browserCache.ts`
      - [ ] Refactoring
        - [ ] Optimize operations
-       - [ ] Update documentation
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 2. **Project Structure**
    - [ ] Project Organization
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/projects/projectOrganization.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for structure creation
        - [ ] Write failing tests for structure validation
        - [ ] Write failing tests for structure updates
+       - [ ] Write failing performance tests for tree operations
      - [ ] Implementation
        - [ ] Implement project organization components:
          - [ ] Project structure tree (`src/components/features/projects/ProjectStructureTree.tsx`)
+           - Implement virtualization for large trees
          - [ ] Structure editor (`src/components/features/projects/StructureEditor.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Project hierarchy view (`src/components/features/projects/ProjectHierarchy.tsx`)
+           - Implement lazy loading for performance
          - [ ] Drag-and-drop organizer (`src/components/features/projects/ProjectOrganizer.tsx`)
+           - Implement optimistic updates for better UX
        - [ ] Create project structure pages:
          - [ ] Structure editor page (`src/app/(dashboard)/projects/[id]/structure/page.tsx`)
          - [ ] Structure view page (`src/app/(dashboard)/projects/[id]/structure/view/page.tsx`)
-       - [ ] Implement project structure API (`src/lib/projects/structureService.ts`)
-       - [ ] Create structure validation utilities (`src/lib/projects/structureValidation.ts`)
+       - [ ] Implement project structure API (`src/lib/features/projects/structureService.ts`)
+         - Use standardized request/response handling
+         - Implement real-time updates with `src/lib/api/realtimeUpdates.ts`
+       - [ ] Create structure validation utilities (`src/lib/features/projects/structureValidation.ts`)
        - [ ] Implement structure state management 
          - Either extend project store or create separate structure store
+         - Implement with React Query for efficient caching
      - [ ] Refactoring
-       - [ ] Optimize organization
-       - [ ] Update documentation
+       - [ ] Optimize organization with memoization
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Project Components
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/projects/projectComponents.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for component creation
        - [ ] Write failing tests for component relationships
        - [ ] Write failing tests for component updates
+       - [ ] Write failing tests for performance
      - [ ] Implementation
        - [ ] Implement project component UI:
          - [ ] Component creator (`src/components/features/projects/ComponentCreator.tsx`)
+           - Add proper loading and error states
          - [ ] Component list (`src/components/features/projects/ComponentList.tsx`)
+           - Implement virtualization for large lists
          - [ ] Component detail (`src/components/features/projects/ComponentDetail.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
          - [ ] Component relationship visualizer (`src/components/features/projects/ComponentRelationships.tsx`)
+           - Implement lazy loading for better performance
        - [ ] Create component pages:
          - [ ] Component list page (`src/app/(dashboard)/projects/[id]/components/page.tsx`)
          - [ ] Component detail page (`src/app/(dashboard)/projects/[id]/components/[componentId]/page.tsx`)
          - [ ] Component creation page (`src/app/(dashboard)/projects/[id]/components/create/page.tsx`)
-       - [ ] Implement component API services (`src/lib/projects/componentService.ts`)
+       - [ ] Implement component API services (`src/lib/features/projects/componentService.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Use standardized request building with `src/lib/api/requestBuilders.ts`
        - [ ] Create component hooks:
-         - [ ] Component query hook (`src/hooks/useProjectComponent.ts`)
-         - [ ] Component relationship hook (`src/hooks/useComponentRelationships.ts`)
+         - [ ] Component query hook (`src/lib/hooks/projects/useProjectComponent.ts`)
+         - [ ] Component relationship hook (`src/lib/hooks/projects/useComponentRelationships.ts`)
+           - Implement with React Query and proper caching
      - [ ] Refactoring
-       - [ ] Optimize components
-       - [ ] Update documentation
+       - [ ] Optimize components with memoization
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
        - [ ] Review and adjust
 
 3. **Project Collaboration**
    - [ ] Team Management
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/projects/teamManagement.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
        - [ ] Write failing tests for team creation
        - [ ] Write failing tests for team roles
        - [ ] Write failing tests for team permissions
+       - [ ] Write failing tests for performance
      - [ ] Implementation
        - [ ] Implement team management components:
          - [ ] Team members list (`src/components/features/projects/TeamMembers.tsx`)
+           - Implement virtualization for large teams
          - [ ] Member invite form (`src/components/features/projects/MemberInvite.tsx`)
+           - Add proper validation and error handling
          - [ ] Role assignment UI (`src/components/features/projects/RoleAssignment.tsx`)
+           - Implement optimistic updates
          - [ ] Permission management (`src/components/features/projects/TeamPermissions.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
        - [ ] Create team management pages:
          - [ ] Team management page (`src/app/(dashboard)/projects/[id]/team/page.tsx`)
          - [ ] Invite members page (`src/app/(dashboard)/projects/[id]/team/invite/page.tsx`)
          - [ ] Team roles page (`src/app/(dashboard)/projects/[id]/team/roles/page.tsx`)
-       - [ ] Implement team API services (`src/lib/projects/teamService.ts`)
+       - [ ] Implement team API services (`src/lib/features/projects/teamService.ts`)
+         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
+         - Implement real-time updates with `src/lib/api/realtimeUpdates.ts`
        - [ ] Create team management hooks:
-         - [ ] Team members hook (`src/hooks/useTeamMembers.ts`)
-         - [ ] Team roles hook (`src/hooks/useTeamRoles.ts`)
+         - [ ] Team members hook (`src/lib/hooks/projects/useTeamMembers.ts`)
+         - [ ] Team roles hook (`src/lib/hooks/projects/useTeamRoles.ts`)
+           - Implement with React Query for efficient caching
        - [ ] Connect with user entity system
          - Leverage existing user roles and permissions systems
      - [ ] Refactoring
        - [ ] Optimize team management
-       - [ ] Update documentation
+       - [ ] Update documentation in `src/lib/documentation/`
        - [ ] Review and adjust
 
    - [ ] Collaboration Tools
      - [ ] Test Setup
        - [ ] Create test file (`src/tests/features/projects/collaborationTools.test.ts`)
+         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
+         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
+         - [ ] Set up Socket.io mocks
        - [ ] Write failing tests for real-time updates
        - [ ] Write failing tests for notifications
        - [ ] Write failing tests for activity tracking
+       - [ ] Write failing tests for performance
      - [ ] Implementation
        - [ ] Implement collaboration components:
          - [ ] Activity feed (`src/components/features/projects/ActivityFeed.tsx`)
+           - Implement virtualization for large activity lists
          - [ ] Notification center (`src/components/features/projects/NotificationCenter.tsx`)
+           - Implement optimistic updates
          - [ ] Real-time collaboration indicator (`src/components/features/projects/CollaborationIndicator.tsx`)
+           - Connect with WebSockets
          - [ ] Project chat (`src/components/features/projects/ProjectChat.tsx`)
+           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
+           - Implement virtualized message list
        - [ ] Create collaboration pages:
          - [ ] Project activity page (`src/app/(dashboard)/projects/[id]/activity/page.tsx`)
          - [ ] Project chat page (`src/app/(dashboard)/projects/[id]/chat/page.tsx`)
        - [ ] Implement collaboration services:
-         - [ ] Real-time service (`src/lib/projects/realtimeService.ts`)
-           - Integrate with Socket.io client from architecture
-         - [ ] Notification service (`src/lib/projects/notificationService.ts`)
-         - [ ] Activity service (`src/lib/projects/activityService.ts`)
+         - [ ] Real-time service (`src/lib/features/projects/realtimeService.ts`)
+           - Integrate with Socket.io client from `src/lib/api/socketClient.ts`
+         - [ ] Notification service (`src/lib/features/projects/notificationService.ts`)
+           - Use `src/lib/api/responseHandlers.ts` for error handling
+         - [ ] Activity service (`src/lib/features/projects/activityService.ts`)
+           - Implement optimistic updates with `src/lib/api/optimisticUpdates.ts`
        - [ ] Create collaboration hooks:
-         - [ ] Real-time hook (`src/hooks/useProjectRealtime.ts`)
-         - [ ] Activity hook (`src/hooks/useProjectActivity.ts`)
-         - [ ] Notification hook (`src/hooks/useProjectNotifications.ts`)
+         - [ ] Real-time hook (`src/lib/hooks/projects/useProjectRealtime.ts`)
+         - [ ] Activity hook (`src/lib/hooks/projects/useProjectActivity.ts`)
+         - [ ] Notification hook (`src/lib/hooks/projects/useProjectNotifications.ts`)
+           - Implement with React Query for efficient caching
+           - Cache notifications in `src/lib/cache/browserCache.ts`
      - [ ] Refactoring
-       - [ ] Optimize collaboration
-       - [ ] Update documentation
+       - [ ] Optimize collaboration with memoization
+       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
+       - [ ] Create user documentation in `src/lib/documentation/userDocs.ts`
        - [ ] Review and adjust
 
 ## Architecture Integration Points
 - **UI Components**: 
   - Leverage existing components from `src/components/ui/` and `src/components/forms/`
   - Use modular composition for complex project UIs
+  - Apply error boundaries with `src/lib/utils/TestErrorBoundary.tsx`
 - **API Client**: 
-  - Use the established API client from `src/lib/api/axios.ts`
+  - Use the established API client from `src/lib/api/axiosConfig.ts`
+  - Implement error handling with `src/lib/api/responseHandlers.ts`
+  - Build requests with `src/lib/api/requestBuilders.ts`
   - Implement project-specific API services with proper error handling
 - **State Management**: 
-  - Follow Zustand patterns in `src/store/slices/projects.ts`
+  - Follow Zustand patterns in `src/lib/store/slices/projects.ts`
   - Use React Query for server state management
-  - Implement optimistic updates for better UX during project operations
+  - Implement optimistic updates with `src/lib/api/optimisticUpdates.ts`
+  - Integrate with browser cache using `src/lib/cache/browserCache.ts` for offline support
 - **Real-time Communication**:
-  - Integrate with Socket.io client for real-time project updates
+  - Use WebSockets via `src/lib/api/socketClient.ts` for real-time project updates
+  - Implement real-time notifications with `src/lib/api/realtimeUpdates.ts`
   - Implement presence awareness for collaborative editing
   - Set up notification channels for project events
 - **Navigation**:
@@ -188,16 +254,25 @@ Each projects task follows the Red-Green-Refactor cycle:
   - Follow Next.js app router conventions for nested routes
 - **Performance**:
   - Implement lazy loading for project components
-  - Use pagination for large project lists
+  - Use pagination and virtualization for large project lists
   - Apply proper caching strategies for project data
+  - Monitor performance with `src/lib/performance/performanceAnalysis.ts`
 - **Security**:
   - Enforce project-level permissions based on user roles
   - Validate operations against user permissions
   - Implement proper data access controls
 - **Testing**: 
   - Maintain minimum 80% test coverage following TDD approach
+  - Use test utilities from `src/tests/utils/testUtils.ts`
+  - Mock API calls with `src/tests/utils/mockApi.ts`
   - Test project operations and collaborations thoroughly
   - Mock Socket.io for testing real-time features
+  - Test performance with `src/tests/utils/mockPerformance.ts`
+- **Documentation**:
+  - Update API reference in `src/lib/documentation/apiReference.ts`
+  - Create user documentation in `src/lib/documentation/userDocs.ts`
+  - Document component usage in `src/lib/documentation/apiExamples.ts`
+  - Generate project structure diagrams and documentation
 
 Status Indicators:
 - [ ] Not started
@@ -205,4 +280,4 @@ Status Indicators:
 - [x] Completed
 - [!] Blocked/Issues
 
-Last Updated: Enhanced with specific file paths and architecture integration points. 
+Last Updated: Enhanced with comprehensive infrastructure integration and fixed path inconsistencies. 
