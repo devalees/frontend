@@ -47,7 +47,7 @@
 
 ### Phase 2: Session Management
 1. **Token Handling**
-   - [ ] Set up token storage utility
+   - [x] Set up token storage utility
      - File: `src/lib/features/auth/token.ts`
      - Store tokens securely (localStorage/cookies)
      - Add to API request headers

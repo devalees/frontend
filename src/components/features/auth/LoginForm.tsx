@@ -52,16 +52,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading = false }
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
     
-    // Check if username/email is provided
-    if (!formData.username && !formData.email) {
-      newErrors.username = 'Username or email is required';
+    // Check if username is provided
+    if (!formData.username) {
+      newErrors.username = 'Username is required';
     }
     
     // Check if password is provided
     if (!formData.password) {
       newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters long';
     }
     
     setErrors(newErrors);
@@ -105,7 +103,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading = false }
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="form-group">
           <label htmlFor="username" className="block text-sm font-medium">
-            Username or Email
+            Username
           </label>
           <input
             id="username"
@@ -114,7 +112,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading = false }
             value={formData.username}
             onChange={handleChange}
             className={`mt-1 block w-full px-3 py-2 border ${errors.username ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500`}
-            placeholder="Enter username or email"
+            placeholder="Enter username"
             disabled={isSubmitting || loading}
           />
           {errors.username && (
