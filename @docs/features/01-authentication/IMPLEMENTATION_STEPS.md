@@ -54,7 +54,7 @@
      - Handle token refresh using `/api/v1/users/refresh-token/`
 
 2. **Protected Routes**
-   - [ ] Create simple auth middleware
+   - [x] Create simple auth middleware
      - File: `src/middleware.ts` (Next.js middleware)
      - Check auth state for protected routes
      - Redirect unauthenticated users to login
