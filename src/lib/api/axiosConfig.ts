@@ -8,8 +8,15 @@
  * - Environment-based configuration
  */
 
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { getAccessToken, getRefreshToken, refreshTokens, clearTokens } from './tokenRefresh';
+import axios, { 
+  AxiosInstance, 
+  AxiosRequestConfig, 
+  AxiosResponse, 
+  AxiosHeaderValue,
+  HeadersDefaults,
+  AxiosHeaders
+} from 'axios';
+import * as tokenRefresh from './tokenRefresh';
 
 // Environment variable keys
 const ENV_API_URL = 'NEXT_PUBLIC_API_URL';
@@ -19,27 +26,25 @@ const ENV_API_TIMEOUT = 'NEXT_PUBLIC_API_TIMEOUT';
 const DEFAULT_TIMEOUT = 10000;
 const DEFAULT_BASE_URL = 'http://localhost:8000/api/';
 
-/**
- * Environment-specific configuration interface
- */
-export interface EnvironmentConfig {
-  baseURL: string;
-  timeout: number;
-  debug: boolean;
-  headers?: Record<string, string>;
-  [key: string]: any;
+// Extended axios request config with retry options
+interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
+  retry?: boolean;
+  retryDelay?: number;
+  maxRetries?: number;
+  debug?: boolean;
+  validateStatus?: (status: number) => boolean;
 }
 
 /**
  * Get configuration based on current environment
  * @returns Environment-specific configuration
  */
-export function getEnvironmentConfig(): EnvironmentConfig {
+export function getEnvironmentConfig(): ExtendedAxiosRequestConfig {
   const isDevelopment = process.env.NODE_ENV === 'development';
   const isTest = process.env.NODE_ENV === 'test';
   
   // Base configuration
-  const config: EnvironmentConfig = {
+  const config: ExtendedAxiosRequestConfig = {
     baseURL: process.env[ENV_API_URL] || DEFAULT_BASE_URL,
     timeout: parseInt(process.env[ENV_API_TIMEOUT] || DEFAULT_TIMEOUT.toString(), 10),
     debug: isDevelopment || isTest,
@@ -81,9 +86,10 @@ export function getEnvironmentConfig(): EnvironmentConfig {
  * @returns An axios instance
  */
 export const createAxiosInstance = (
-  baseURL?: string,
-  options?: Partial<AxiosRequestConfig>
+  baseURL?: string, 
+  options?: AxiosRequestConfig
 ): AxiosInstance => {
+  // Get environment configuration
   const envConfig = getEnvironmentConfig();
   
   // Build configuration with priority:
@@ -97,36 +103,53 @@ export const createAxiosInstance = (
     ...options
   };
   
-  // Check if axios.create exists before using it
-  if (typeof axios.create !== 'function') {
+  // Check if we're in a test environment or if axios.create is not available
+  if (process.env.NODE_ENV === 'test' && typeof axios.create !== 'function') {
     console.warn('axios.create is not a function, using default axios instance');
     
     // Initialize defaults if they don't exist
     if (!axios.defaults) {
       axios.defaults = {
         headers: {
-          common: {}
-        }
+          common: { 'Content-Type': 'application/json' },
+          delete: {},
+          get: {},
+          head: {},
+          post: {},
+          put: {},
+          patch: {}
+        } as HeadersDefaults & { [key: string]: AxiosHeaderValue }
       } as any;
     }
     
     if (!axios.defaults.headers) {
-      axios.defaults.headers = { common: {} };
+      axios.defaults.headers = {
+        common: { 'Content-Type': 'application/json' },
+        delete: {},
+        get: {},
+        head: {},
+        post: {},
+        put: {},
+        patch: {}
+      } as HeadersDefaults & { [key: string]: AxiosHeaderValue };
     }
     
     if (!axios.defaults.headers.common) {
-      axios.defaults.headers.common = {};
+      axios.defaults.headers.common = { 'Content-Type': 'application/json' };
     }
     
+    // Apply configuration to defaults
     axios.defaults.baseURL = config.baseURL;
     axios.defaults.timeout = config.timeout;
+    
     if (config.headers) {
       Object.entries(config.headers).forEach(([key, value]) => {
         if (axios.defaults.headers && axios.defaults.headers.common) {
-          axios.defaults.headers.common[key] = value;
+          axios.defaults.headers.common[key] = value as AxiosHeaderValue;
         }
       });
     }
+    
     return axios;
   }
   
@@ -141,23 +164,33 @@ export const configureAxiosDefaults = (): void => {
   
   // Initialize defaults if they don't exist
   if (!axios.defaults) {
-    axios.defaults = {} as any;
+    axios.defaults = {
+      headers: {
+        common: { 'Content-Type': 'application/json' },
+        delete: {},
+        get: {},
+        head: {},
+        post: {},
+        put: {},
+        patch: {}
+      } as HeadersDefaults & { [key: string]: AxiosHeaderValue }
+    } as any;
   }
-
+  
   if (!axios.defaults.headers) {
     axios.defaults.headers = {
-      common: {},
+      common: { 'Content-Type': 'application/json' },
       delete: {},
       get: {},
       head: {},
       post: {},
       put: {},
       patch: {}
-    } as any;
+    } as HeadersDefaults & { [key: string]: AxiosHeaderValue };
   }
-
+  
   if (!axios.defaults.headers.common) {
-    axios.defaults.headers.common = {};
+    axios.defaults.headers.common = { 'Content-Type': 'application/json' };
   }
   
   axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -167,165 +200,82 @@ export const configureAxiosDefaults = (): void => {
   if (envConfig.headers) {
     Object.entries(envConfig.headers).forEach(([key, value]) => {
       if (key !== 'Content-Type') { // Already set above
-        axios.defaults.headers.common[key] = value;
+        axios.defaults.headers.common[key] = value as AxiosHeaderValue;
       }
     });
   }
 };
-
-// Flag to track if token refresh is in progress
-let isRefreshing = false;
-
-// Queue of failed requests to retry after token refresh
-let refreshSubscribers: Array<(token: string) => void> = [];
-
-/**
- * Subscribe to token refresh
- * @param callback - Function to call when token is refreshed
- */
-function subscribeTokenRefresh(callback: (token: string) => void): void {
-  refreshSubscribers.push(callback);
-}
-
-/**
- * Notify all subscribers that token has been refreshed
- * @param token - New access token
- */
-function onTokenRefreshed(token: string): void {
-  refreshSubscribers.forEach(callback => callback(token));
-  refreshSubscribers = [];
-}
-
-/**
- * Reject all subscribers if token refresh fails
- * @param error - Error that caused refresh to fail
- */
-function onTokenRefreshFailed(error: any): void {
-  refreshSubscribers.forEach(callback => callback(''));
-  refreshSubscribers = [];
-  
-  // Clear tokens and redirect to login
-  clearTokens();
-  window.location.href = '/login';
-}
 
 /**
  * Sets up interceptors for the axios instance
  * @param instance - The axios instance to configure
  */
 export const setupInterceptors = (instance: AxiosInstance): void => {
-  // Skip interceptors setup if interceptors are not available
+  // Skip interceptor setup if interceptors are not available
   if (!instance.interceptors || !instance.interceptors.request || !instance.interceptors.response) {
     console.warn('Axios interceptors not available, skipping interceptor setup');
     return;
   }
-
+  
   // Request interceptor for authentication
   instance.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
-      // Get the token from localStorage
-      const token = getAccessToken();
-      
-      // If token exists, add it to the Authorization header
+    (config) => {
+      const token = tokenRefresh.getAccessToken();
       if (token) {
         config.headers = config.headers || {};
         config.headers.Authorization = `Bearer ${token}`;
       }
-      
-      // Add request logging in debug mode
-      const envConfig = getEnvironmentConfig();
-      if (envConfig.debug) {
-        console.debug('Request:', config.method?.toUpperCase(), config.url);
-      }
-      
       return config;
     },
-    (error: AxiosError) => {
-      return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
   );
-
+  
   // Response interceptor for error handling
   instance.interceptors.response.use(
-    (response: AxiosResponse) => {
-      // Add response logging in debug mode
-      const envConfig = getEnvironmentConfig();
-      if (envConfig.debug) {
-        console.debug('Response:', response.status, response.config.url);
-      }
+    (response: AxiosResponse) => response,
+    async (error) => {
+      const originalRequest = error.config;
       
-      return response;
-    },
-    async (error: AxiosError) => {
-      // Get original request
-      const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-      
-      // Handle 401 Unauthorized errors (token expired or invalid)
+      // If error is 401 and we haven't tried to refresh token yet
       if (error.response?.status === 401 && !originalRequest._retry) {
-        // If refresh is already in progress, queue this request
-        if (isRefreshing) {
-          return new Promise<AxiosResponse>((resolve, reject) => {
-            subscribeTokenRefresh((token: string) => {
-              if (token) {
-                // Replace old token with new token
-                originalRequest.headers.Authorization = `Bearer ${token}`;
-                // Retry the request
-                resolve(instance(originalRequest));
-              } else {
-                // Token refresh failed
-                reject(error);
-              }
-            });
-          });
-        }
-        
-        // Start token refresh
         originalRequest._retry = true;
-        isRefreshing = true;
         
         try {
-          // Attempt token refresh
-          const refreshToken = getRefreshToken();
+          const refreshToken = tokenRefresh.getRefreshToken();
           if (!refreshToken) {
             throw new Error('No refresh token available');
           }
           
-          const newTokens = await refreshTokens();
-          // Notify all subscribers of new token
-          onTokenRefreshed(newTokens.access);
-          // Update request with new token
-          originalRequest.headers.Authorization = `Bearer ${newTokens.access}`;
-          // Reset refreshing flag
-          isRefreshing = false;
-          // Retry the request with new token
+          await tokenRefresh.refreshTokens();
+          
+          // Retry the original request
           return instance(originalRequest);
         } catch (refreshError) {
-          // Handle token refresh failure
-          isRefreshing = false;
-          onTokenRefreshFailed(refreshError);
-          return Promise.reject(error);
+          // Clear tokens and redirect to login on refresh failure
+          tokenRefresh.clearTokens();
+          if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+          }
+          return Promise.reject(refreshError);
         }
       }
       
-      // Handle other error cases
+      // Handle other error status codes
       if (error.response) {
         const { status, data } = error.response;
         
         // Handle 403 Forbidden errors
         if (status === 403) {
-          // Handle permission denied
           console.error('Permission denied:', data);
         }
         
         // Handle 404 Not Found errors
         if (status === 404) {
-          // Handle resource not found
           console.error('Resource not found:', data);
         }
         
         // Handle 500 Internal Server errors
         if (status === 500) {
-          // Handle server errors
           console.error('Server error:', data);
         }
       }

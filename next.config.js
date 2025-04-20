@@ -4,24 +4,19 @@ const nextConfig = {
   swcMinify: true,
   images: {
     domains: ['localhost', 'api.example.com'],
+    formats: ['image/avif', 'image/webp'],
   },
   publicRuntimeConfig: {
-    apiUrl: process.env.NEXT_PUBLIC_API_URL,
-    wsUrl: process.env.NEXT_PUBLIC_WS_URL,
+    apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+    environment: process.env.NODE_ENV,
   },
   experimental: {
     turbotrace: {
       logLevel: 'error',
-      logDetail: true,
+      logDetail: false,
     },
-  },
-  // Enable static exports if needed
-  // output: 'export',
-  
-  // Configure webpack if needed
-  webpack: (config, { isServer }) => {
-    // Add any webpack configurations here
-    return config;
+    optimizeCss: true,
+    scrollRestoration: true,
   },
 }
 
