@@ -18,7 +18,7 @@
      - Test form validation, API integration, and error handling
 
 2. **Create Core Login Components**
-   - [ ] Set up auth store with Zustand
+   - [x] Set up auth store with Zustand
      - File: `src/lib/store/slices/authSlice.ts`
      - Implement login/logout actions
      - Handle API response from `/api/v1/users/login/`
