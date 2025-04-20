@@ -60,7 +60,7 @@
      - Redirect unauthenticated users to login
 
 3. **User Profile**
-   - [ ] Add user profile view
+   - [x] Add user profile view
      - File: `src/components/features/auth/UserProfile.tsx`
      - Display current user information
      - Option to logout

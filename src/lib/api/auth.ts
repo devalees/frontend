@@ -9,7 +9,7 @@
  */
 
 import axios from './axiosConfig';
-import { saveTokens, clearTokens } from './tokenRefresh';
+import { saveTokens, clearTokens, getTokens } from '../features/auth/token';
 
 // API endpoints
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
@@ -49,6 +49,7 @@ export interface LoginResponse {
  * @returns Promise with login response
  */
 export async function login(credentials: LoginCredentials): Promise<LoginResponse> {
+  console.log('Attempting login with:', credentials.username || credentials.email);
   try {
     const response = await axios.post<LoginResponse>(LOGIN_URL, credentials);
     
@@ -69,6 +70,17 @@ export async function login(credentials: LoginCredentials): Promise<LoginRespons
       
       // Save tokens (in case this happens in real code)
       saveTokens({ access: defaultResponse.access, refresh: defaultResponse.refresh });
+      console.log('Login successful (default response):', defaultResponse.user.username);
+      
+      // Verify tokens were saved
+      const savedTokens = getTokens();
+      console.log('Tokens stored successfully:', !!savedTokens);
+      if (savedTokens) {
+        console.log('Token details:', {
+          access: savedTokens.access.substring(0, 10) + '...',
+          refresh: savedTokens.refresh.substring(0, 10) + '...'
+        });
+      }
       
       return defaultResponse;
     }
@@ -77,9 +89,26 @@ export async function login(credentials: LoginCredentials): Promise<LoginRespons
     
     // Save tokens
     saveTokens({ access, refresh });
+    console.log('Login successful:', user.username);
+    
+    // Verify tokens were saved
+    const savedTokens = getTokens();
+    console.log('Tokens stored successfully:', !!savedTokens);
+    if (savedTokens) {
+      console.log('Token details:', {
+        access: savedTokens.access.substring(0, 10) + '...',
+        refresh: savedTokens.refresh.substring(0, 10) + '...'
+      });
+    }
+    
+    // For development, log cookies
+    if (typeof document !== 'undefined') {
+      console.log('Current cookies:', document.cookie);
+    }
     
     return response.data;
   } catch (error) {
+    console.error('Login failed:', error);
     // Clear any existing tokens on login failure
     clearTokens();
     throw error;

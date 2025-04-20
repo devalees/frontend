@@ -23,20 +23,57 @@ export interface AuthTokens {
 }
 
 /**
+ * Check if code is running in browser environment
+ */
+const isBrowser = (): boolean => {
+  return typeof window !== 'undefined';
+};
+
+/**
  * Save tokens securely
- * - Access token in memory (cleared on page refresh)
- * - Refresh token in HTTP-only cookie
+ * - In development: both tokens in localStorage for simplicity
+ * - In production: Access token in localStorage, refresh token in HTTP-only cookie
  */
 export const saveTokens = (tokens: AuthTokens): void => {
-  // Store access token in memory
-  sessionStorage.setItem(ACCESS_TOKEN_KEY, tokens.access);
+  if (!isBrowser()) return;
+
+  console.log('Saving tokens:', !!tokens.access, !!tokens.refresh);
   
-  // Store refresh token in HTTP-only cookie
-  Cookies.set(REFRESH_TOKEN_KEY, tokens.refresh, {
-    expires: TOKEN_EXPIRY_DAYS,
-    secure: true,
-    sameSite: 'strict'
-  });
+  // Store access token in localStorage
+  localStorage.setItem(ACCESS_TOKEN_KEY, tokens.access);
+  
+  // For development simplicity, also store refresh token in localStorage
+  localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refresh);
+  
+  // Also store tokens in cookies for middleware access
+  try {
+    const isSecure = window.location.protocol === 'https:';
+    
+    // Set access token in a cookie that middleware can read
+    Cookies.set(ACCESS_TOKEN_KEY, tokens.access, {
+      expires: TOKEN_EXPIRY_DAYS,
+      secure: isSecure,
+      sameSite: 'lax',
+      path: '/'
+    });
+    
+    // Set refresh token in a cookie
+    Cookies.set(REFRESH_TOKEN_KEY, tokens.refresh, {
+      expires: TOKEN_EXPIRY_DAYS,
+      secure: isSecure,
+      sameSite: 'lax',
+      path: '/'
+    });
+    
+    // Also set cookies directly for maximum compatibility
+    const expiryDate = new Date(Date.now() + TOKEN_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
+    document.cookie = `${ACCESS_TOKEN_KEY}=${tokens.access}; expires=${expiryDate.toUTCString()}; path=/; ${isSecure ? 'secure; ' : ''}samesite=lax`;
+    document.cookie = `${REFRESH_TOKEN_KEY}=${tokens.refresh}; expires=${expiryDate.toUTCString()}; path=/; ${isSecure ? 'secure; ' : ''}samesite=lax`;
+    
+    console.log('Tokens set in both localStorage and cookies');
+  } catch (error) {
+    console.warn('Failed to set cookies, falling back to localStorage only:', error);
+  }
 };
 
 /**
@@ -44,8 +81,16 @@ export const saveTokens = (tokens: AuthTokens): void => {
  * Returns null if tokens are not available
  */
 export const getTokens = (): AuthTokens | null => {
-  const access = sessionStorage.getItem(ACCESS_TOKEN_KEY);
-  const refresh = Cookies.get(REFRESH_TOKEN_KEY);
+  if (!isBrowser()) return null;
+
+  const access = localStorage.getItem(ACCESS_TOKEN_KEY);
+  // Try to get refresh token from cookie first, then fallback to localStorage
+  let refresh = Cookies.get(REFRESH_TOKEN_KEY);
+  
+  // Fallback to localStorage if cookie is not available
+  if (!refresh) {
+    refresh = localStorage.getItem(REFRESH_TOKEN_KEY) || undefined;
+  }
   
   if (!access || !refresh) {
     return null;
@@ -55,24 +100,29 @@ export const getTokens = (): AuthTokens | null => {
 };
 
 /**
- * Get access token from memory
+ * Get access token from localStorage
  */
 export const getAccessToken = (): string | null => {
-  return sessionStorage.getItem(ACCESS_TOKEN_KEY);
+  if (!isBrowser()) return null;
+  return localStorage.getItem(ACCESS_TOKEN_KEY);
 };
 
 /**
- * Get refresh token from cookie
+ * Get refresh token from cookie or localStorage
  */
 export const getRefreshToken = (): string | null => {
-  return Cookies.get(REFRESH_TOKEN_KEY);
+  if (!isBrowser()) return null;
+  const token = Cookies.get(REFRESH_TOKEN_KEY) || localStorage.getItem(REFRESH_TOKEN_KEY);
+  return token || null;
 };
 
 /**
  * Clear tokens from storage
  */
 export const clearTokens = (): void => {
-  sessionStorage.removeItem(ACCESS_TOKEN_KEY);
+  if (!isBrowser()) return;
+  localStorage.removeItem(ACCESS_TOKEN_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
   Cookies.remove(REFRESH_TOKEN_KEY);
 };
 
@@ -115,6 +165,8 @@ export const refreshTokens = async (instance: AxiosInstance): Promise<AuthTokens
  * Setup token refresh interceptor for axios instance
  */
 export const setupTokenRefresh = (instance: AxiosInstance): void => {
+  if (!isBrowser()) return;
+  
   let isRefreshing = false;
   let failedQueue: Array<{
     resolve: (value?: unknown) => void;
@@ -175,7 +227,7 @@ export const setupTokenRefresh = (instance: AxiosInstance): void => {
         } catch (refreshError) {
           processQueue(refreshError);
           clearTokens();
-          if (typeof window !== 'undefined') {
+          if (isBrowser()) {
             window.location.href = '/login';
           }
           return Promise.reject(refreshError);
