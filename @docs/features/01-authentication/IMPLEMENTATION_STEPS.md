@@ -1,104 +1,130 @@
-# Authentication Feature Implementation Steps
+# Authentication Feature - Simplified Implementation Plan
 
-## Test-Driven Development Approach
-Each authentication task follows the Red-Green-Refactor cycle:
-1. Write failing tests (Red)
-2. Implement minimum code to pass tests (Green)
-3. Refactor while keeping tests passing (Refactor)
+## Simplification Principles
+1. Focus on one feature at a time
+2. Reuse existing components and utilities
+3. Use centralized testing utilities for all tests
+4. Follow the existing project architecture
 
-1. **User Authentication**
-   - [ ] Login System
-     - [ ] Test Setup
-       - [ ] Create test file (`src/tests/features/auth/login.test.ts`)
-       - [ ] Write failing tests for login form validation
-       - [ ] Write failing tests for login API integration
-       - [ ] Write failing tests for error handling
-     - [ ] Implementation
-       - [ ] Create auth feature module (`src/lib/features/auth/`)
-         - [ ] Create auth types (`src/lib/features/auth/types.ts`)
-         - [ ] Create auth constants (`src/lib/features/auth/constants.ts`)
-         - [ ] Create auth utilities (`src/lib/features/auth/utils.ts`)
-       - [ ] Implement login form component (`src/components/features/auth/LoginForm.tsx`)
-         - Leverage existing UI components from `src/lib/components/ui`
-       - [ ] Create login page (`src/app/(auth)/login/page.tsx`)
-       - [ ] Create auth hooks (`src/lib/hooks/auth/`)
-         - [ ] Implement useAuth hook (`src/lib/hooks/auth/useAuth.ts`)
-         - [ ] Implement useLogin hook (`src/lib/hooks/auth/useLogin.ts`)
-       - [ ] Set up global auth state (`src/lib/store/slices/authSlice.ts`)
-         - Implement with Zustand following state pattern
-       - [ ] Set up error handling with descriptive messages
-     - [ ] Refactoring
-       - [ ] Optimize login flow
-       - [ ] Update documentation
-       - [ ] Review and adjust
+## Implementation Phases
 
-   - [ ] Registration System
-     - [ ] Test Setup
-       - [ ] Create test file (`src/tests/features/auth/registration.test.ts`)
-       - [ ] Write failing tests for registration form validation
-       - [ ] Write failing tests for registration API integration
-     - [ ] Implementation
-       - [ ] Implement registration form component (`src/components/features/auth/RegistrationForm.tsx`)
-         - Leverage existing UI components from `src/lib/components/ui`
-       - [ ] Create registration page (`src/app/(auth)/register/page.tsx`)
-       - [ ] Create registration hook (`src/lib/hooks/auth/useRegistration.ts`)
-       - [ ] Connect to auth state in store (`src/lib/store/slices/authSlice.ts`)
-       - [ ] Set up validation with descriptive error messages
-     - [ ] Refactoring
-       - [ ] Optimize registration flow
-       - [ ] Update documentation
-       - [ ] Review and adjust
+### Phase 1: Login Feature
+1. **Set Up Tests**
+   - [x] Create login tests using centralized testing utilities
+     - File: `src/tests/features/auth/login.test.ts`
+     - Import utilities from `src/tests/utils/` (NOT directly from testing libraries)
+     - Use `componentTestUtils.ts` for component testing
+     - Use `mockApi.ts` for API mocking
+     - Test form validation, API integration, and error handling
 
-2. **Session Management**
-   - [ ] Token Handling
-     - [ ] Test Setup
-       - [ ] Create test file (`src/tests/features/auth/tokenHandling.test.ts`)
-       - [ ] Write failing tests for token storage
-       - [ ] Write failing tests for token validation
-       - [ ] Write failing tests for token refresh
-     - [ ] Implementation
-       - [ ] Implement token storage utility (`src/lib/features/auth/token.ts`)
-       - [ ] Create token validation service (`src/lib/features/auth/validation.ts`)
-       - [ ] Configure token refresh mechanism
-         - Use existing `src/lib/api/tokenRefresh.ts`
-         - Connect to axios config in `src/lib/api/axiosConfig.ts`
-       - [ ] Update auth store with token handling (`src/lib/store/slices/authSlice.ts`)
-     - [ ] Refactoring
-       - [ ] Optimize token handling
-       - [ ] Update documentation
-       - [ ] Review and adjust
+2. **Create Core Login Components**
+   - [ ] Set up auth store with Zustand
+     - File: `src/lib/store/slices/authSlice.ts`
+     - Implement login/logout actions
+     - Handle API response from `/api/v1/users/login/`
+     - Store user profile and tokens
+   
+   - [ ] Implement login form
+     - File: `src/components/features/auth/LoginForm.tsx`
+     - Use existing UI components from `src/components/ui`
+     - Fields: username/email and password
+     - Form validation with error messages
+     - Loading state during submission
 
-   - [ ] Session Persistence
-     - [ ] Test Setup
-       - [ ] Create test file (`src/tests/features/auth/sessionPersistence.test.ts`)
-       - [ ] Write failing tests for session storage
-       - [ ] Write failing tests for session recovery
-       - [ ] Write failing tests for session cleanup
-     - [ ] Implementation
-       - [ ] Implement session management (`src/lib/features/auth/session.ts`)
-       - [ ] Create session recovery mechanism
-         - Connect to app initialization in `src/app/layout.tsx`
-       - [ ] Set up session cleanup logic
-       - [ ] Create auth middleware (`src/lib/features/auth/middleware.ts`)
-         - Integrate with Next.js middleware for route protection
-     - [ ] Refactoring
-       - [ ] Optimize session management
-       - [ ] Update documentation
-       - [ ] Review and adjust
+3. **Create Login Page**
+   - [ ] Implement login page
+     - File: `src/app/(auth)/login/page.tsx`
+     - Use login form component
+     - Add navigation link for forgot password
+     - Handle redirect after successful login
 
-## Architecture Integration Points
-- **Feature Module**: Centralize auth logic in `src/lib/features/auth/`
-- **UI Components**: Leverage existing components from `src/lib/components/ui/`
-- **API Client**: Use the established API client from `src/lib/api/axiosConfig.ts`
-- **Token Refresh**: Utilize token refresh mechanism from `src/lib/api/tokenRefresh.ts`
-- **State Management**: Follow Zustand patterns in `src/lib/store/slices/`
-- **Hooks**: Organize auth hooks in `src/lib/hooks/auth/`
-- **Error Handling**: Implement consistent error handling with descriptive messages
+4. **API Integration**
+   - [ ] Connect to backend API
+     - Set up API client for `/api/v1/users/login/`
+     - Handle authentication response and tokens
+     - Implement error handling for failed login attempts
+     - Support for potential 2FA flow
 
-Status Indicators:
-- [ ] Not started
-- [~] In progress
-- [x] Completed
-- [!] Blocked/Issues
+### Phase 2: Session Management
+1. **Token Handling**
+   - [ ] Set up token storage utility
+     - File: `src/lib/features/auth/token.ts`
+     - Store tokens securely (localStorage/cookies)
+     - Add to API request headers
+     - Handle token refresh using `/api/v1/users/refresh-token/`
 
-Last Updated: Enhanced with specific file paths and architecture integration points. 
+2. **Protected Routes**
+   - [ ] Create simple auth middleware
+     - File: `src/middleware.ts` (Next.js middleware)
+     - Check auth state for protected routes
+     - Redirect unauthenticated users to login
+
+3. **User Profile**
+   - [ ] Add user profile view
+     - File: `src/components/features/auth/UserProfile.tsx`
+     - Display current user information
+     - Option to logout
+     - Change password functionality
+
+### Phase 3: Password Management (Optional)
+1. **Forgot Password**
+   - [ ] Implement forgot password functionality
+     - Create request form for password reset
+     - Handle password reset confirmation
+     - Connect to relevant API endpoints
+
+2. **Change Password**
+   - [ ] Add change password feature for logged-in users
+     - Create change password form
+     - Validate current and new passwords
+     - Show success/error messages
+
+## Testing Guidelines
+- Use centralized testing utilities from `src/tests/utils/`
+- NO direct imports from testing libraries
+- Use `componentTestUtils.ts` for React component tests
+- Use `functionTestUtils.ts` for utility function tests
+- Use `integrationTestUtils.ts` for integration tests
+- Use `mockApi.ts` for mocking API responses
+
+## API Integration Details
+Based on `/home/ehab/Desktop/backend/docs/users/api.md`:
+
+### Login Endpoint
+- **URL**: `/api/v1/users/login/`
+- **Method**: POST
+- **Request Body**:
+  ```json
+  {
+    "username": "username",  // or "email": "user@example.com"
+    "password": "securepassword"
+  }
+  ```
+- **Success Response**:
+  ```json
+  {
+    "refresh": "refresh_token",
+    "access": "access_token",
+    "user": {
+      // User profile data
+    }
+  }
+  ```
+
+### Token Refresh Endpoint
+- **URL**: `/api/v1/users/refresh-token/`
+- **Method**: POST
+- **Request Body**:
+  ```json
+  {
+    "refresh": "refresh_token"
+  }
+  ```
+
+### Password Management Endpoints
+- **Reset Request**: `POST /api/v1/users/password-reset/`
+- **Reset Confirm**: `POST /api/v1/users/password-reset-confirm/`
+
+Status Key:
+- [ ] To Do
+- [x] Completed 
