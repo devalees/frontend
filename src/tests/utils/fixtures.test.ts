@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { jest } from "@jest/globals";
 import { 
   createUserFixture, 
   createAdminFixture, 

@@ -104,7 +104,7 @@ describe('Select Component', () => {
   // Selection Tests
   describe('Selection Handling', () => {
     it('should select an option when clicked', async () => {
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<Select options={options} onChange={handleChange} />);
       
       const selectElement = screen.getByTestId('select-element');
@@ -128,7 +128,7 @@ describe('Select Component', () => {
     });
 
     it('should support multiple selection when multiple prop is true', async () => {
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<Select options={options} multiple onChange={handleChange} />);
       
       await act(async () => {
@@ -145,7 +145,7 @@ describe('Select Component', () => {
     });
 
     it('should deselect option when clicked again in multiple mode', async () => {
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<Select options={options} multiple onChange={handleChange} />);
       
       const option = screen.getByTestId('option-1');

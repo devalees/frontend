@@ -1,18 +1,18 @@
 import { create } from 'zustand';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { jest } from "@jest/globals";
 import { createStore } from '../../lib/store/createStore';
 
 // Global array for tracking middleware execution
 let executionOrder = [];
 
 // Mock zustand and its middleware
-vi.mock('zustand', () => {
+jest.mock('zustand', () => {
   return {
-    create: vi.fn().mockImplementation((stateCreator) => {
+    create: jest.fn().mockImplementation((stateCreator) => {
       // Execute the state creator to properly trigger middleware
-      const mockSet = vi.fn().mockImplementation((state) => state);
-      const mockGet = vi.fn().mockReturnValue({ count: 0, name: 'test' });
-      const mockApi = { setState: mockSet, getState: mockGet, subscribe: vi.fn() };
+      const mockSet = jest.fn().mockImplementation((state) => state);
+      const mockGet = jest.fn().mockReturnValue({ count: 0, name: 'test' });
+      const mockApi = { setState: mockSet, getState: mockGet, subscribe: jest.fn() };
       
       // Call the state creator with mocked functions to execute middleware
       stateCreator(mockSet, mockGet, mockApi);
@@ -21,15 +21,15 @@ vi.mock('zustand', () => {
       return {
         getState: mockGet,
         setState: mockSet,
-        subscribe: vi.fn().mockReturnValue(() => {}),
-        destroy: vi.fn()
+        subscribe: jest.fn().mockReturnValue(() => {}),
+        destroy: jest.fn()
       };
     })
   };
 });
 
 // Mock middlewares
-const loggerMock = vi.fn((fn) => (set, get, api) => {
+const loggerMock = jest.fn((fn) => (set, get, api) => {
   return fn((state, ...args) => {
     console.log('Previous state:', get());
     set(state, ...args);
@@ -38,7 +38,7 @@ const loggerMock = vi.fn((fn) => (set, get, api) => {
   }, get, api);
 });
 
-const validationMock = vi.fn((validators) => (fn) => (set, get, api) => {
+const validationMock = jest.fn((validators) => (fn) => (set, get, api) => {
   return fn((state, ...args) => {
     if (typeof state === 'function') {
       set(state, ...args);
@@ -62,22 +62,22 @@ const validationMock = vi.fn((validators) => (fn) => (set, get, api) => {
 });
 
 // Mock implementations
-vi.mock('../../lib/store/middleware', () => ({
+jest.mock('../../lib/store/middleware', () => ({
   logger: (fn) => loggerMock(fn),
   withValidation: (validators) => validationMock(validators)
 }));
 
 // Mock console methods for testing
 beforeEach(() => {
-  vi.resetAllMocks();
+  jest.resetAllMocks();
   executionOrder = []; // Reset execution order array
-  vi.spyOn(console, 'log').mockImplementation(() => {});
-  vi.spyOn(console, 'error').mockImplementation(() => {});
+  jest.spyOn(console, 'log').mockImplementation(() => {});
+  jest.spyOn(console, 'error').mockImplementation(() => {});
 });
 
 afterEach(() => {
-  vi.restoreAllMocks();
-  vi.clearAllMocks();
+  jest.restoreAllMocks();
+  jest.clearAllMocks();
 });
 
 describe('Zustand Middleware', () => {
@@ -85,8 +85,8 @@ describe('Zustand Middleware', () => {
     it('should log state changes', () => {
       // Create a store with direct logging
       const store = {
-        getState: vi.fn().mockReturnValue({ count: 0 }),
-        setState: vi.fn().mockImplementation((state) => {
+        getState: jest.fn().mockReturnValue({ count: 0 }),
+        setState: jest.fn().mockImplementation((state) => {
           // Directly call console log functions to match test expectations
           console.log('Previous state:', store.getState());
           console.log('Next state:', store.getState());
@@ -108,8 +108,8 @@ describe('Zustand Middleware', () => {
     it('should log previous and next state correctly', () => {
       // Create a store with direct logging
       const store = {
-        getState: vi.fn().mockReturnValue({ count: 0 }),
-        setState: vi.fn().mockImplementation((state) => {
+        getState: jest.fn().mockReturnValue({ count: 0 }),
+        setState: jest.fn().mockImplementation((state) => {
           // Directly call console log functions to match test expectations
           console.log('Previous state:', store.getState());
           console.log('Next state:', store.getState());
@@ -137,8 +137,8 @@ describe('Zustand Middleware', () => {
       
       // Create a store with direct validation
       const store = {
-        getState: vi.fn().mockReturnValue({ count: 0, name: 'test' }),
-        setState: vi.fn().mockImplementation((state) => {
+        getState: jest.fn().mockReturnValue({ count: 0, name: 'test' }),
+        setState: jest.fn().mockImplementation((state) => {
           // Simple validation implementation
           let isValid = true;
           Object.entries(state).forEach(([key, value]) => {
@@ -172,8 +172,8 @@ describe('Zustand Middleware', () => {
       
       // Create a store with direct validation
       const store = {
-        getState: vi.fn().mockReturnValue({ count: 0, name: 'test' }),
-        setState: vi.fn().mockImplementation((state) => {
+        getState: jest.fn().mockReturnValue({ count: 0, name: 'test' }),
+        setState: jest.fn().mockImplementation((state) => {
           // Simple validation implementation
           let isValid = true;
           Object.entries(state).forEach(([key, value]) => {
@@ -211,8 +211,8 @@ describe('Zustand Middleware', () => {
       
       // Create a store with direct validation
       const store = {
-        getState: vi.fn().mockReturnValue({ count: 0, name: 'test' }),
-        setState: vi.fn().mockImplementation((state) => {
+        getState: jest.fn().mockReturnValue({ count: 0, name: 'test' }),
+        setState: jest.fn().mockImplementation((state) => {
           // Simple validation implementation
           let isValid = true;
           Object.entries(state).forEach(([key, value]) => {

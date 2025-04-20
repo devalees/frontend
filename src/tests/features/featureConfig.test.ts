@@ -40,7 +40,7 @@ describe('Feature Configuration', () => {
 
   // Reset mocks and feature registry before each test
   beforeEach(() => {
-    vi.resetAllMocks();
+    jest.resetAllMocks();
     resetFeatureRegistry();
   });
 
@@ -257,8 +257,8 @@ describe('Feature Configuration', () => {
     it('should integrate feature with external service', async () => {
       // Arrange
       const mockService = {
-        registerFeature: vi.fn().mockResolvedValue({ success: true }),
-        notifyOnChange: vi.fn()
+        registerFeature: jest.fn().mockResolvedValue({ success: true }),
+        notifyOnChange: jest.fn()
       };
       
       // Act
@@ -274,8 +274,8 @@ describe('Feature Configuration', () => {
     it('should handle integration failures gracefully', async () => {
       // Arrange
       const mockService = {
-        registerFeature: vi.fn().mockRejectedValue(new Error('Integration failed')),
-        notifyOnChange: vi.fn()
+        registerFeature: jest.fn().mockRejectedValue(new Error('Integration failed')),
+        notifyOnChange: jest.fn()
       };
       
       // Act & Assert
@@ -286,8 +286,8 @@ describe('Feature Configuration', () => {
     it('should set up change notifications during integration', async () => {
       // Arrange
       const mockService = {
-        registerFeature: vi.fn().mockResolvedValue({ success: true }),
-        notifyOnChange: vi.fn()
+        registerFeature: jest.fn().mockResolvedValue({ success: true }),
+        notifyOnChange: jest.fn()
       };
       
       // Act

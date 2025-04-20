@@ -1,20 +1,20 @@
 import React from 'react';
-import { screen } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { screen  } from '../../tests/utils';
+import { jest } from "@jest/globals";
 import { render, renderHook } from './testUtils';
 
 // Mock the useStore hook
-vi.mock('../../lib/store', () => ({
-  useStore: vi.fn(() => ({
+jest.mock('../../lib/store', () => ({
+  useStore: jest.fn(() => ({
     todos: [],
-    addTodo: vi.fn(),
+    addTodo: jest.fn(),
     user: null,
-    login: vi.fn()
+    login: jest.fn()
   })),
 }));
 
-vi.mock('next/navigation', () => ({
-  useRouter: vi.fn(),
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn(),
 }));
 
 describe('Test Utilities', () => {

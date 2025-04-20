@@ -39,7 +39,7 @@
      - Handle redirect after successful login
 
 4. **API Integration**
-   - [ ] Connect to backend API
+   - [x] Connect to backend API
      - Set up API client for `/api/v1/users/login/`
      - Handle authentication response and tokens
      - Implement error handling for failed login attempts

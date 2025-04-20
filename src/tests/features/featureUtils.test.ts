@@ -68,7 +68,7 @@ describe('Feature Utilities', () => {
 
   // Reset registry before each test
   beforeEach(() => {
-    vi.resetAllMocks();
+    jest.resetAllMocks();
     resetFeatureRegistry();
   });
 
@@ -282,10 +282,10 @@ describe('Feature Utilities', () => {
     it('should use feature logger methods for coverage', () => {
       // Arrange
       const logger = createFeatureLogger('test-feature');
-      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {});
+      const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => {});
       
       // Act
       logger.log('Test log');
@@ -308,8 +308,8 @@ describe('Feature Utilities', () => {
 
     it('should safely execute feature callbacks with error handling', async () => {
       // Arrange
-      const successCallback = vi.fn().mockResolvedValue('success');
-      const errorCallback = vi.fn().mockRejectedValue(new Error('test error'));
+      const successCallback = jest.fn().mockResolvedValue('success');
+      const errorCallback = jest.fn().mockRejectedValue(new Error('test error'));
       
       // Act
       const successResult = await executeFeatureCallback('test-feature', successCallback);
@@ -324,7 +324,7 @@ describe('Feature Utilities', () => {
 
     it('should handle non-Error objects in callback errors', async () => {
       // Arrange
-      const errorCallback = vi.fn().mockRejectedValue('string error');
+      const errorCallback = jest.fn().mockRejectedValue('string error');
       
       // Act
       const errorResult = await executeFeatureCallback('test-feature', errorCallback);

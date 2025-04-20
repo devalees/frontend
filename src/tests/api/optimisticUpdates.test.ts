@@ -5,9 +5,8 @@
  * for immediately reflecting changes in the UI while waiting for server confirmation.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from '../../tests/utils';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { describe, it, expect, beforeEach, afterEach } from '../../tests/utils';
+import axios, { AxiosInstance } from 'axios';
 import { createStore } from 'zustand/vanilla';
 
 import { createOptimisticStore, OptimisticUpdater, OptimisticAction, OptimisticState } from '../../lib/api/optimisticUpdates';
@@ -26,8 +25,36 @@ enum TodoAction {
   DELETE = 'DELETE_TODO',
 }
 
-// Mock axios
-const mock = new MockAdapter(axios);
+// Mock axios instance
+const mockAxiosInstance: jest.Mocked<AxiosInstance> = {
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+  patch: jest.fn(),
+  request: jest.fn(),
+  defaults: { 
+    headers: { 
+      common: {},
+      delete: {},
+      get: {},
+      head: {},
+      post: {},
+      put: {},
+      patch: {}
+    } 
+  },
+  interceptors: {
+    request: { use: jest.fn(), eject: jest.fn(), clear: jest.fn() },
+    response: { use: jest.fn(), eject: jest.fn(), clear: jest.fn() }
+  },
+  getUri: jest.fn(),
+  head: jest.fn(),
+  options: jest.fn(),
+  postForm: jest.fn(),
+  putForm: jest.fn(),
+  patchForm: jest.fn()
+} as unknown as jest.Mocked<AxiosInstance>;
 
 // Helper to create a test store
 function createTestStore() {
@@ -43,13 +70,13 @@ describe('Optimistic Updates', () => {
   let updater: OptimisticUpdater<Todo>;
   
   beforeEach(() => {
-    mock.reset();
+    jest.clearAllMocks();
     store = createTestStore();
-    updater = createOptimisticStore(store, axios);
+    updater = createOptimisticStore(store, mockAxiosInstance);
   });
   
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
   
   describe('Basic Optimistic Operations', () => {
@@ -59,7 +86,7 @@ describe('Optimistic Updates', () => {
       const apiResponse: Todo = { ...newTodo, id: 'server-1' };
       
       // Configure mock
-      mock.onPost('/todos').reply(200, apiResponse);
+      mockAxiosInstance.request.mockResolvedValueOnce({ data: apiResponse, status: 200, statusText: 'OK', headers: {}, config: {} });
       
       // Test - optimistically add the todo
       const action: OptimisticAction<Todo> = {
@@ -101,7 +128,7 @@ describe('Optimistic Updates', () => {
       });
       
       // Configure mock
-      mock.onPut(`/todos/${initialTodo.id}`).reply(200, updatedTodo);
+      mockAxiosInstance.request.mockResolvedValueOnce({ data: updatedTodo, status: 200, statusText: 'OK', headers: {}, config: {} });
       
       // Test - optimistically update the todo
       const action: OptimisticAction<Todo> = {
@@ -143,7 +170,7 @@ describe('Optimistic Updates', () => {
       });
       
       // Configure mock
-      mock.onDelete(`/todos/${todo.id}`).reply(200);
+      mockAxiosInstance.request.mockResolvedValueOnce({ data: {}, status: 200, statusText: 'OK', headers: {}, config: {} });
       
       // Test - optimistically delete the todo
       const action: OptimisticAction<Todo> = {
@@ -186,7 +213,9 @@ describe('Optimistic Updates', () => {
       });
       
       // Configure mock to return error
-      mock.onPut(`/todos/${todo.id}`).reply(500, { message: 'Server error' });
+      const error = new Error('Server error');
+      (error as any).response = { status: 500, data: { message: 'Server error' } };
+      mockAxiosInstance.request.mockRejectedValueOnce(error);
       
       // Test - optimistically update the todo
       const action: OptimisticAction<Todo> = {
@@ -202,30 +231,28 @@ describe('Optimistic Updates', () => {
         }),
       };
       
-      // Execute action
+      // Verify - changes should be applied optimistically
+      const promise = updater.execute(action);
+      expect(store.getState().data[0].completed).toBe(true);
+      
+      // Wait for promise to complete
       try {
-        const promise = updater.execute(action);
-        
-        // Verify immediate update
-        expect(store.getState().data[0].completed).toBe(true);
-        
-        // Wait for server response
         await promise;
-        
-        // Should not reach here
+        // Should fail
         expect(true).toBe(false);
       } catch (error) {
-        // Verify rollback
+        // Error should be set in state
+        expect(store.getState().error).not.toBeNull();
+        // Changes should be rolled back
         expect(store.getState().data[0].completed).toBe(false);
         expect(store.getState().pending.length).toBe(0);
-        expect(store.getState().error).not.toBe(null);
       }
     });
     
     it('should handle network errors and rollback changes', async () => {
       // Setup
       const todo: Todo = { id: 'server-1', title: 'Original Todo', completed: false };
-      const updatedTodo: Todo = { ...todo, completed: true };
+      const updatedTodo: Todo = { ...todo, title: 'Updated Todo' };
       
       // Set initial state
       store.setState({
@@ -235,7 +262,8 @@ describe('Optimistic Updates', () => {
       });
       
       // Configure mock to simulate network error
-      mock.onPut(`/todos/${todo.id}`).networkError();
+      const networkError = new Error('Network Error');
+      mockAxiosInstance.request.mockRejectedValueOnce(networkError);
       
       // Test - optimistically update the todo
       const action: OptimisticAction<Todo> = {
@@ -251,23 +279,21 @@ describe('Optimistic Updates', () => {
         }),
       };
       
-      // Execute action
+      // Verify - changes should be applied optimistically
+      const promise = updater.execute(action);
+      expect(store.getState().data[0].title).toBe('Updated Todo');
+      
+      // Wait for promise to complete
       try {
-        const promise = updater.execute(action);
-        
-        // Verify immediate update
-        expect(store.getState().data[0].completed).toBe(true);
-        
-        // Wait for server response
         await promise;
-        
-        // Should not reach here
+        // Should fail
         expect(true).toBe(false);
       } catch (error) {
-        // Verify rollback
-        expect(store.getState().data[0].completed).toBe(false);
+        // Error should be set in state
+        expect(store.getState().error).not.toBeNull();
+        // Changes should be rolled back
+        expect(store.getState().data[0].title).toBe('Original Todo');
         expect(store.getState().pending.length).toBe(0);
-        expect(store.getState().error).not.toBe(null);
       }
     });
   });
@@ -289,8 +315,8 @@ describe('Optimistic Updates', () => {
       const updatedTodo1: Todo = { ...todo1, completed: true };
       const updatedTodo2: Todo = { ...todo2, title: 'Updated Todo 2' };
       
-      mock.onPut(`/todos/${todo1.id}`).reply(200, updatedTodo1);
-      mock.onPut(`/todos/${todo2.id}`).reply(200, updatedTodo2);
+      mockAxiosInstance.request.mockResolvedValueOnce({ data: updatedTodo1, status: 200, statusText: 'OK', headers: {}, config: {} });
+      mockAxiosInstance.request.mockResolvedValueOnce({ data: updatedTodo2, status: 200, statusText: 'OK', headers: {}, config: {} });
       
       // Test - optimistically update both todos
       const action1: OptimisticAction<Todo> = {
@@ -353,8 +379,8 @@ describe('Optimistic Updates', () => {
       const updatedTodo1: Todo = { ...todo1, completed: true };
       const updatedTodo2: Todo = { ...todo2, title: 'Updated Todo 2' };
       
-      mock.onPut(`/todos/${todo1.id}`).reply(200, updatedTodo1);
-      mock.onPut(`/todos/${todo2.id}`).reply(500, { message: 'Error updating todo 2' });
+      mockAxiosInstance.request.mockResolvedValueOnce({ data: updatedTodo1, status: 200, statusText: 'OK', headers: {}, config: {} });
+      mockAxiosInstance.request.mockRejectedValueOnce(new Error('Error updating todo 2'));
       
       // Test - optimistically update both todos
       const action1: OptimisticAction<Todo> = {

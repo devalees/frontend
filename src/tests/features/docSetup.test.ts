@@ -72,7 +72,7 @@ describe('Feature Documentation Setup', () => {
 
   // Reset mocks and doc structure before each test
   beforeEach(() => {
-    vi.resetAllMocks();
+    jest.resetAllMocks();
     resetDocStructure();
   });
 

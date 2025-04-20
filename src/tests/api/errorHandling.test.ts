@@ -1,6 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from '../../tests/utils';
-import { ApiError, NetworkError, ValidationError, AuthenticationError, AuthorizationError, NotFoundError, ServerError } from '../../api/errors';
-import { formatError, logError } from '../../api/errorHandling';
+import { describe, it, expect, jest, beforeEach } from '../utils';
+import { 
+  ApiError, 
+  NetworkError, 
+  ValidationError, 
+  AuthenticationError, 
+  AuthorizationError, 
+  NotFoundError, 
+  ServerError,
+  formatError,
+  logError
+} from '../../lib/api/errors';
 
 describe('API Error Handling', () => {
   describe('Error Types', () => {
@@ -87,7 +96,7 @@ describe('API Error Handling', () => {
       expect(formatted).toEqual({
         message: 'Unknown error',
         status: 500,
-        type: 'ApiError',
+        type: 'UnknownError',
         timestamp: expect.any(String)
       });
     });
@@ -95,15 +104,15 @@ describe('API Error Handling', () => {
 
   describe('Error Logging', () => {
     const consoleSpy = {
-      error: vi.fn(),
-      warn: vi.fn(),
-      info: vi.fn()
+      error: jest.fn(),
+      warn: jest.fn(),
+      info: jest.fn()
     };
 
     beforeEach(() => {
-      vi.spyOn(console, 'error').mockImplementation(consoleSpy.error);
-      vi.spyOn(console, 'warn').mockImplementation(consoleSpy.warn);
-      vi.spyOn(console, 'info').mockImplementation(consoleSpy.info);
+      jest.spyOn(console, 'error').mockImplementation(consoleSpy.error);
+      jest.spyOn(console, 'warn').mockImplementation(consoleSpy.warn);
+      jest.spyOn(console, 'info').mockImplementation(consoleSpy.info);
     });
 
     it('should log ApiError with correct level and format', () => {

@@ -1,48 +1,48 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { jest } from "@jest/globals";
 import { withPersistence, PersistenceOptions } from '../../lib/store/middleware';
 
 // Mock localStorage and sessionStorage
 const mockStorage = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
   length: 0,
-  key: vi.fn()
+  key: jest.fn()
 };
 
 // Variable to capture persist options for assertions
 let persistOptions: any = null;
 
 // Mock implementations
-vi.mock('zustand', () => ({
-  create: vi.fn().mockImplementation((fn) => {
+jest.mock('zustand', () => ({
+  create: jest.fn().mockImplementation((fn) => {
     const state = {};
-    const setState = vi.fn();
-    const getState = vi.fn().mockReturnValue(state);
-    fn(setState, getState, { setState, getState, subscribe: vi.fn() });
-    return { getState, setState, subscribe: vi.fn() };
+    const setState = jest.fn();
+    const getState = jest.fn().mockReturnValue(state);
+    fn(setState, getState, { setState, getState, subscribe: jest.fn() });
+    return { getState, setState, subscribe: jest.fn() };
   })
 }));
 
-vi.mock('zustand/middleware', () => ({
-  persist: vi.fn().mockImplementation((fn, options) => {
+jest.mock('zustand/middleware', () => ({
+  persist: jest.fn().mockImplementation((fn, options) => {
     // Store options for testing
     persistOptions = options;
     return fn;
   }),
-  createJSONStorage: vi.fn().mockImplementation(() => ({
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn()
+  createJSONStorage: jest.fn().mockImplementation(() => ({
+    getItem: jest.fn(),
+    setItem: jest.fn(),
+    removeItem: jest.fn()
   }))
 }));
 
 // Mock the withPersistence middleware to directly expose the persist configuration
-vi.mock('../../lib/store/middleware', async () => {
-  const actual = await vi.importActual('../../lib/store/middleware');
+jest.mock('../../lib/store/middleware', () => {
+  const actual = jest.requireActual('../../lib/store/middleware');
   return {
     ...actual,
     withPersistence: (name: string, options: any = {}) => {
@@ -119,14 +119,14 @@ vi.mock('../../lib/store/middleware', async () => {
 
 describe('Persistence Middleware', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     Object.defineProperty(window, 'localStorage', { value: { ...mockStorage } });
     Object.defineProperty(window, 'sessionStorage', { value: { ...mockStorage } });
     persistOptions = null;
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   describe('Whitelist/Blacklist Functionality', () => {
@@ -225,7 +225,7 @@ describe('Persistence Middleware', () => {
       
       const migration1 = {
         version: 1,
-        migrate: vi.fn().mockImplementation((state) => ({
+        migrate: jest.fn().mockImplementation((state) => ({
           ...state,
           user: { ...state.user, name: 'Updated Name' }
         }))
@@ -233,7 +233,7 @@ describe('Persistence Middleware', () => {
       
       const migration2 = {
         version: 2,
-        migrate: vi.fn().mockImplementation((state) => ({
+        migrate: jest.fn().mockImplementation((state) => ({
           ...state,
           settings: { ...state.settings, language: 'en' }
         }))
@@ -270,7 +270,7 @@ describe('Persistence Middleware', () => {
       
       const migration1 = {
         version: 1,
-        migrate: vi.fn().mockImplementation((state) => ({
+        migrate: jest.fn().mockImplementation((state) => ({
           ...state,
           user: { ...state.user, name: 'Updated Name' }
         }))
@@ -278,7 +278,7 @@ describe('Persistence Middleware', () => {
       
       const migration2 = {
         version: 2,
-        migrate: vi.fn().mockImplementation((state) => ({
+        migrate: jest.fn().mockImplementation((state) => ({
           ...state,
           settings: { ...state.settings, language: 'en' }
         }))
@@ -310,7 +310,7 @@ describe('Persistence Middleware', () => {
       // Arrange
       const migration = {
         version: 1,
-        migrate: vi.fn()
+        migrate: jest.fn()
       };
       
       // Create mock store with migration
@@ -336,7 +336,7 @@ describe('Persistence Middleware', () => {
   describe('Custom Event Handlers', () => {
     it('should set onRehydrateStorage handler when provided', () => {
       // Arrange
-      const onRehydrateStorageMock = vi.fn();
+      const onRehydrateStorageMock = jest.fn();
       
       // Create mock store with event handler
       const createStore = () => create(withPersistence('test-store', {
@@ -357,7 +357,7 @@ describe('Persistence Middleware', () => {
   describe('Merge Strategies', () => {
     it('should use custom merge function when provided', () => {
       // Arrange
-      const mergeMock = vi.fn();
+      const mergeMock = jest.fn();
       
       // Create mock store with custom merge function
       const createStore = () => create(withPersistence('test-store', {

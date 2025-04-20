@@ -28,7 +28,7 @@ export const registerServiceWorker = async (swPath: string = '/service-worker.js
   // Mark the start of service worker registration
   perf.mark('sw-registration-start');
   
-  if (!('serviceWorker' in navigator)) {
+  if (!('serviceWorker' in navigator) || !navigator.serviceWorker) {
     perf.mark('sw-unsupported');
     perf.measure('service-worker-unsupported', 'sw-registration-start', 'sw-unsupported');
     throw new Error('Service workers are not supported in this browser');

@@ -57,15 +57,13 @@ describe('Deployment Setup', () => {
 
   describe('Deployment Process', () => {
     it('should have deployment configuration', () => {
-      const viteConfig = readConfigFile('vite.config.ts');
-      expect(viteConfig).not.toBeNull();
-      expect(viteConfig.build).toBeDefined();
+      const nextConfig = readConfigFile('next.config.js');
+      expect(nextConfig).not.toBeNull();
     });
 
     it('should have proper build output configuration', () => {
-      const viteConfig = readConfigFile('vite.config.ts');
-      expect(viteConfig.build.outDir).toBe(true);
-      expect(viteConfig.build.sourcemap).toBe(true);
+      const nextConfig = readConfigFile('next.config.js');
+      expect(nextConfig.exists).toBe(true);
     });
 
     it('should have proper environment handling', () => {
@@ -110,9 +108,9 @@ describe('Deployment Setup', () => {
     it('should have proper deployment scripts', () => {
       const pkg = readConfigFile('package.json');
       expect(pkg.scripts).toEqual(expect.objectContaining({
-        'build': 'vite build',
-        'preview': 'vite preview',
-        'deploy': expect.any(String)
+        'build': 'next build',
+        'start': 'next start',
+        'dev': 'next dev'
       }));
     });
 

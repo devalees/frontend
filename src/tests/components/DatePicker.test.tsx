@@ -13,7 +13,7 @@ describe('DatePicker Component', () => {
     });
 
     it('should call onChange when a date is selected', async () => {
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<DatePicker onChange={handleChange} />);
       const dateInput = screen.getByTestId('date-picker-input');
       
@@ -35,7 +35,7 @@ describe('DatePicker Component', () => {
   // Date Range Selection Tests
   describe('Date Range Selection', () => {
     it('should validate that end date is after start date', async () => {
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<DatePicker range onChange={handleChange} />);
       
       const startDateInput = screen.getByTestId('date-picker-start-input');
@@ -63,7 +63,7 @@ describe('DatePicker Component', () => {
     });
 
     it('should call onChange with both start and end dates when range is selected', async () => {
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<DatePicker range onChange={handleChange} />);
       
       const startDateInput = screen.getByTestId('date-picker-start-input');
@@ -95,7 +95,7 @@ describe('DatePicker Component', () => {
     });
 
     it('should accept input in the specified format', async () => {
-      const handleChange = vi.fn();
+      const handleChange = jest.fn();
       render(<DatePicker format="DD/MM/YYYY" onChange={handleChange} />);
       const dateInput = screen.getByTestId('date-picker-input');
       

@@ -10,16 +10,16 @@ interface TestState {
 }
 
 describe('Logger Middleware', () => {
-  let consoleSpy: ReturnType<typeof vi.spyOn>;
-  let mockLogger: ReturnType<typeof vi.fn>;
+  let consoleSpy: ReturnType<typeof jest.spyOn>;
+  let mockLogger: ReturnType<typeof jest.fn>;
   let store: any; // Use any for simplified typing
   
   beforeEach(() => {
     // Spy on console.log
-    consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+    consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     
     // Create a mock logger
-    mockLogger = vi.fn();
+    mockLogger = jest.fn();
     
     // Create a test store with the logger middleware
     store = create<TestState>()(

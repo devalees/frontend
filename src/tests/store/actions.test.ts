@@ -12,7 +12,7 @@ const mockTodoResponse = { id: '1', text: 'Test todo', completed: false };
 const mockUserResponse = { id: '1', name: 'Test User' };
 
 // Mock fetch globally
-const mockFetch = vi.fn();
+const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
 // Base store type
@@ -30,7 +30,7 @@ describe('Store Actions', () => {
   let store: ReturnType<typeof createStore<TestStore>>;
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     // Reset fetch mock default response
     mockFetch.mockImplementation(() => 
       Promise.resolve({
@@ -169,7 +169,7 @@ describe('Store Actions', () => {
       
       // Mock the addTodo implementation directly instead of going through fetch
       const originalCreateTodoAsync = store.getState().createTodoAsync;
-      const mockCreateTodoAsync = vi.fn().mockImplementation(async (text) => {
+      const mockCreateTodoAsync = jest.fn().mockImplementation(async (text) => {
         // Directly set the state with our test todo
         store.setState({
           todos: [testTodo],
@@ -236,10 +236,12 @@ describe('Store Actions', () => {
       store.getState().fetchTodos();
       expect(store.getState().todosLoading).toBe(true);
 
-      await vi.waitFor(() => {
-        expect(store.getState().todosLoading).toBe(false);
-        expect(store.getState().todos.length).toBeGreaterThan(0);
-      });
+      // Wait for the async operation to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Now check that loading state is false and todos are loaded
+      expect(store.getState().todosLoading).toBe(false);
+      expect(store.getState().todos.length).toBeGreaterThan(0);
 
       expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/api/todos');
     });
@@ -248,7 +250,7 @@ describe('Store Actions', () => {
   // Test action effects
   describe('Action Effects', () => {
     it('should trigger notification effect on todo completion', () => {
-      const notifyMock = vi.fn();
+      const notifyMock = jest.fn();
       store.getState().setNotificationHandler(notifyMock);
       store.getState().addTodo('Test todo');
       store.getState().toggleTodo(store.getState().todos[0].id);

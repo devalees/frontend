@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import axios from 'axios';
+import { jest } from "@jest/globals";
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { 
   createMockResponse,
   createMockError,
@@ -9,13 +9,14 @@ import {
   ApiMocker
 } from './mockApi';
 import { createTodoFixture, createErrorResponse } from './fixtures';
+import { Todo } from '../../types/todo';
 
 // Ensure axios is mocked
-vi.mock('axios');
+jest.mock('axios');
 
 describe('Mock API Utilities', () => {
   afterEach(() => {
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
   
   describe('createMockResponse', () => {
@@ -28,7 +29,7 @@ describe('Mock API Utilities', () => {
         status: 200,
         statusText: 'OK',
         headers: { 'Content-Type': 'application/json' },
-        config: {}
+        config: { headers: {} }
       });
     });
     
@@ -38,7 +39,7 @@ describe('Mock API Utilities', () => {
         todo,
         201,
         'Created',
-        { 'Content-Type': 'application/json', 'Authorization': 'Bearer token' }
+        { 'Content-Type': 'application/json', 'Authorization': 'Bearer token' as string }
       );
       
       expect(response).toEqual({
@@ -49,7 +50,7 @@ describe('Mock API Utilities', () => {
           'Content-Type': 'application/json', 
           'Authorization': 'Bearer token' 
         },
-        config: {}
+        config: { headers: {} }
       });
     });
   });
@@ -66,7 +67,7 @@ describe('Mock API Utilities', () => {
         status: 500,
         statusText: 'Request failed',
         headers: { 'Content-Type': 'application/json' },
-        config: {}
+        config: { headers: {} }
       });
     });
     
@@ -81,7 +82,7 @@ describe('Mock API Utilities', () => {
         status: 404,
         statusText: 'Not found',
         headers: { 'Content-Type': 'application/json' },
-        config: {}
+        config: { headers: {} }
       });
     });
   });
@@ -146,8 +147,8 @@ describe('Mock API Utilities', () => {
       apiMocker = new ApiMocker();
       
       // Reset axios mocks
-      vi.mocked(axios.get).mockReset();
-      vi.mocked(axios.post).mockReset();
+      jest.mocked(axios.get).mockReset();
+      jest.mocked(axios.post).mockReset();
     });
     
     afterEach(() => {
@@ -159,7 +160,7 @@ describe('Mock API Utilities', () => {
       const todo2 = createTodoFixture({ id: '2', title: 'Todo 2' });
       
       // Setup mock responses directly
-      vi.mocked(axios.get).mockImplementation((url: any) => {
+      jest.mocked(axios.get).mockImplementation((url: any) => {
         if (url === '/api/todos/1') {
           return Promise.resolve(createMockResponse(todo1));
         } 
@@ -180,7 +181,7 @@ describe('Mock API Utilities', () => {
       const todo2 = createTodoFixture({ id: '2' });
       
       // Setup mock implementations directly
-      vi.mocked(axios.get).mockImplementation((url: any) => {
+      jest.mocked(axios.get).mockImplementation((url: any) => {
         if (url === '/api/todos/1') {
           return Promise.reject(createMockError('Not found', 404, 'RESOURCE_NOT_FOUND'));
         }
@@ -206,16 +207,16 @@ describe('Mock API Utilities', () => {
     
     it('should reset all mocks', async () => {
       // First, set up a mock
-      vi.mocked(axios.get).mockResolvedValueOnce(createMockResponse(createTodoFixture()));
+      jest.mocked(axios.get).mockResolvedValueOnce(createMockResponse(createTodoFixture()));
       
       // This should succeed with our mock
       await axios.get('/api/todos/1');
       
       // Reset all mocks
-      vi.mocked(axios.get).mockReset();
+      jest.mocked(axios.get).mockReset();
       
       // Setup a rejection for the next call
-      vi.mocked(axios.get).mockRejectedValueOnce(new Error('Real error'));
+      jest.mocked(axios.get).mockRejectedValueOnce(new Error('Real error'));
       
       // Now this should fail with our custom error
       try {

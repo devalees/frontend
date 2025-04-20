@@ -6,10 +6,102 @@
  * and state verification.
  */
 
-import { vi } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { jest } from '@jest/globals';
+import { render, screen, fireEvent, act, RenderOptions } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+
+type ComponentType<P> = React.ComponentType<P>;
+
+/**
+ * Custom render function with provider wrappers
+ * 
+ * @param ui - The component to render
+ * @param options - Render options
+ * @returns The rendered component with additional helpers
+ */
+export function renderWithProviders(
+  ui: React.ReactElement,
+  options?: Omit<RenderOptions, 'wrapper'>
+) {
+  // Here you would add your providers if needed
+  const AllProviders = ({ children }: { children: React.ReactNode }) => {
+    return (
+      React.createElement(React.Fragment, null, children)
+    );
+  };
+  
+  return render(ui, { wrapper: AllProviders, ...options });
+}
+
+/**
+ * Component test harness provides a unified way to test components
+ * 
+ * @param Component - The component to test
+ * @param defaultProps - Default props for the component
+ * @returns Object with test utilities
+ */
+export function componentTestHarness<Props>(
+  Component: React.ComponentType<Props>,
+  defaultProps: Props
+) {
+  return {
+    /**
+     * Render the component with custom props
+     */
+    render: (customProps?: Partial<Props>) => {
+      const props = { ...defaultProps, ...customProps } as Props;
+      return renderWithProviders(React.createElement(Component, props));
+    },
+    
+    /**
+     * Get component with props for snapshot testing
+     */
+    getComponent: (customProps?: Partial<Props>) => {
+      const props = { ...defaultProps, ...customProps } as Props;
+      return React.createElement(Component, props);
+    }
+  };
+}
+
+/**
+ * Props validation tester
+ * 
+ * @param Component - The component to test
+ * @param validProps - Valid props for the component
+ * @returns Object with test utilities for prop validation
+ */
+export function propsValidation<Props>(
+  Component: React.ComponentType<Props>,
+  validProps: Props
+) {
+  return {
+    /**
+     * Test if the component renders without errors with valid props
+     */
+    testValidProps: () => {
+      const result = renderWithProviders(React.createElement(Component, validProps));
+      return result;
+    },
+    
+    /**
+     * Test if the component handles missing required props as expected
+     * 
+     * @param requiredPropName - Name of the required prop to omit
+     */
+    testMissingRequiredProp: (requiredPropName: keyof Props) => {
+      // Create a copy of validProps without the specified required prop
+      const { [requiredPropName]: _, ...propsWithoutRequired } = validProps as any;
+      
+      // This should produce a console error for required props
+      const renderWithMissingProp = () => {
+        renderWithProviders(React.createElement(Component, propsWithoutRequired as Props));
+      };
+      
+      return renderWithMissingProp;
+    }
+  };
+}
 
 /**
  * Component Test Harness
@@ -20,16 +112,15 @@ export const componentTestHarness = {
    * Sets up a component test with the given props and options
    */
   setupComponentTest<P extends Record<string, any>>(
-    Component: React.ComponentType<P>, 
+    Component: ComponentType<P>, 
     defaultProps: P = {} as P
   ) {
     return {
       Component,
       defaultProps,
       render: (props: Partial<P> = {}) => {
-        return render(
-          <Component {...defaultProps} {...props} />
-        );
+        const allProps = { ...defaultProps, ...props } as P;
+        return render(React.createElement(Component, allProps));
       }
     };
   },
@@ -38,10 +129,10 @@ export const componentTestHarness = {
    * Renders a component with the given props
    */
   renderComponent<P extends Record<string, any>>(
-    Component: React.ComponentType<P>,
+    Component: ComponentType<P>,
     props: P
   ) {
-    return render(<Component {...props} />);
+    return render(React.createElement(Component, props));
   },
 
   /**
@@ -112,7 +203,7 @@ export const propsValidation = {
    * Validates required props for a component
    */
   validateRequiredProps<P extends Record<string, any>>(
-    Component: React.ComponentType<P>,
+    Component: ComponentType<P>,
     requiredProps: Array<keyof P>,
     baseProps: P
   ) {
@@ -124,14 +215,14 @@ export const propsValidation = {
       // in strict development mode with prop-types
       expect(() => {
         const originalConsoleError = console.error;
-        console.error = vi.fn();
+        console.error = jest.fn();
         
         try {
-          render(<Component {...props as P} />);
+          render(React.createElement(Component, props as P));
         } finally {
           console.error = originalConsoleError;
         }
-      }).toThrow;
+      }).toThrow();
     }
     
     return true;
@@ -141,7 +232,7 @@ export const propsValidation = {
    * Validates optional props for a component
    */
   validateOptionalProps<P extends Record<string, any>>(
-    Component: React.ComponentType<P>,
+    Component: ComponentType<P>,
     optionalProps: Array<keyof P>,
     baseProps: P
   ) {
@@ -151,7 +242,7 @@ export const propsValidation = {
       
       // We expect rendering without an optional prop to NOT throw an error
       expect(() => {
-        render(<Component {...props as P} />);
+        render(React.createElement(Component, props as P));
       }).not.toThrow();
     }
     
@@ -162,7 +253,7 @@ export const propsValidation = {
    * Validates prop types for a component
    */
   validatePropTypes<P extends Record<string, any>>(
-    Component: React.ComponentType<P>,
+    Component: ComponentType<P>,
     propTypes: Record<keyof P, any>,
     baseProps: P
   ) {
@@ -195,15 +286,17 @@ export const propsValidation = {
       
       // We expect console.error to be called for invalid prop types
       const originalConsoleError = console.error;
-      const mockConsoleError = vi.fn();
+      const mockConsoleError = jest.fn();
       console.error = mockConsoleError;
       
       try {
-        render(<Component {...props as P} />);
-        expect(mockConsoleError).toHaveBeenCalled();
+        render(React.createElement(Component, props as P));
       } finally {
         console.error = originalConsoleError;
       }
+      
+      // In development mode, React should report prop type errors
+      expect(mockConsoleError).toHaveBeenCalled();
     }
     
     return true;
@@ -213,16 +306,20 @@ export const propsValidation = {
    * Validates default props for a component
    */
   validateDefaultProps<P extends Record<string, any>>(
-    Component: React.ComponentType<P>,
+    Component: ComponentType<P>,
     defaultProps: Partial<P>,
     testRenderer: (props: P) => { getProps: () => P }
   ) {
+    // Call the test renderer with minimal props
     const minimalProps = {} as P;
     const renderer = testRenderer(minimalProps);
     
-    for (const [prop, defaultValue] of Object.entries(defaultProps)) {
-      const actualProps = renderer.getProps();
-      expect(actualProps[prop]).toEqual(defaultValue);
+    // Get the props that were actually used
+    const actualProps = renderer.getProps();
+    
+    // Check that default props were applied
+    for (const [key, value] of Object.entries(defaultProps)) {
+      expect(actualProps[key]).toEqual(value);
     }
     
     return true;

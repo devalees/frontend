@@ -158,5 +158,9 @@ export function uniqueArray<T>(
       return true;
     });
   }
-  return [...new Set(array)];
+  
+  // For primitive arrays, use Array.filter with indexOf
+  return array.filter((item, index, self) => 
+    self.indexOf(item) === index
+  );
 } 

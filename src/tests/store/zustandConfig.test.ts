@@ -1,33 +1,33 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { jest } from "@jest/globals";
 import { createJSONStorage, persist, PersistOptions, StateStorage } from 'zustand/middleware';
 import { create } from 'zustand';
 import { createStore } from '../../lib/store/createStore';
 
 // Mock zustand and its middleware
-vi.mock('zustand', async () => {
-  const actual = await vi.importActual('zustand');
+jest.mock('zustand', () => {
+  const actual = jest.requireActual('zustand');
   return {
     ...actual,
-    create: vi.fn(),
+    create: jest.fn(),
   };
 });
 
-vi.mock('zustand/middleware', async () => {
-  const actual = await vi.importActual('zustand/middleware');
+jest.mock('zustand/middleware', () => {
+  const actual = jest.requireActual('zustand/middleware');
   return {
     ...actual,
-    persist: vi.fn().mockImplementation(() => (fn: any) => fn),
-    createJSONStorage: vi.fn(),
+    persist: jest.fn().mockImplementation(() => (fn: any) => fn),
+    createJSONStorage: jest.fn(),
   };
 });
 
 describe('Zustand Store Configuration', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   afterEach(() => {
-    vi.resetAllMocks();
+    jest.resetAllMocks();
   });
 
   describe('Store Creation', () => {
@@ -45,11 +45,11 @@ describe('Zustand Store Configuration', () => {
     it('should return a store with getters and setters', () => {
       // Arrange
       const mockStore = {
-        getState: vi.fn(),
-        setState: vi.fn(),
-        subscribe: vi.fn(),
+        getState: jest.fn(),
+        setState: jest.fn(),
+        subscribe: jest.fn(),
       };
-      (create as unknown as ReturnType<typeof vi.fn>).mockReturnValue(mockStore);
+      (create as unknown as ReturnType<typeof jest.fn>).mockReturnValue(mockStore);
       
       // Act
       const store = createStore({ initialState: { count: 0 } });
@@ -64,7 +64,7 @@ describe('Zustand Store Configuration', () => {
   describe('Middleware Configuration', () => {
     it('should apply middleware when creating a store', () => {
       // Arrange
-      const middleware = vi.fn().mockImplementation((config) => config);
+      const middleware = jest.fn().mockImplementation((config) => config);
       
       // Act
       createStore({ 
@@ -78,8 +78,8 @@ describe('Zustand Store Configuration', () => {
 
     it('should apply multiple middleware in the correct order', () => {
       // Arrange
-      const middleware1 = vi.fn().mockImplementation((config) => config);
-      const middleware2 = vi.fn().mockImplementation((config) => config);
+      const middleware1 = jest.fn().mockImplementation((config) => config);
+      const middleware2 = jest.fn().mockImplementation((config) => config);
       const order: number[] = [];
       
       middleware1.mockImplementation((config) => {

@@ -256,7 +256,7 @@ export function createOptimisticStore<T>(
       applyOptimisticUpdate(action, operationId);
       
       // Make the actual API call
-      const response = await httpClient({
+      const response = await httpClient.request({
         url: action.endpoint,
         method: action.method as Method,
         data: action.method !== 'get' && action.method !== 'delete' ? action.payload : undefined,

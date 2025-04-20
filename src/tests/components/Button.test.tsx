@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent, describe, it, expect, vi } from '../../tests/utils';
+import { render, screen, fireEvent, describe, it, expect, jest } from '../../tests/utils';
 
 // Import the Button component
 import { Button } from '../../components/ui/Button';
@@ -80,7 +80,7 @@ describe('Button Component', () => {
 
     it('should not trigger onClick when disabled', () => {
       // This test will fail until the Button component is implemented
-      const handleClick = vi.fn();
+      const handleClick = jest.fn();
       render(<Button disabled onClick={handleClick}>Click me</Button>);
       const button = screen.getByRole('button', { name: /click me/i });
       fireEvent.click(button);
@@ -99,7 +99,7 @@ describe('Button Component', () => {
 
     it('should be keyboard accessible', () => {
       // This test will fail until the Button component is implemented
-      const handleClick = vi.fn();
+      const handleClick = jest.fn();
       render(<Button onClick={handleClick}>Click me</Button>);
       const button = screen.getByRole('button', { name: /click me/i });
       fireEvent.keyDown(button, { key: 'Enter', code: 'Enter' });

@@ -39,7 +39,7 @@ describe('Feature Test Configuration', () => {
 
   // Reset mocks and test configuration before each test
   beforeEach(() => {
-    vi.resetAllMocks();
+    jest.resetAllMocks();
     resetTestConfig();
   });
 
@@ -178,9 +178,9 @@ describe('Feature Test Configuration', () => {
       };
 
       // Mock the implementation to return our expected coverage
-      vi.spyOn(global, 'fetch').mockResolvedValue({
+      jest.spyOn(global, 'fetch').mockResolvedValue({
         ok: true,
-        json: vi.fn().mockResolvedValue(expectedCoverage)
+        json: jest.fn().mockResolvedValue(expectedCoverage)
       } as any);
       
       // Act & Assert
@@ -195,10 +195,10 @@ describe('Feature Test Configuration', () => {
       initializeTestConfig(mockTestConfig);
       
       // Mock an error response from the API
-      vi.spyOn(global, 'fetch').mockResolvedValue({
+      jest.spyOn(global, 'fetch').mockResolvedValue({
         ok: false,
         status: 500,
-        json: vi.fn().mockResolvedValue({ error: 'Server error' })
+        json: jest.fn().mockResolvedValue({ error: 'Server error' })
       } as any);
       
       // Act & Assert
@@ -247,10 +247,10 @@ describe('Feature Test Configuration', () => {
       };
 
       // Set up the mock depending on which config is requested
-      vi.spyOn(global, 'fetch').mockImplementation((url: any) => {
+      jest.spyOn(global, 'fetch').mockImplementation((url: any) => {
         return Promise.resolve({
           ok: true,
-          json: vi.fn().mockResolvedValue({
+          json: jest.fn().mockResolvedValue({
             ...coverageResult,
             meetsCoverage: url.includes('low-threshold-test')
           })
@@ -286,9 +286,9 @@ describe('Feature Test Configuration', () => {
         meetsCoverage: false
       };
 
-      vi.spyOn(global, 'fetch').mockResolvedValue({
+      jest.spyOn(global, 'fetch').mockResolvedValue({
         ok: true,
-        json: vi.fn().mockResolvedValue(coverageWithUncoveredLines)
+        json: jest.fn().mockResolvedValue(coverageWithUncoveredLines)
       } as any);
       
       // Act & Assert

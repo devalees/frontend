@@ -28,8 +28,9 @@ describe('Development Tools', () => {
       const tsConfig = readJsonFile('tsconfig.json');
       expect(tsConfig).not.toBeNull();
       expect(tsConfig.compilerOptions).toBeDefined();
-      expect(tsConfig.compilerOptions.jsx).toBe('react-jsx');
-      expect(tsConfig.include).toContain('src/**/*');
+      expect(tsConfig.compilerOptions.jsx).toBe('preserve');
+      expect(tsConfig.include).toContain('**/*.ts');
+      expect(tsConfig.include).toContain('**/*.tsx');
     });
 
     it('should have ESLint configuration', () => {
@@ -52,20 +53,19 @@ describe('Development Tools', () => {
     it('should have correct TypeScript compiler options', () => {
       const tsConfig = readJsonFile('tsconfig.json');
       expect(tsConfig.compilerOptions).toEqual(expect.objectContaining({
-        target: 'ES2020',
+        target: 'es5',
         lib: expect.arrayContaining(['dom', 'dom.iterable', 'esnext']),
         allowJs: true,
         skipLibCheck: true,
         strict: true,
-        forceConsistentCasingInFileNames: true,
         noEmit: true,
         incremental: true,
         esModuleInterop: true,
         module: 'esnext',
-        moduleResolution: 'node',
+        moduleResolution: 'bundler',
         resolveJsonModule: true,
         isolatedModules: true,
-        jsx: 'react-jsx'
+        jsx: 'preserve'
       }));
     });
 
@@ -95,8 +95,7 @@ describe('Development Tools', () => {
     it('should have script commands for development tools', () => {
       const pkg = readJsonFile('package.json');
       expect(pkg.scripts).toEqual(expect.objectContaining({
-        'lint': 'eslint . --ext .ts,.tsx',
-        'lint:fix': 'eslint . --ext .ts,.tsx --fix',
+        'lint': 'next lint',
         'format': 'prettier --write "src/**/*.{ts,tsx}"',
         'type-check': 'tsc --noEmit'
       }));

@@ -6,8 +6,8 @@
  * consistent usage across the codebase.
  */
 
-// Re-export testing functions from vitest
-import { describe, it, expect, beforeEach, afterEach, vi, test } from 'vitest';
+// Re-export testing functions from Jest
+import { describe, it, expect, beforeEach, afterEach, jest, test } from '@jest/globals';
 
 // Export the testing functions
 export {
@@ -16,6 +16,6 @@ export {
   expect,
   beforeEach,
   afterEach,
-  vi,
+  jest,
   test
 }; 

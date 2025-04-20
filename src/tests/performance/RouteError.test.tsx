@@ -1,6 +1,6 @@
 import React from 'react';
 // Import core testing utilities directly from vitest
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { jest } from "@jest/globals";
 // Import DOM testing utilities from our centralized system
 import { render, screen, fireEvent } from '../utils';
 
@@ -8,13 +8,13 @@ import { RouteError } from '../../lib/routing';
 import { performanceMockInstance } from '../utils';
 
 describe('RouteError Performance', () => {
-  const mockRetry = vi.fn();
+  const mockRetry = jest.fn();
   const errorMessage = 'Test error message';
   const originalPerformance = window.performance;
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    performanceMockInstance.reset();
+    jest.clearAllMocks();
+    performanceMockInstance.resetAll();
     // Replace window.performance with our mock
     Object.defineProperty(window, 'performance', {
       configurable: true,

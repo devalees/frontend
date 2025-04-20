@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 // Import core testing utilities directly from vitest
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { jest } from "@jest/globals";
 // Import testing utilities from our centralized system
 import { waitFor, act, performanceMockInstance, render, fireEvent } from '../utils';
 import TestErrorBoundary, { ComponentError as ImportedComponentError } from '../../lib/utils/TestErrorBoundary';
@@ -18,12 +18,12 @@ const ErrorComponent = ({ error, retry }: { error: any; retry: () => void }) => 
 );
 
 // Create mock implementations
-const mockLoadComponent = vi.fn();
-const mockPreloadComponent = vi.fn();
-const mockRegisterComponent = vi.fn();
-const mockComponentErrorBoundary = vi.fn();
-const mockLazyLoadComponent = vi.fn();
-const mockGetComponent = vi.fn();
+const mockLoadComponent = jest.fn();
+const mockPreloadComponent = jest.fn();
+const mockRegisterComponent = jest.fn();
+const mockComponentErrorBoundary = jest.fn();
+const mockLazyLoadComponent = jest.fn();
+const mockGetComponent = jest.fn();
 
 // Define the component mock interfaces for TypeScript
 interface ComponentError extends Error {
@@ -80,7 +80,7 @@ const createErrorThrowingComponent = (errorMessage: string = 'Failed to load com
 const ErrorThrowingComponent = createErrorThrowingComponent();
 
 // Mock the component loader module
-vi.mock('../../lib/components/componentLoader', () => {
+jest.mock('../../lib/components/componentLoader', () => {
   return {
     loadComponent: mockLoadComponent,
     preloadComponent: mockPreloadComponent,
@@ -115,8 +115,8 @@ describe('Component-based Code Splitting', () => {
 
   beforeEach(() => {
     console.log('[TEST] Setting up test with cleared mocks');
-    vi.clearAllMocks();
-    performanceMockInstance.reset();
+    jest.clearAllMocks();
+    performanceMockInstance.resetAll();
     
     // Setup mock getComponent to return a component that can be rendered in tests
     mockGetComponent.mockImplementation((componentId, fallback) => {

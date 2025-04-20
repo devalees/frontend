@@ -452,7 +452,7 @@ const deleteProject = async (id: string): Promise<void> => {
       
       // Mock the API client
       const mockApi = {
-        delete: vi.fn().mockResolvedValue({ status: 200 })
+        delete: jest.fn().mockResolvedValue({ status: 200 })
       };
       
       // Mock global object for the test

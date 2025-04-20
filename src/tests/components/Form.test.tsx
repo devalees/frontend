@@ -59,7 +59,7 @@ describe('Form Component', () => {
   // Test validation
   describe('Validation', () => {
     it('should validate form fields on submit', async () => {
-      const handleSubmit = vi.fn();
+      const handleSubmit = jest.fn();
       
       render(
         <Form onSubmit={handleSubmit}>
@@ -172,7 +172,7 @@ describe('Form Component', () => {
   // Test submission
   describe('Submission', () => {
     it('should call onSubmit handler when form is valid', async () => {
-      const handleSubmit = vi.fn();
+      const handleSubmit = jest.fn();
       
       render(
         <Form onSubmit={handleSubmit}>
@@ -194,7 +194,7 @@ describe('Form Component', () => {
     });
 
     it('should prevent default form submission', async () => {
-      const handleSubmit = vi.fn();
+      const handleSubmit = jest.fn();
       
       render(
         <Form onSubmit={handleSubmit}>
@@ -206,7 +206,7 @@ describe('Form Component', () => {
       
       const form = screen.getByRole('form');
       const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
-      const preventDefaultSpy = vi.spyOn(submitEvent, 'preventDefault');
+      const preventDefaultSpy = jest.spyOn(submitEvent, 'preventDefault');
       
       await act(async () => {
         form.dispatchEvent(submitEvent);
@@ -216,7 +216,7 @@ describe('Form Component', () => {
     });
 
     it('should handle async form submission', async () => {
-      const handleSubmit = vi.fn().mockImplementation(() => 
+      const handleSubmit = jest.fn().mockImplementation(() => 
         new Promise(resolve => setTimeout(resolve, 100))
       );
       
@@ -245,7 +245,7 @@ describe('Form Component', () => {
 
     it('should handle submission errors', async () => {
       const error = new Error('Submission failed');
-      const handleSubmit = vi.fn().mockRejectedValue(error);
+      const handleSubmit = jest.fn().mockRejectedValue(error);
       
       render(
         <Form onSubmit={handleSubmit}>
@@ -301,7 +301,7 @@ describe('Form Component', () => {
     });
 
     it('should be keyboard accessible', async () => {
-      const handleSubmit = vi.fn();
+      const handleSubmit = jest.fn();
       
       render(
         <Form onSubmit={handleSubmit}>

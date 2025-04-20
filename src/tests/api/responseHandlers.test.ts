@@ -48,7 +48,7 @@ interface PaginatedResponse<T> {
 
 describe('API Response Handlers', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Response Parsing', () => {

@@ -1,122 +1,55 @@
-import { describe, it, expect } from './utils';
-import fs from 'fs';
-import path from 'path';
+import { readConfigFile, readJsonFile } from './utils/testImplementationUtils';
 
 describe('Build Tools', () => {
-  const rootDir = path.resolve(__dirname, '../../');
-
-  // Helper function to read configuration file
-  const readConfigFile = (filePath: string) => {
-    try {
-      const content = fs.readFileSync(path.join(rootDir, filePath), 'utf8');
-      if (filePath.endsWith('.ts')) {
-        // For TypeScript files, we'll do a simple check for the presence of required configurations
-        return {
-          build: content.includes('build:') && {
-            outDir: content.includes('outDir:') && content.includes("'dist'"),
-            sourcemap: content.includes('sourcemap:') && content.includes('true'),
-            minify: content.includes("minify: 'terser'"),
-            terserOptions: content.includes('terserOptions:'),
-            rollupOptions: content.includes('rollupOptions:') && {
-              output: content.includes('output:') && {
-                manualChunks: content.includes('manualChunks:'),
-                entryFileNames: content.includes('entryFileNames:') && content.includes('[hash]'),
-                chunkFileNames: content.includes('chunkFileNames:') && content.includes('[hash]'),
-                assetFileNames: content.includes('assetFileNames:') && content.includes('[hash]')
-              }
-            }
-          },
-          assetsInclude: content.includes('assetsInclude:') && [
-            '**/*.svg',
-            '**/*.png',
-            '**/*.jpg',
-            '**/*.jpeg',
-            '**/*.gif'
-          ],
-          publicDir: content.includes("publicDir: 'public'") && 'public',
-          resolve: content.includes('resolve:') && {
-            alias: content.includes('alias:')
-          }
-        };
-      }
-      return JSON.parse(content);
-    } catch (error) {
-      console.error('Error reading config file:', error);
-      return null;
-    }
-  };
-
   describe('Build Process', () => {
-    it('should have Vite configuration', () => {
-      const viteConfig = readConfigFile('vite.config.ts');
-      expect(viteConfig).not.toBeNull();
+    it('should have Next.js configuration', () => {
+      const nextConfig = readConfigFile('next.config.js');
+      expect(nextConfig).not.toBeNull();
     });
 
     it('should have build scripts in package.json', () => {
       const pkg = readConfigFile('package.json');
       expect(pkg.scripts).toEqual(expect.objectContaining({
-        'build': 'vite build',
-        'dev': 'vite',
-        'preview': 'vite preview'
+        'build': 'next build',
+        'dev': 'next dev',
+        'start': 'next start'
       }));
     });
 
-    it('should have proper build output configuration', () => {
-      const viteConfig = readConfigFile('vite.config.ts');
-      expect(viteConfig.build).toBeDefined();
-      expect(viteConfig.build.outDir).toBe(true);
-      expect(viteConfig.build.sourcemap).toBe(true);
+    it('should have proper build configuration', () => {
+      const nextConfig = readConfigFile('next.config.js');
+      expect(nextConfig).toBeDefined();
+      expect(nextConfig.reactStrictMode).toBe(true);
     });
   });
 
   describe('Asset Handling', () => {
     it('should have proper asset handling configuration', () => {
-      const viteConfig = readConfigFile('vite.config.ts');
-      expect(viteConfig.assetsInclude).toBeDefined();
-      expect(viteConfig.assetsInclude).toContain('**/*.svg');
-      expect(viteConfig.assetsInclude).toContain('**/*.png');
-      expect(viteConfig.assetsInclude).toContain('**/*.jpg');
-      expect(viteConfig.assetsInclude).toContain('**/*.jpeg');
-      expect(viteConfig.assetsInclude).toContain('**/*.gif');
-    });
-
-    it('should have proper static assets directory setup', () => {
-      // Check for src/styles directory which contains component styles
-      const stylesDir = path.join(rootDir, 'src', 'styles');
-      expect(fs.existsSync(stylesDir)).toBe(true);
-      
-      // Check for src/components directory which contains UI components
-      const componentsDir = path.join(rootDir, 'src', 'components');
-      expect(fs.existsSync(componentsDir)).toBe(true);
+      const nextConfig = readConfigFile('next.config.js');
+      expect(nextConfig.images).toBeDefined();
+      expect(nextConfig.images.domains).toBeDefined();
     });
 
     it('should have proper static file handling', () => {
-      const viteConfig = readConfigFile('vite.config.ts');
-      // We're not checking for publicDir anymore since it's not in our project structure
-      expect(viteConfig.resolve).toBeDefined();
-      expect(viteConfig.resolve.alias).toBeDefined();
+      const nextConfig = readConfigFile('next.config.js');
+      expect(nextConfig.publicRuntimeConfig).toBeDefined();
     });
   });
 
   describe('Optimization', () => {
     it('should have proper code splitting configuration', () => {
-      const viteConfig = readConfigFile('vite.config.ts');
-      expect(viteConfig.build.rollupOptions).toBeDefined();
-      expect(viteConfig.build.rollupOptions.output).toBeDefined();
-      expect(viteConfig.build.rollupOptions.output.manualChunks).toBeDefined();
+      const nextConfig = readConfigFile('next.config.js');
+      expect(nextConfig.experimental).toBeDefined();
     });
 
     it('should have proper minification configuration', () => {
-      const viteConfig = readConfigFile('vite.config.ts');
-      expect(viteConfig.build.minify).toBe(true);
-      expect(viteConfig.build.terserOptions).toBeDefined();
+      const nextConfig = readConfigFile('next.config.js');
+      expect(nextConfig.swcMinify).toBe(true);
     });
 
     it('should have proper caching configuration', () => {
-      const viteConfig = readConfigFile('vite.config.ts');
-      expect(viteConfig.build.rollupOptions.output.entryFileNames).toBe(true);
-      expect(viteConfig.build.rollupOptions.output.chunkFileNames).toBe(true);
-      expect(viteConfig.build.rollupOptions.output.assetFileNames).toBe(true);
+      const nextConfig = readConfigFile('next.config.js');
+      expect(nextConfig.experimental?.turbotrace).toBeDefined();
     });
   });
 }); 

@@ -87,7 +87,7 @@ function createRealtimeUpdates(socket: SocketClient, store: StoreApi<TestStore>)
 }
 
 describe('Real-time Updates', () => {
-  let mockSocket: { on: ReturnType<typeof vi.fn>; off: ReturnType<typeof vi.fn>; emit: ReturnType<typeof vi.fn> };
+  let mockSocket: { on: ReturnType<typeof jest.fn>; off: ReturnType<typeof jest.fn>; emit: ReturnType<typeof jest.fn> };
   let socketClient: SocketClient;
   let store: StoreApi<TestStore>;
   let realtimeUpdates: ReturnType<typeof createRealtimeUpdates>;
@@ -95,26 +95,26 @@ describe('Real-time Updates', () => {
   beforeEach(() => {
     // Setup mock socket
     mockSocket = {
-      on: vi.fn(),
-      off: vi.fn(),
-      emit: vi.fn()
+      on: jest.fn(),
+      off: jest.fn(),
+      emit: jest.fn()
     };
     
     // Setup socket client
     socketClient = {
-      connect: vi.fn().mockResolvedValue(undefined),
-      disconnect: vi.fn(),
-      isConnected: vi.fn().mockReturnValue(true),
-      on: vi.fn().mockImplementation((event, callback) => {
+      connect: jest.fn().mockResolvedValue(undefined),
+      disconnect: jest.fn(),
+      isConnected: jest.fn().mockReturnValue(true),
+      on: jest.fn().mockImplementation((event, callback) => {
         mockSocket.on(event, callback);
       }),
-      off: vi.fn().mockImplementation((event, callback) => {
+      off: jest.fn().mockImplementation((event, callback) => {
         mockSocket.off(event, callback);
       }),
-      emit: vi.fn().mockImplementation((event, data) => {
+      emit: jest.fn().mockImplementation((event, data) => {
         mockSocket.emit(event, data);
       }),
-      getSocket: vi.fn().mockReturnValue(mockSocket as unknown as Socket)
+      getSocket: jest.fn().mockReturnValue(mockSocket as unknown as Socket)
     };
     
     // Create a test store
@@ -140,7 +140,7 @@ describe('Real-time Updates', () => {
   });
   
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
   
   describe('Update Handling', () => {

@@ -5,7 +5,8 @@
  * It helps with testing performance measurements and timing.
  */
 
-import { vi, SpyInstance } from 'vitest';
+import { jest } from '@jest/globals';
+import type { SpyInstance } from 'jest-mock';
 
 // Type definitions
 interface MockPerformanceEntry extends PerformanceEntry {
@@ -27,7 +28,7 @@ class PerformanceMock {
   private entries: MockPerformanceEntry[] = [];
   
   // Create spy functions for testing
-  public mark = vi.fn((name: string) => {
+  public mark = jest.fn((name: string) => {
     this.marks[name] = Date.now();
     return {
       name,
@@ -44,7 +45,7 @@ class PerformanceMock {
     } as MockPerformanceMark;
   });
 
-  public measure = vi.fn((name: string, startMark: string, endMark: string) => {
+  public measure = jest.fn((name: string, startMark: string, endMark: string) => {
     const start = this.marks[startMark] || 0;
     const end = this.marks[endMark] || Date.now();
     const duration = end - start;
@@ -74,7 +75,14 @@ class PerformanceMock {
     this.marks = {};
     this.measures = {};
     this.entries = [];
-    vi.clearAllMocks();
+    jest.clearAllMocks();
+  }
+
+  /**
+   * Reset all performance mocks and clear stored metrics (alias for reset)
+   */
+  resetAll() {
+    this.reset();
   }
 
   /**
@@ -112,7 +120,7 @@ class PerformanceMock {
    */
   clearMarks() {
     this.marks = {};
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   }
 
   /**
@@ -120,7 +128,7 @@ class PerformanceMock {
    */
   clearMeasures() {
     this.measures = {};
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   }
 
   /**
@@ -128,7 +136,7 @@ class PerformanceMock {
    * This is used in tests to verify that performance marks and measures are called
    */
   spyOnMetrics() {
-    // Since we're already using vi.fn() for mark and measure,
+    // Since we're already using jest.fn() for mark and measure,
     // we can just return those directly as they already have spy functionality
     return {
       markSpy: this.mark,

@@ -139,7 +139,7 @@ describe('Selector Helpers', () => {
       
       const todosSelector = (state: TodoState) => state.todos;
       
-      const expensiveComputation = vi.fn((todos: Todo[]) => 
+      const expensiveComputation = jest.fn((todos: Todo[]) => 
         todos.filter(todo => todo.completed)
       );
       

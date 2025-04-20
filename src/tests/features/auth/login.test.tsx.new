@@ -1,0 +1,192 @@
+/**
+ * Authentication Login Tests
+ * 
+ * Tests for the login functionality, including:
+ * - API integration
+ * - Token storage
+ * - Error handling
+ */
+
+import { mockApiMethod, mockApiError, createMockResponse, resetApiMocks } from 'src/tests/utils';
+import { login, LoginResponse } from 'src/lib/api/auth';
+import { render, screen, waitFor, act, fireEvent } from 'src/tests/utils';
+import LoginForm from 'src/components/features/auth/LoginForm';
+
+describe('Authentication API', () => {
+  // Clean up mocks after each test
+  afterEach(() => {
+    resetApiMocks();
+    localStorage.clear();
+    jest.clearAllMocks();
+  });
+
+  describe('login', () => {
+    it('should successfully log in a user with valid credentials', async () => {
+      // Mock successful API response
+      const mockResponse: LoginResponse = {
+        access: 'mock-access-token',
+        refresh: 'mock-refresh-token',
+        user: {
+          id: 1,
+          username: 'testuser',
+          email: 'test@example.com',
+          is_active: true
+        }
+      };
+
+      // Setup mock API response
+      mockApiMethod('post', mockResponse);
+
+      // Call login function
+      const response = await login({ username: 'testuser', password: 'password123' });
+
+      // Verify response
+      expect(response).toEqual(mockResponse);
+
+      // Verify tokens stored in localStorage
+      expect(localStorage.getItem('auth_token')).toBe('mock-access-token');
+      expect(localStorage.getItem('refresh_token')).toBe('mock-refresh-token');
+    });
+
+    it('should handle login failure with invalid credentials', async () => {
+      // Mock API error response
+      mockApiError('post', 'Invalid credentials', 401, 'INVALID_CREDENTIALS');
+
+      // Call login function and expect it to throw
+      await expect(
+        login({ username: 'testuser', password: 'wrongpassword' })
+      ).rejects.toThrow();
+
+      // Verify no tokens in localStorage
+      expect(localStorage.getItem('auth_token')).toBeNull();
+      expect(localStorage.getItem('refresh_token')).toBeNull();
+    });
+
+    it('should handle network errors during login', async () => {
+      // Mock network error
+      mockApiError('post', 'Network Error', 0, 'NETWORK_ERROR');
+
+      // Call login function and expect it to throw
+      await expect(
+        login({ username: 'testuser', password: 'password123' })
+      ).rejects.toThrow('Network Error');
+
+      // Verify no tokens in localStorage
+      expect(localStorage.getItem('auth_token')).toBeNull();
+      expect(localStorage.getItem('refresh_token')).toBeNull();
+    });
+
+    it('should handle server errors during login', async () => {
+      // Mock server error
+      mockApiError('post', 'Internal Server Error', 500, 'INTERNAL_SERVER_ERROR');
+
+      // Call login function and expect it to throw
+      await expect(
+        login({ username: 'testuser', password: 'password123' })
+      ).rejects.toThrow();
+
+      // Verify no tokens in localStorage
+      expect(localStorage.getItem('auth_token')).toBeNull();
+      expect(localStorage.getItem('refresh_token')).toBeNull();
+    });
+  });
+});
+
+describe('Login Form Component', () => {
+  // Mock login function for form tests
+  const mockLoginFn = jest.fn();
+  
+  beforeEach(() => {
+    mockLoginFn.mockClear();
+  });
+
+  it('should render the login form correctly', () => {
+    render(<LoginForm onLogin={mockLoginFn} />);
+    
+    // Check if form elements are rendered
+    expect(screen.getByLabelText(/username or email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
+  });
+
+  it('should handle form submission with valid credentials', async () => {
+    // Setup mock API response for successful login
+    const mockResponse = createMockResponse({
+      access: 'mock-access-token',
+      refresh: 'mock-refresh-token',
+      user: {
+        id: 1,
+        username: 'testuser',
+        email: 'test@example.com',
+        is_active: true
+      }
+    });
+
+    // Mock the login function to resolve with mock response
+    mockLoginFn.mockResolvedValueOnce(mockResponse);
+
+    // Render the form
+    render(<LoginForm onLogin={mockLoginFn} />);
+
+    // Fill out the form
+    fireEvent.change(screen.getByLabelText(/username or email/i), {
+      target: { value: 'testuser' }
+    });
+    
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: 'password123' }
+    });
+
+    // Submit the form
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    // Wait for submission to complete
+    await waitFor(() => {
+      expect(mockLoginFn).toHaveBeenCalledWith({
+        username: 'testuser',
+        password: 'password123'
+      });
+    });
+  });
+
+  it('should show validation errors for empty fields', async () => {
+    render(<LoginForm onLogin={mockLoginFn} />);
+
+    // Submit the form without filling out any fields
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    // Check for validation errors
+    await waitFor(() => {
+      expect(screen.getByText(/username or email is required/i)).toBeInTheDocument();
+      expect(screen.getByText(/password is required/i)).toBeInTheDocument();
+    });
+
+    // Verify login function was not called
+    expect(mockLoginFn).not.toHaveBeenCalled();
+  });
+
+  it('should display error message on login failure', async () => {
+    // Mock login function to reject with error
+    mockLoginFn.mockRejectedValueOnce(new Error('Invalid credentials'));
+
+    // Render the form
+    render(<LoginForm onLogin={mockLoginFn} />);
+
+    // Fill out the form
+    fireEvent.change(screen.getByLabelText(/username or email/i), {
+      target: { value: 'testuser' }
+    });
+    
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: 'wrongpassword' }
+    });
+
+    // Submit the form
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+
+    // Check for error message
+    await waitFor(() => {
+      expect(screen.getByText(/invalid credentials/i)).toBeInTheDocument();
+    });
+  });
+}); 

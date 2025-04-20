@@ -1,6 +1,10 @@
 import React, { ReactElement } from 'react';
-import { render as rtlRender, RenderOptions } from '@testing-library/react';
+import { render as rtlRender, RenderOptions, cleanup, act, fireEvent, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { renderHook as rtlRenderHook, RenderHookOptions, RenderHookResult } from '@testing-library/react';
+
+// Import React hooks directly to make them available in tests
+import { useState, useEffect, useCallback, useMemo, useRef, useReducer } from 'react';
 
 // Since Zustand is used directly without a provider pattern, 
 // we don't need to import a StoreProvider.
@@ -74,6 +78,21 @@ function renderHook<TResult, TProps>(
   return rtlRenderHook(callback, { ...options, wrapper: Wrapper });
 }
 
+// Export React hooks so they can be used in test files
+export {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+  useReducer,
+  act,
+  cleanup,
+  fireEvent,
+  screen,
+  waitFor,
+  userEvent
+};
+
 // Re-export screen and other testing utilities for convenience
-export * from '@testing-library/react';
 export { render, renderHook }; 

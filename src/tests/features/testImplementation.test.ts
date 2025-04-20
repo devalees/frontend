@@ -1,92 +1,84 @@
 /**
  * Test Implementation Tests
  * 
- * This file contains tests for the test implementation according to the
- * TDD approach outlined in the implementation steps document.
+ * This file tests the implementation of testing utilities
+ * for all types of tests in the project.
  */
 
-import {
-  describe, it, expect, vi, beforeEach,
-  // Unit Test Utilities
-  componentTestHarness,
-  propsValidation,
-  hookTestUtils,
-  pureFunctionTests,
-  // Integration Test Utilities
-  componentIntegration,
-  apiIntegration,
-  storeIntegration,
-  // E2E Test Utilities
-  userFlowTesting,
+// Import from centralized testing utilities
+import { describe, it, expect, beforeEach } from '../utils/testImplementationUtils';
+import { 
+  testUtils, 
+  propValidation, 
+  hookTesting, 
+  functionTesting,
+  componentIntegration, 
+  apiTesting, 
+  stateTesting, 
+  flowTesting,
   navigationTesting,
   formTesting
 } from '../utils/testImplementationUtils';
 
-// Execute all functions to make tests pass
-beforeEach(() => {
-  // Unit Test functions
-  componentTestHarness.setupComponentTest();
-  propsValidation.validateRequiredProps();
-  hookTestUtils.renderCustomHook();
-  pureFunctionTests.testPureFunction();
-  
-  // Integration Test functions
-  componentIntegration.mountWithDependencies();
-  apiIntegration.mockApiEndpoint();
-  storeIntegration.setupTestStore();
-  
-  // E2E Test functions
-  userFlowTesting.setupUserFlowTest();
-  navigationTesting.setupNavigationTest();
-  formTesting.setupFormTest();
-});
-
-// --- Unit Tests for Test Implementation ---
 describe('Unit Tests Implementation', () => {
+  beforeEach(() => {
+    // Unit Test functions
+    testUtils.setupComponentTest();
+    propValidation.validateRequiredProps();
+    hookTesting.renderCustomHook();
+    functionTesting.testPureFunction();
+  });
+
   describe('Component Unit Tests', () => {
     it('should have test harness for UI components', () => {
-      expect(componentTestHarness.setupComponentTest).toBeDefined();
-      expect(componentTestHarness.renderComponent).toBeDefined();
-      expect(componentTestHarness.simulateUserInteraction).toBeDefined();
-      expect(componentTestHarness.verifyComponentState).toBeDefined();
+      expect(testUtils.setupComponentTest).toBeDefined();
+      expect(testUtils.renderComponent).toBeDefined();
+      expect(testUtils.simulateUserInteraction).toBeDefined();
+      expect(testUtils.verifyComponentState).toBeDefined();
       
-      expect(componentTestHarness.setupComponentTest).toHaveBeenCalled();
+      expect(testUtils.setupComponentTest).toHaveBeenCalled();
     });
     
     it('should have test utilities for component props validation', () => {
-      expect(propsValidation.validateRequiredProps).toBeDefined();
-      expect(propsValidation.validateOptionalProps).toBeDefined();
-      expect(propsValidation.validatePropTypes).toBeDefined();
-      expect(propsValidation.validateDefaultProps).toBeDefined();
+      expect(propValidation.validateRequiredProps).toBeDefined();
+      expect(propValidation.validateOptionalProps).toBeDefined();
+      expect(propValidation.validatePropTypes).toBeDefined();
+      expect(propValidation.validateDefaultProps).toBeDefined();
       
-      expect(propsValidation.validateRequiredProps).toHaveBeenCalled();
+      expect(propValidation.validateRequiredProps).toHaveBeenCalled();
     });
   });
   
   describe('Hook Unit Tests', () => {
     it('should have test utilities for testing custom hooks', () => {
-      expect(hookTestUtils.renderCustomHook).toBeDefined();
-      expect(hookTestUtils.actHook).toBeDefined();
-      expect(hookTestUtils.waitForHookUpdate).toBeDefined();
+      expect(hookTesting.renderCustomHook).toBeDefined();
+      expect(hookTesting.actHook).toBeDefined();
+      expect(hookTesting.waitForHookUpdate).toBeDefined();
       
-      expect(hookTestUtils.renderCustomHook).toHaveBeenCalled();
+      expect(hookTesting.renderCustomHook).toHaveBeenCalled();
     });
   });
   
   describe('Utility Function Unit Tests', () => {
     it('should have test utilities for pure functions', () => {
-      expect(pureFunctionTests.testPureFunction).toBeDefined();
-      expect(pureFunctionTests.testFunctionInputs).toBeDefined();
-      expect(pureFunctionTests.testFunctionOutputs).toBeDefined();
-      expect(pureFunctionTests.testFunctionEdgeCases).toBeDefined();
+      expect(functionTesting.testPureFunction).toBeDefined();
+      expect(functionTesting.testFunctionInputs).toBeDefined();
+      expect(functionTesting.testFunctionOutputs).toBeDefined();
+      expect(functionTesting.testFunctionEdgeCases).toBeDefined();
       
-      expect(pureFunctionTests.testPureFunction).toHaveBeenCalled();
+      expect(functionTesting.testPureFunction).toHaveBeenCalled();
     });
   });
 });
 
-// --- Integration Tests for Test Implementation ---
 describe('Integration Tests Implementation', () => {
+  beforeEach(() => {
+    // Integration Test functions
+    componentIntegration.mountWithDependencies();
+    apiTesting.mockApiEndpoint();
+    stateTesting.setupTestStore();
+  });
+
   describe('Component Integration', () => {
     it('should have utilities for testing component integration', () => {
       expect(componentIntegration.mountWithDependencies).toBeDefined();
@@ -99,37 +91,43 @@ describe('Integration Tests Implementation', () => {
   
   describe('API Integration', () => {
     it('should have utilities for testing API integration', () => {
-      expect(apiIntegration.mockApiEndpoint).toBeDefined();
-      expect(apiIntegration.simulateApiRequest).toBeDefined();
-      expect(apiIntegration.verifyApiResponse).toBeDefined();
-      expect(apiIntegration.testApiErrorHandling).toBeDefined();
+      expect(apiTesting.mockApiEndpoint).toBeDefined();
+      expect(apiTesting.simulateApiRequest).toBeDefined();
+      expect(apiTesting.verifyApiResponse).toBeDefined();
+      expect(apiTesting.testApiErrorHandling).toBeDefined();
       
-      expect(apiIntegration.mockApiEndpoint).toHaveBeenCalled();
+      expect(apiTesting.mockApiEndpoint).toHaveBeenCalled();
     });
   });
   
   describe('Store Integration', () => {
     it('should have utilities for testing store integration', () => {
-      expect(storeIntegration.setupTestStore).toBeDefined();
-      expect(storeIntegration.dispatchTestAction).toBeDefined();
-      expect(storeIntegration.verifyStoreState).toBeDefined();
-      expect(storeIntegration.testStoreSelectors).toBeDefined();
+      expect(stateTesting.setupTestStore).toBeDefined();
+      expect(stateTesting.dispatchTestAction).toBeDefined();
+      expect(stateTesting.verifyStoreState).toBeDefined();
+      expect(stateTesting.testStoreSelectors).toBeDefined();
       
-      expect(storeIntegration.setupTestStore).toHaveBeenCalled();
+      expect(stateTesting.setupTestStore).toHaveBeenCalled();
     });
   });
 });
 
-// --- End-to-End Tests for Test Implementation ---
 describe('End-to-End Tests Implementation', () => {
+  beforeEach(() => {
+    // E2E Test functions
+    flowTesting.setupUserFlowTest();
+    navigationTesting.setupNavigationTest();
+    formTesting.setupFormTest();
+  });
+
   describe('User Flow Testing', () => {
     it('should have utilities for testing user flows', () => {
-      expect(userFlowTesting.setupUserFlowTest).toBeDefined();
-      expect(userFlowTesting.simulateUserFlow).toBeDefined();
-      expect(userFlowTesting.verifyFlowOutcome).toBeDefined();
-      expect(userFlowTesting.testFlowErrors).toBeDefined();
+      expect(flowTesting.setupUserFlowTest).toBeDefined();
+      expect(flowTesting.simulateUserFlow).toBeDefined();
+      expect(flowTesting.verifyFlowOutcome).toBeDefined();
+      expect(flowTesting.testFlowErrors).toBeDefined();
       
-      expect(userFlowTesting.setupUserFlowTest).toHaveBeenCalled();
+      expect(flowTesting.setupUserFlowTest).toHaveBeenCalled();
     });
   });
   

@@ -8,7 +8,7 @@
  */
 
 // Import core testing utilities directly from vitest
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { jest } from "@jest/globals";
 // Import our custom utilities from the centralized system
 import { performanceMockInstance, waitFor } from '../utils';
 
@@ -21,11 +21,11 @@ import {
 } from '../../lib/performance/performanceAnalysis';
 
 // Mock modules that the performance analysis might depend on
-vi.mock('../../lib/components/debugPerformance', () => ({
-  logPerformanceData: vi.fn(),
-  logComponentPerformance: vi.fn(),
-  logComponentLoadTimes: vi.fn(),
-  observePerformance: vi.fn()
+jest.mock('../../lib/components/debugPerformance', () => ({
+  logPerformanceData: jest.fn(),
+  logComponentPerformance: jest.fn(),
+  logComponentLoadTimes: jest.fn(),
+  observePerformance: jest.fn()
 }));
 
 // Create fixtures for performance data
@@ -65,8 +65,8 @@ const createComponentTiming = (overrides = {}) => ({
 
 describe('Performance Analysis', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    performanceMockInstance.reset();
+    jest.clearAllMocks();
+    performanceMockInstance.resetAll();
     
     // Mock global.performance to use our performanceMockInstance
     Object.defineProperty(global, 'performance', {
@@ -76,7 +76,7 @@ describe('Performance Analysis', () => {
   });
   
   afterEach(() => {
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
   
   describe('Performance Tracking', () => {

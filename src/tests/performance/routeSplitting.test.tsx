@@ -1,9 +1,9 @@
 import React from 'react';
 // Import core testing utilities directly from vitest
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { jest } from "@jest/globals";
 // Import DOM testing utilities from our centralized system
 import { render, screen, waitFor, act } from '../utils';
-import { prettyDOM } from '@testing-library/react';
+import { prettyDOM  } from '../../tests/utils';
 
 // Import the actual components we're testing
 import { RouteLink, RouteError, RouteLoading } from '../../lib/routing';
@@ -13,9 +13,9 @@ import { getRouteChunks, preloadChunk } from '../../lib/routing/chunkLoader';
 import { performanceMockInstance, createRouteFixture, createChunkFixture } from '../utils';
 
 // Mock the chunk loader
-vi.mock('../../lib/routing/chunkLoader', () => ({
-  getRouteChunks: vi.fn(),
-  preloadChunk: vi.fn()
+jest.mock('../../lib/routing/chunkLoader', () => ({
+  getRouteChunks: jest.fn(),
+  preloadChunk: jest.fn()
 }));
 
 // Mock global.performance to use our performanceMockInstance utility
@@ -26,7 +26,7 @@ Object.defineProperty(global, 'performance', {
 
 describe('Route-based Code Splitting', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     performanceMockInstance.reset();
     
     // Debug: Log mock resets

@@ -1,15 +1,15 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '../../../tests/utils';
 import { RouteError } from '../RouteError';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 
 // Mock performance API
 const mockPerformance = {
-  mark: vi.fn(),
-  measure: vi.fn(),
-  getEntriesByName: vi.fn(),
-  clearMarks: vi.fn(),
-  clearMeasures: vi.fn(),
+  mark: jest.fn(),
+  measure: jest.fn(),
+  getEntriesByName: jest.fn(),
+  clearMarks: jest.fn(),
+  clearMeasures: jest.fn(),
 };
 
 // Replace global performance with mock
@@ -21,7 +21,7 @@ Object.defineProperty(window, 'performance', {
 describe('RouteError', () => {
   beforeEach(() => {
     // Clear all mocks before each test
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('renders error message correctly', () => {
@@ -33,7 +33,7 @@ describe('RouteError', () => {
   });
 
   it('renders retry button when onRetry is provided', () => {
-    const onRetry = vi.fn();
+    const onRetry = jest.fn();
     render(<RouteError message="Test error" onRetry={onRetry} />);
     
     const retryButton = screen.getByRole('button', { name: /retry loading route/i });
@@ -87,7 +87,7 @@ describe('RouteError', () => {
   });
 
   it('marks performance for retry action', () => {
-    const onRetry = vi.fn();
+    const onRetry = jest.fn();
     render(<RouteError message="Test error" onRetry={onRetry} />);
     
     const retryButton = screen.getByRole('button', { name: /retry loading route/i });

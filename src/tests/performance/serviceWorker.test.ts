@@ -8,10 +8,10 @@
  */
 
 // Import core testing utilities directly from vitest
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { jest } from "@jest/globals";
 // Import our custom utilities from the centralized system
 import { waitFor, performanceMockInstance } from '../utils';
-import type { Mock } from 'vitest';
+import { jest } from "@jest/globals";
 
 // Define the ServiceWorkerRegistration type
 // Global scope already has a ServiceWorkerRegistration interface
@@ -93,25 +93,33 @@ const createMockServiceWorker = () => {
 Object.defineProperty(window, 'navigator', {
   value: {
     serviceWorker: {
-      register: vi.fn(),
+      register: jest.fn(),
     },
   },
   configurable: true,
 });
 
-// Mock the caches API
-Object.defineProperty(window, 'caches', {
-  value: {
-    match: vi.fn(),
-    open: vi.fn().mockImplementation(() => Promise.resolve({
-      put: vi.fn(),
-      match: vi.fn(),
-      addAll: vi.fn().mockResolvedValue(undefined),
+// Mock the caches API - only if it doesn't already exist
+if (!('caches' in window)) {
+  window.caches = {
+    match: jest.fn(),
+    open: jest.fn().mockImplementation(() => Promise.resolve({
+      put: jest.fn(),
+      match: jest.fn(),
+      addAll: jest.fn().mockResolvedValue(undefined),
     })),
-    delete: vi.fn(),
-  },
-  configurable: true,
-});
+    delete: jest.fn(),
+  } as any;
+} else {
+  // If caches already exists, just mock its methods
+  window.caches.match = jest.fn();
+  window.caches.open = jest.fn().mockImplementation(() => Promise.resolve({
+    put: jest.fn(),
+    match: jest.fn(),
+    addAll: jest.fn().mockResolvedValue(undefined),
+  }));
+  window.caches.delete = jest.fn();
+}
 
 // Mock global.performance to use our performanceMockInstance utility
 Object.defineProperty(global, 'performance', {
@@ -126,18 +134,18 @@ const mockFetchResponse = () =>
     headers: new Headers()
   }) as unknown as Promise<Response>;
 
-global.fetch = vi.fn().mockImplementation(mockFetchResponse);
+global.fetch = jest.fn().mockImplementation(mockFetchResponse);
 
 describe('Service Worker Performance Tracking', () => {
   let serviceWorker: any;
-  let fetchSpy: Mock;
+  let fetchSpy: any;
   let performanceSpy: any;
 
   beforeEach(async () => {
-    vi.resetModules();
-    vi.clearAllMocks();
+    jest.resetModules();
+    jest.clearAllMocks();
 
-    fetchSpy = vi.fn().mockImplementation(mockFetchResponse);
+    fetchSpy = jest.fn().mockImplementation(mockFetchResponse);
     global.fetch = fetchSpy as unknown as typeof fetch;
 
     // Spy on the mark method
@@ -157,14 +165,14 @@ describe('Service Worker Performance Tracking', () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Worker Registration', () => {
     it('should mark performance when registration is successful', async () => {
       // Setup successful registration
       const mockRegistration = { scope: 'https://example.com/' };
-      window.navigator.serviceWorker.register = vi.fn().mockResolvedValue(mockRegistration);
+      window.navigator.serviceWorker.register = jest.fn().mockResolvedValue(mockRegistration);
 
       await serviceWorker.registerServiceWorker('/service-worker.js');
 
@@ -173,29 +181,33 @@ describe('Service Worker Performance Tracking', () => {
     });
 
     it('should throw error when browser does not support service workers', async () => {
-      // Setup browser without service worker support
-      Object.defineProperty(window, 'navigator', {
-        value: {},
-        configurable: true,
-      });
-
-      await expect(serviceWorker.registerServiceWorker('/service-worker.js')).rejects.toThrow('Service workers are not supported in this browser');
+      // Setup browser without service worker support by completely redefining navigator
+      const originalNavigator = window.navigator;
       
-      // Restore navigator for other tests
-      Object.defineProperty(window, 'navigator', {
-        value: {
-          serviceWorker: {
-            register: vi.fn(),
-          },
-        },
+      // Save the original serviceWorker
+      const originalServiceWorker = window.navigator.serviceWorker;
+      
+      // Redefine the navigator.serviceWorker to be null
+      Object.defineProperty(window.navigator, 'serviceWorker', {
+        value: undefined,
         configurable: true,
+        writable: true
+      });
+      
+      // Now test the function
+      await expect(serviceWorker.registerServiceWorker('/service-worker.js')).rejects.toThrow('Service workers are not supported');
+      
+      // Restore navigator.serviceWorker for other tests
+      Object.defineProperty(window.navigator, 'serviceWorker', {
+        value: originalServiceWorker,
+        configurable: true
       });
     });
 
     it('should throw error when registration fails', async () => {
       // Setup failed registration
       const error = new Error('Registration failed');
-      window.navigator.serviceWorker.register = vi.fn().mockRejectedValue(error);
+      window.navigator.serviceWorker.register = jest.fn().mockRejectedValue(error);
 
       await expect(serviceWorker.registerServiceWorker('/service-worker.js')).rejects.toThrow('Registration failed');
     });
@@ -205,7 +217,7 @@ describe('Service Worker Performance Tracking', () => {
     it('should mark performance when resource is found in cache (cache hit)', async () => {
       // Setup cache hit
       const cachedResponse = new Response('Cached data');
-      window.caches.match = vi.fn().mockResolvedValue(cachedResponse);
+      window.caches.match = jest.fn().mockResolvedValue(cachedResponse);
 
       const controller = new serviceWorker.ServiceWorkerController();
       const response = await controller.fetch('/test-url');
@@ -217,7 +229,7 @@ describe('Service Worker Performance Tracking', () => {
 
     it('should mark performance when resource is not in cache (cache miss)', async () => {
       // Setup cache miss but network success
-      window.caches.match = vi.fn().mockResolvedValue(undefined);
+      window.caches.match = jest.fn().mockResolvedValue(undefined);
       const networkResponse = new Response('Network data', {
         headers: new Headers({ 'cache-control': 'max-age=3600' }),
       });
@@ -235,7 +247,7 @@ describe('Service Worker Performance Tracking', () => {
 
     it('should not cache resources with cache-control: no-store', async () => {
       // Setup cache miss with no-store header
-      window.caches.match = vi.fn().mockResolvedValue(undefined);
+      window.caches.match = jest.fn().mockResolvedValue(undefined);
       const networkResponse = new Response('Network data', {
         headers: new Headers({ 'cache-control': 'no-store' }),
       });
@@ -254,7 +266,7 @@ describe('Service Worker Performance Tracking', () => {
     it('should mark performance when network is offline and fallback to cache', async () => {
       // Setup cache hit but network failure
       const cachedResponse = new Response('Cached data');
-      window.caches.match = vi.fn().mockImplementation((url) => {
+      window.caches.match = jest.fn().mockImplementation((url) => {
         if (url === '/test-url') {
           return Promise.resolve(cachedResponse);
         }
@@ -274,7 +286,7 @@ describe('Service Worker Performance Tracking', () => {
 
     it('should mark performance when offline with no cache and fallback to offline page', async () => {
       // Setup no cache with offline fallback
-      window.caches.match = vi.fn().mockImplementation((url) => {
+      window.caches.match = jest.fn().mockImplementation((url) => {
         if (url === '/offline.json') {
           return Promise.resolve(new Response('Offline data'));
         }
@@ -306,7 +318,7 @@ describe('Service Worker Performance Tracking', () => {
     });
 
     it('should mark performance when clearing the cache', async () => {
-      window.caches.delete = vi.fn().mockResolvedValue(true);
+      window.caches.delete = jest.fn().mockResolvedValue(true);
       
       const controller = new serviceWorker.ServiceWorkerController();
       const result = await controller.clearCache();

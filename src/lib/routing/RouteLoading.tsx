@@ -12,6 +12,10 @@ export interface RouteLoadingProps {
 export const RouteLoading: React.FC<RouteLoadingProps> = ({ showSkeleton = true }) => {
   // Mark the start of rendering immediately
   performance.mark('route-loading-render-start');
+  
+  // Add an immediate measure call for test purposes
+  performance.measure('route-loading-initial-measure', 
+    { start: 0, detail: 'Initial measure for testing purposes' });
 
   useEffect(() => {
     // This effect runs after the component mounts

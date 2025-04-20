@@ -1,12 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent  } from '../../tests/utils';
+import { jest } from "@jest/globals";
 import { DebugPanel } from '../../components/debug/DebugPanel';
 import { useDebugger } from '../../lib/hooks/useDebugger';
 
 // Mock the useDebugger hook
-vi.mock('../../lib/hooks/useDebugger', () => ({
-  useDebugger: vi.fn(),
+jest.mock('../../lib/hooks/useDebugger', () => ({
+  useDebugger: jest.fn(),
 }));
 
 describe('DebugPanel', () => {
@@ -16,15 +16,15 @@ describe('DebugPanel', () => {
     levels: ['error', 'state', 'action'],
     actionHistory: [],
     stateHistory: [],
-    toggleDebug: vi.fn(),
-    setLevels: vi.fn(),
-    toggleLevel: vi.fn(),
-    clearHistory: vi.fn(),
+    toggleDebug: jest.fn(),
+    setLevels: jest.fn(),
+    toggleLevel: jest.fn(),
+    clearHistory: jest.fn(),
     debugTools: {},
   };
 
   beforeEach(() => {
-    vi.resetAllMocks();
+    jest.resetAllMocks();
     // Setup the default mock implementation
     (useDebugger as any).mockReturnValue(defaultMockDebugger);
   });

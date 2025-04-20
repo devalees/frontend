@@ -7,23 +7,28 @@
  * - Input validation
  */
 
-import { vi } from 'vitest';
+import { jest } from "@jest/globals";
 
 // Mock axios needs to be before other imports
-vi.mock('axios', () => ({
-  default: {
-    request: vi.fn().mockImplementation((config) => {
-      // Return a mock response
-      return Promise.resolve({
-        data: { success: true, ...config },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config
-      });
-    })
-  },
-}));
+jest.mock('axios', () => {
+  const mockRequest = jest.fn().mockImplementation((config) => {
+    // Return a mock response
+    return Promise.resolve({
+      data: { success: true, ...config },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config
+    });
+  });
+  
+  return {
+    request: mockRequest,
+    default: {
+      request: mockRequest
+    }
+  };
+});
 
 import { describe, it, expect, beforeEach } from '../../tests/utils';
 import axios from 'axios';
@@ -54,7 +59,7 @@ interface TestParams {
 
 describe('API Request Builders', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Request Creation', () => {

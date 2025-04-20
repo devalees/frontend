@@ -1,9 +1,9 @@
-import { vi } from 'vitest';
+import { jest } from "@jest/globals";
 
 // Mock Socket.io client needs to be before imports
-vi.mock('socket.io-client', () => ({
-  io: vi.fn(),
-  Socket: vi.fn()
+jest.mock('socket.io-client', () => ({
+  io: jest.fn(),
+  Socket: jest.fn()
 }));
 
 import { describe, it, expect, beforeEach, afterEach } from '../../tests/utils';
@@ -64,12 +64,12 @@ interface MockSocketManager {
 }
 
 interface MockSocket extends SocketCallbacks {
-  connect: ReturnType<typeof vi.fn>;
-  disconnect: ReturnType<typeof vi.fn>;
-  on: ReturnType<typeof vi.fn>;
-  off: ReturnType<typeof vi.fn>;
-  once: ReturnType<typeof vi.fn>;
-  emit: ReturnType<typeof vi.fn>;
+  connect: ReturnType<typeof jest.fn>;
+  disconnect: ReturnType<typeof jest.fn>;
+  on: ReturnType<typeof jest.fn>;
+  off: ReturnType<typeof jest.fn>;
+  once: ReturnType<typeof jest.fn>;
+  emit: ReturnType<typeof jest.fn>;
   connected: boolean;
   id: string;
   io: Partial<MockSocketManager>;
@@ -77,12 +77,12 @@ interface MockSocket extends SocketCallbacks {
 
 function createMockSocket(): MockSocket {
   const mockSocket: MockSocket = {
-    connect: vi.fn().mockReturnThis(),
-    disconnect: vi.fn().mockReturnThis(),
-    on: vi.fn().mockReturnThis(),
-    off: vi.fn().mockReturnThis(),
-    once: vi.fn().mockReturnThis(),
-    emit: vi.fn().mockReturnThis(),
+    connect: jest.fn().mockReturnThis(),
+    disconnect: jest.fn().mockReturnThis(),
+    on: jest.fn().mockReturnThis(),
+    off: jest.fn().mockReturnThis(),
+    once: jest.fn().mockReturnThis(),
+    emit: jest.fn().mockReturnThis(),
     connected: false,
     id: 'mock-socket-id',
     io: {
@@ -109,8 +109,8 @@ function createMockSocket(): MockSocket {
 
   // Add callback properties
   ['connect', 'disconnect', 'connect_error'].forEach((event) => {
-    mockSocket[`${event}Callback`] = vi.fn();
-    mockSocket[`${event}OnceCallback`] = vi.fn();
+    mockSocket[`${event}Callback`] = jest.fn();
+    mockSocket[`${event}OnceCallback`] = jest.fn();
   });
 
   return mockSocket;
@@ -137,34 +137,34 @@ function createMockSocketClient(socket: MockSocket): SocketClient {
   });
   
   return {
-    connect: vi.fn().mockImplementation(() => {
+    connect: jest.fn().mockImplementation(() => {
       connecting = true;
       return Promise.resolve();
     }),
-    disconnect: vi.fn().mockImplementation(() => {
+    disconnect: jest.fn().mockImplementation(() => {
       socket.connected = false;
       connecting = false;
       reconnecting = false;
     }),
-    isConnected: vi.fn().mockImplementation(() => socket.connected),
-    isConnecting: vi.fn().mockImplementation(() => connecting),
-    isReconnecting: vi.fn().mockImplementation(() => reconnecting),
-    getSocketId: vi.fn().mockImplementation(() => socket.connected ? socket.id : null),
-    on: vi.fn().mockImplementation((event, callback) => {
+    isConnected: jest.fn().mockImplementation(() => socket.connected),
+    isConnecting: jest.fn().mockImplementation(() => connecting),
+    isReconnecting: jest.fn().mockImplementation(() => reconnecting),
+    getSocketId: jest.fn().mockImplementation(() => socket.connected ? socket.id : null),
+    on: jest.fn().mockImplementation((event, callback) => {
       socket.on(event, callback);
     }),
-    off: vi.fn().mockImplementation((event, callback) => {
+    off: jest.fn().mockImplementation((event, callback) => {
       socket.off(event, callback);
     }),
-    emit: vi.fn().mockImplementation((event, data) => {
+    emit: jest.fn().mockImplementation((event, data) => {
       socket.emit(event, data);
     }),
-    getSocket: vi.fn().mockImplementation(() => socket as unknown as Socket)
+    getSocket: jest.fn().mockImplementation(() => socket as unknown as Socket)
   };
 }
 
 // Mock createSocketClient function
-const createSocketClient = vi.fn();
+const createSocketClient = jest.fn();
 
 describe('SocketClient', () => {
   let socketClient: SocketClient;
@@ -178,10 +178,10 @@ describe('SocketClient', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockSocket = createMockSocket();
     const socketModule = require('socket.io-client');
-    socketModule.io = vi.fn().mockReturnValue(mockSocket);
+    socketModule.io = jest.fn().mockReturnValue(mockSocket);
 
     // Setup mock implementations
     mockSocket.once.mockImplementation((event: string, callback: SocketCallback) => {
@@ -208,7 +208,7 @@ describe('SocketClient', () => {
     if (socketClient) {
       socketClient.disconnect();
     }
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('Connection', () => {
@@ -258,7 +258,7 @@ describe('SocketClient', () => {
   describe('Events', () => {
     it('should subscribe to events', () => {
       const eventName = 'test-event';
-      const handler = vi.fn();
+      const handler = jest.fn();
       
       socketClient.on(eventName, handler);
       expect(mockSocket.on).toHaveBeenCalledWith(eventName, handler);
@@ -266,7 +266,7 @@ describe('SocketClient', () => {
 
     it('should unsubscribe from events', () => {
       const eventName = 'test-event';
-      const handler = vi.fn();
+      const handler = jest.fn();
       
       socketClient.on(eventName, handler);
       socketClient.off(eventName, handler);
@@ -284,7 +284,7 @@ describe('SocketClient', () => {
     it('should handle incoming events', () => {
       const eventName = 'test-event';
       const expectedData = { message: 'Hello, client!' };
-      const handler = vi.fn();
+      const handler = jest.fn();
       
       socketClient.on(eventName, handler);
       mockSocket[`${eventName}Callback`]?.(expectedData);
@@ -299,7 +299,7 @@ describe('SocketClient', () => {
       const testSocket = createMockSocket();
       
       // Create a simple mock implementation that will allow us to control and test reconnection
-      const reconnectMock = vi.fn();
+      const reconnectMock = jest.fn();
       testSocket.connect = reconnectMock;
       
       // Setup the disconnect callback to trigger reconnection manually in this test
@@ -336,8 +336,8 @@ describe('SocketClient', () => {
     });
 
     it('should emit reconnection events', () => {
-      const reconnectingHandler = vi.fn();
-      const reconnectHandler = vi.fn();
+      const reconnectingHandler = jest.fn();
+      const reconnectHandler = jest.fn();
       
       socketClient.on(SocketEvent.RECONNECTING, reconnectingHandler);
       socketClient.on(SocketEvent.RECONNECT, reconnectHandler);

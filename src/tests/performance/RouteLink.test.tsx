@@ -1,14 +1,14 @@
 import React from 'react';
 // Import core testing utilities directly from vitest
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { jest } from "@jest/globals";
 // Import testing utilities from our centralized system
 import { render, screen, fireEvent, waitFor, performanceMockInstance } from '../utils';
 
 import { RouteLink } from '../../lib/routing';
 
-vi.mock('../../lib/routing/chunkLoader', () => ({
-  getRouteChunks: vi.fn(),
-  preloadChunk: vi.fn()
+jest.mock('../../lib/routing/chunkLoader', () => ({
+  getRouteChunks: jest.fn(),
+  preloadChunk: jest.fn()
 }));
 
 // Mock global.performance to use our performanceMockInstance utility
@@ -26,8 +26,8 @@ describe('RouteLink Performance', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
-    performanceMockInstance.reset();
+    jest.clearAllMocks();
+    performanceMockInstance.resetAll();
   });
 
   it('should preload route chunks efficiently on hover', async () => {
@@ -35,8 +35,8 @@ describe('RouteLink Performance', () => {
     const { getRouteChunks, preloadChunk } = await import('../../lib/routing/chunkLoader');
     
     // Configure mocks with synchronous resolution
-    vi.mocked(getRouteChunks).mockReturnValue(Promise.resolve([mockChunk]));
-    vi.mocked(preloadChunk).mockReturnValue(Promise.resolve(undefined));
+    jest.mocked(getRouteChunks).mockReturnValue(Promise.resolve([mockChunk]));
+    jest.mocked(preloadChunk).mockReturnValue(Promise.resolve(undefined));
 
     render(
       <RouteLink 
@@ -73,7 +73,7 @@ describe('RouteLink Performance', () => {
     const { markSpy, measureSpy } = performanceMockInstance.spyOnMetrics();
     const { getRouteChunks } = await import('../../lib/routing/chunkLoader');
     
-    vi.mocked(getRouteChunks).mockResolvedValue([mockChunk]);
+    jest.mocked(getRouteChunks).mockResolvedValue([mockChunk]);
 
     render(
       <RouteLink 

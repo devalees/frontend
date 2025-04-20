@@ -134,7 +134,7 @@ describe('Header Component', () => {
 
     it('should handle navigation link clicks', () => {
       // This test will fail until the Header component is implemented
-      const handleNavClick = vi.fn();
+      const handleNavClick = jest.fn();
       render(<Header onNavClick={handleNavClick} />);
       const navLink = screen.getByRole('link', { name: /dashboard - desktop navigation/i });
       

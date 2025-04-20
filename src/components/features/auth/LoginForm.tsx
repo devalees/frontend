@@ -1,85 +1,67 @@
+/**
+ * Login Form Component
+ * 
+ * This component handles user login, including:
+ * - Form rendering and validation
+ * - API integration through provided callback
+ * - Error handling and user feedback
+ */
+
 import React, { useState } from 'react';
-import { Input } from '../../ui/Input';
-import { Button } from '../../ui/Button';
-import { useStore } from '../../../lib/store';
-import { LoginCredentials, AuthSlice } from '../../../lib/store/slices/authSlice';
+import { LoginCredentials } from '@/lib/api/auth';
 
 interface LoginFormProps {
-  onSuccess?: () => void;
-  className?: string;
+  onLogin: (credentials: LoginCredentials) => Promise<any>;
+  loading?: boolean;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ 
-  onSuccess,
-  className = '',
-}) => {
-  // Get auth methods from store with proper typing
-  const { login, authState } = useStore() as AuthSlice;
-  
-  // Local form state
-  const [loginMethod, setLoginMethod] = useState<'username' | 'email'>('email');
+export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, loading = false }) => {
+  // Form state
   const [formData, setFormData] = useState<LoginCredentials>({
-    email: '',
-    password: '',
+    username: '',
+    password: ''
   });
-  const [errors, setErrors] = useState<{
-    username?: string;
-    email?: string;
-    password?: string;
-    general?: string;
-  }>({});
-
-  // Loading state from the auth slice
-  const isLoading = authState.status === 'loading';
   
-  // Toggle between username and email login
-  const toggleLoginMethod = () => {
-    const newMethod = loginMethod === 'username' ? 'email' : 'username';
-    setLoginMethod(newMethod);
-    
-    // Reset form data and errors for the changed field
-    setFormData(prev => ({
-      ...prev,
-      username: newMethod === 'username' ? '' : undefined,
-      email: newMethod === 'email' ? '' : undefined,
-    }));
-    setErrors(prev => {
-      const { [loginMethod]: _, ...rest } = prev;
-      return rest;
-    });
-  };
+  // Validation state
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Error message from API
+  const [apiError, setApiError] = useState<string | null>(null);
+  
+  // Loading state for form submission
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Clear errors when user types
-    if (errors[name as keyof typeof errors]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
+    // Clear validation error when field is edited
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
     }
+    
+    // Clear API error when any field is changed
+    if (apiError) {
+      setApiError(null);
+    }
+    
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Form validation
+  // Validate form data
   const validateForm = (): boolean => {
-    const newErrors: typeof errors = {};
+    const newErrors: Record<string, string> = {};
     
-    if (loginMethod === 'username' && !formData.username?.trim()) {
-      newErrors.username = 'Username is required';
+    // Check if username/email is provided
+    if (!formData.username && !formData.email) {
+      newErrors.username = 'Username or email is required';
     }
     
-    if (loginMethod === 'email') {
-      if (!formData.email?.trim()) {
-        newErrors.email = 'Email is required';
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        newErrors.email = 'Please enter a valid email address';
-      }
-    }
-    
-    if (!formData.password?.trim()) {
+    // Check if password is provided
+    if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
+      newErrors.password = 'Password must be at least 8 characters long';
     }
     
     setErrors(newErrors);
@@ -87,140 +69,117 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   };
 
   // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    // Clear general error
-    setErrors(prev => ({ ...prev, general: undefined }));
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
     
-    if (!validateForm()) return;
+    setIsSubmitting(true);
     
     try {
-      // Prepare credentials based on login method
-      const credentials: LoginCredentials = {
-        password: formData.password,
-      };
-
-      if (loginMethod === 'username') {
-        credentials.username = formData.username;
-      } else {
-        credentials.email = formData.email;
-      }
-      
-      // Attempt login
-      await login(credentials);
-      
-      // Call success callback if provided
-      if (onSuccess) {
-        onSuccess();
-      }
+      // Call the login function with credentials
+      await onLogin(formData);
+      // Form submission was successful
+      setFormData({ username: '', password: '' });
     } catch (error) {
       // Handle login error
-      setErrors(prev => ({ 
-        ...prev, 
-        general: error instanceof Error 
-          ? error.message 
-          : 'Login failed. Please check your credentials and try again.'
-      }));
+      setApiError(error instanceof Error ? error.message : 'Login failed');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // This handles the submit button click
-  const handleButtonClick = () => {
-    // The form's onSubmit will be triggered by the button click
-  };
-
   return (
-    <div className={`w-full max-w-md mx-auto ${className}`}>
-      <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-        {/* Login method toggle */}
-        <div className="text-sm text-right">
-          <button 
-            type="button"
-            onClick={toggleLoginMethod}
-            className="text-primary-600 hover:text-primary-500 font-medium"
-          >
-            Use {loginMethod === 'username' ? 'Email' : 'Username'} Instead
-          </button>
+    <div className="login-form-container">
+      <h1 className="text-2xl font-bold mb-4">Sign In</h1>
+      
+      {apiError && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+          <span className="block sm:inline">{apiError}</span>
+        </div>
+      )}
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="form-group">
+          <label htmlFor="username" className="block text-sm font-medium">
+            Username or Email
+          </label>
+          <input
+            id="username"
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            className={`mt-1 block w-full px-3 py-2 border ${errors.username ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500`}
+            placeholder="Enter username or email"
+            disabled={isSubmitting || loading}
+          />
+          {errors.username && (
+            <p className="mt-2 text-sm text-red-600">{errors.username}</p>
+          )}
         </div>
         
-        {/* Username or Email field */}
-        {loginMethod === 'username' ? (
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-              Username
-            </label>
-            <Input
-              id="username"
-              name="username"
-              type="text"
-              autoComplete="username"
-              value={formData.username || ''}
-              onChange={handleChange}
-              error={!!errors.username}
-              errorMessage={errors.username}
-              aria-label="Username"
-              disabled={isLoading}
-              required
-            />
-          </div>
-        ) : (
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              value={formData.email || ''}
-              onChange={handleChange}
-              error={!!errors.email}
-              errorMessage={errors.email}
-              aria-label="Email"
-              disabled={isLoading}
-              required
-            />
-          </div>
-        )}
-        
-        {/* Password field */}
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="form-group">
+          <label htmlFor="password" className="block text-sm font-medium">
             Password
           </label>
-          <Input
+          <input
             id="password"
-            name="password"
             type="password"
-            autoComplete="current-password"
-            value={formData.password || ''}
+            name="password"
+            value={formData.password}
             onChange={handleChange}
-            error={!!errors.password}
-            errorMessage={errors.password}
-            aria-label="Password"
-            disabled={isLoading}
-            required
+            className={`mt-1 block w-full px-3 py-2 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500`}
+            placeholder="Enter password"
+            disabled={isSubmitting || loading}
           />
+          {errors.password && (
+            <p className="mt-2 text-sm text-red-600">{errors.password}</p>
+          )}
         </div>
         
-        {/* General error message */}
-        {errors.general && (
-          <div className="text-sm text-red-600" role="alert">
-            {errors.general}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <input
+              id="remember-me"
+              name="remember-me"
+              type="checkbox"
+              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            />
+            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+              Remember me
+            </label>
           </div>
-        )}
+          
+          <div className="text-sm">
+            <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+              Forgot your password?
+            </a>
+          </div>
+        </div>
         
-        {/* Submit button */}
         <div>
           <button
             type="submit"
-            className="w-full px-4 py-2 bg-primary-600 text-white rounded-md font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-            disabled={isLoading}
+            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+              isSubmitting || loading ? 'opacity-70 cursor-not-allowed' : ''
+            }`}
+            disabled={isSubmitting || loading}
           >
-            {isLoading ? 'Signing In...' : 'Sign In'}
+            {isSubmitting || loading ? 'Signing in...' : 'Sign in'}
           </button>
+        </div>
+        
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{' '}
+            <a href="/register" className="font-medium text-blue-600 hover:text-blue-500">
+              Sign up
+            </a>
+          </p>
         </div>
       </form>
     </div>

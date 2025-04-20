@@ -4,14 +4,14 @@ import { withDebugger, DebugLevel, createDebugTools, DebugState } from '../../li
 
 // Mock console methods
 const originalConsole = { ...console };
-vi.spyOn(console, 'log').mockImplementation(() => {});
-vi.spyOn(console, 'groupCollapsed').mockImplementation(() => {});
-vi.spyOn(console, 'groupEnd').mockImplementation(() => {});
+jest.spyOn(console, 'log').mockImplementation(() => {});
+jest.spyOn(console, 'groupCollapsed').mockImplementation(() => {});
+jest.spyOn(console, 'groupEnd').mockImplementation(() => {});
 
 describe('Debugger Middleware', () => {
   // Reset console mocks between tests
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   // Type definitions for our test store
@@ -235,7 +235,7 @@ describe('Debugger Middleware', () => {
     
     it('should respect custom logging config', () => {
       // Create a custom logger
-      const customLogger = vi.fn();
+      const customLogger = jest.fn();
       
       // Create store with custom logger
       const store = createTestStore({

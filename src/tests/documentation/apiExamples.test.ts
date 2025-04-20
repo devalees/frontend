@@ -275,7 +275,7 @@ describe('API Examples Documentation', () => {
   describe('Example Testing', () => {
     beforeEach(() => {
       // Set up mocks for fetch or axios
-      vi.spyOn(global, 'fetch').mockImplementation((url) => {
+      jest.spyOn(global, 'fetch').mockImplementation((url) => {
         if (url === '/api/users') {
           return Promise.resolve({
             ok: true,
@@ -289,7 +289,7 @@ describe('API Examples Documentation', () => {
     
     afterEach(() => {
       // Clean up mocks
-      vi.restoreAllMocks();
+      jest.restoreAllMocks();
     });
     
     it('should execute JavaScript examples to verify they work', async () => {

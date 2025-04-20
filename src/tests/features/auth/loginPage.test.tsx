@@ -5,29 +5,29 @@
  * It tests page rendering, component integration, and navigation.
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { jest } from "@jest/globals";
 import LoginPage from '../../../app/(auth)/login/page';
 
 // Mock Next.js router
-const mockPush = vi.fn();
-vi.mock('next/navigation', () => ({
+const mockPush = jest.fn();
+jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: mockPush,
   }),
 }));
 
 // Mock the auth slice
-const mockIsAuthenticated = vi.fn().mockReturnValue(false);
+const mockIsAuthenticated = jest.fn().mockReturnValue(false);
 
 // Mock the store
-vi.mock('../../../lib/store', () => ({
+jest.mock('../../../lib/store', () => ({
   useStore: () => ({
     isAuthenticated: mockIsAuthenticated
   })
 }));
 
 // Mock the login form component
-vi.mock('../../../components/features/auth/LoginForm', () => ({
+jest.mock('../../../components/features/auth/LoginForm', () => ({
   default: (props: { onSuccess: () => void }) => (
     <div data-testid="login-form">
       <button data-testid="mock-submit" onClick={props.onSuccess}>
@@ -41,7 +41,7 @@ describe('Login Page', () => {
   // Reset state before each test
   beforeEach(() => {
     // Reset mocks
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockIsAuthenticated.mockReturnValue(false);
     mockPush.mockReset();
   });

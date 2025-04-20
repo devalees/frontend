@@ -8,7 +8,7 @@
  */
 
 // Import testing utilities from centralized testing framework - NO direct testing library imports
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { jest } from "@jest/globals";
 
 // Import utility functions
 import {
@@ -45,29 +45,31 @@ import {
   DocStructure
 } from '../../lib/features/docSetup';
 
-// Mock validateDocContent for specific tests
-vi.mock('../../lib/features/docSetup', async (importOriginal) => {
-  const actual = await importOriginal() as Record<string, unknown>;
+// Mock the getEnvironment function inside docSetup
+jest.mock('../../lib/features/docSetup', () => {
+  const actual = jest.requireActual('../../lib/features/docSetup');
   return {
     ...actual,
-    validateDocContent: vi.fn().mockImplementation((content) => {
+    validateDocContent: jest.fn().mockImplementation((content) => {
       // Always return valid true for the test cases
       return { valid: true, errors: [] };
     }),
-    checkDocFormat: vi.fn().mockImplementation((content) => {
+    checkDocFormat: jest.fn().mockImplementation((content) => {
       // Always return valid true for the test cases
       return { valid: true, errors: [] };
-    })
+    }),
+    // Mock getEnvironment to always return "development"
+    getEnvironment: jest.fn().mockReturnValue('development')
   };
 });
 
 // Mock console.log to test debug functionality
-vi.spyOn(console, 'log').mockImplementation((...args) => {
+jest.spyOn(console, 'log').mockImplementation((...args) => {
   // Do nothing for tests
 });
 
 // Mock console.error to test error logging
-vi.spyOn(console, 'error').mockImplementation((...args) => {
+jest.spyOn(console, 'error').mockImplementation((...args) => {
   // Do nothing for tests
 });
 
@@ -198,24 +200,21 @@ describe('Feature Documentation Implementation', () => {
 
   // Reset mocks before each test
   beforeEach(() => {
-    vi.resetAllMocks();
+    jest.resetAllMocks();
     resetDocImplementation();
     initializeDocStructure(mockDocStructure);
     
     // Reset the mock implementation for validateDocContent
-    vi.mocked(validateDocContent).mockImplementation(() => {
+    jest.mocked(validateDocContent).mockImplementation(() => {
       return { valid: true, errors: [] };
     });
-    
-    // Reset the process.env.NODE_ENV mock
-    vi.stubEnv('NODE_ENV', 'development');
     
     // Reset debug mode
     setDebugMode(false);
   });
   
   afterEach(() => {
-    vi.unstubAllEnvs();
+    // No need for any cleanup here anymore
   });
 
   describe('Feature Documentation Generation', () => {
@@ -295,7 +294,7 @@ describe('Feature Documentation Implementation', () => {
     
     it('should generate documentation for validation in test mode', () => {
       // Arrange
-      vi.stubEnv('NODE_ENV', 'test');
+      process.env.NODE_ENV = 'test';
       
       // Act
       const result = generateFeatureDocsForValidation(mockFeatureDocConfig, true);
@@ -367,7 +366,7 @@ describe('Feature Documentation Implementation', () => {
     
     it('should handle error situations', () => {
       // Arrange  
-      vi.spyOn(console, 'error');
+      jest.spyOn(console, 'error');
       
       // Act & Assert
       expect(() => generateUsageGuides(mockUsageGuideConfig, { throwError: true, errorMessage: 'Test error' }))
@@ -451,7 +450,7 @@ describe('Feature Documentation Implementation', () => {
     
     it('should handle error situations', () => {
       // Arrange  
-      vi.spyOn(console, 'error');
+      jest.spyOn(console, 'error');
       
       // Act & Assert
       expect(() => generateExamples(mockExampleConfig, { throwError: true, errorMessage: 'Test error' }))
@@ -508,7 +507,7 @@ describe('Feature Documentation Implementation', () => {
     it('should disable debug mode when setDebugMode is called with false', () => {
       // Arrange
       setDebugMode(true);
-      vi.clearAllMocks();
+      jest.clearAllMocks();
       
       // Act
       setDebugMode(false);

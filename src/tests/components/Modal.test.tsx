@@ -1,12 +1,17 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import { Modal } from '../../components/ui/Modal';
+import { render, screen, fireEvent, waitFor  } from '../utils';
+import { jest } from "@jest/globals";
 
 // Mock createPortal to render directly in the document
-vi.mock('react-dom', () => ({
-  createPortal: (children: React.ReactNode) => children,
-}));
+jest.mock('react-dom', () => {
+  const originalModule = jest.requireActual('react-dom');
+  return {
+    ...originalModule,
+    createPortal: (children: React.ReactNode) => children,
+  };
+});
+
+import { Modal } from '../../components/ui/Modal';
 
 describe('Modal Component', () => {
   // Clean up after each test
@@ -53,7 +58,7 @@ describe('Modal Component', () => {
   // Test interactions
   describe('Interactions', () => {
     test('should call onClose when close button is clicked', () => {
-      const handleClose = vi.fn();
+      const handleClose = jest.fn();
       render(
         <Modal isOpen={true} onClose={handleClose}>
           <div>Modal Content</div>
@@ -67,7 +72,7 @@ describe('Modal Component', () => {
     });
 
     test('should call onClose when clicking outside the modal', () => {
-      const handleClose = vi.fn();
+      const handleClose = jest.fn();
       render(
         <Modal isOpen={true} onClose={handleClose}>
           <div>Modal Content</div>
@@ -81,7 +86,7 @@ describe('Modal Component', () => {
     });
 
     test('should not call onClose when clicking inside the modal content', () => {
-      const handleClose = vi.fn();
+      const handleClose = jest.fn();
       render(
         <Modal isOpen={true} onClose={handleClose}>
           <div>Modal Content</div>
@@ -95,7 +100,7 @@ describe('Modal Component', () => {
     });
 
     test('should close when Escape key is pressed', () => {
-      const handleClose = vi.fn();
+      const handleClose = jest.fn();
       render(
         <Modal isOpen={true} onClose={handleClose}>
           <div>Modal Content</div>

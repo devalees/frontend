@@ -8,7 +8,7 @@
 
 import { act, renderHook } from '@testing-library/react';
 import React from 'react';
-import { vi } from 'vitest';
+import { jest } from '@jest/globals';
 
 /**
  * Hook Testing Utilities
@@ -97,7 +97,7 @@ export const hookTestUtils = {
    */
   testHookCleanup<Result extends Record<string, any>>(
     useHook: () => Result & { cleanup?: () => void },
-    mockCleanupFn = vi.fn()
+    mockCleanupFn = jest.fn()
   ) {
     let cleanupFn: () => void = () => {};
     

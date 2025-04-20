@@ -7,7 +7,7 @@
  * - Input validation
  */
 
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import type { AxiosRequestConfig } from 'axios';
 
 // HTTP method enum used by the request builder
 export enum RequestMethod {
@@ -49,6 +49,9 @@ export function createRequest<ResponseType = any, RequestDataType = any>(
   config: RequestConfig
 ): (data?: RequestDataType) => Promise<ResponseType> {
   return async (data?: RequestDataType): Promise<ResponseType> => {
+    // Import axios dynamically to avoid circular dependencies
+    const axios = (await import('axios')).default;
+    
     const requestConfig: AxiosRequestConfig = {
       method: config.method,
       url: config.endpoint,
@@ -67,6 +70,7 @@ export function createRequest<ResponseType = any, RequestDataType = any>(
       requestConfig.params = config.params;
     }
 
+    // Make the actual API request
     const response = await axios.request(requestConfig);
     return response.data;
   };

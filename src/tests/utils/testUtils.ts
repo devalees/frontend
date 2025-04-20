@@ -1,39 +1,58 @@
-import { vi } from 'vitest';
+import { jest, expect, describe, it, test, beforeEach, afterEach, beforeAll, afterAll } from '@jest/globals';
 import { render as rtlRender, RenderOptions, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import React from 'react';
+import fs from 'fs';
+import path from 'path';
 
 /**
  * Mock Performance API for testing
  */
 export const mockPerformance = {
-  mark: vi.fn(),
-  measure: vi.fn(),
-  getEntriesByName: vi.fn().mockReturnValue([]),
-  getEntriesByType: vi.fn().mockReturnValue([]),
-  clearMarks: vi.fn(),
-  clearMeasures: vi.fn(),
-  now: vi.fn().mockReturnValue(Date.now()),
+  mark: jest.fn(),
+  measure: jest.fn(),
+  getEntriesByName: jest.fn().mockReturnValue([]),
+  getEntriesByType: jest.fn().mockReturnValue([]),
+  clearMarks: jest.fn(),
+  clearMeasures: jest.fn(),
+  now: jest.fn().mockReturnValue(Date.now()),
 };
 
-// Re-export testing-library utilities
-export { screen, fireEvent, waitFor, act };
+// Re-export everything
+export * from '@testing-library/react';
 
-/**
- * Custom render function that wraps the testing-library render
- * with any providers needed for the tests
- */
+// Extend the expect interface
+declare global {
+  namespace jest {
+    interface Matchers<R> {
+      toBeInTheDocument(): R;
+      toHaveTextContent(text: string): R;
+      toBeVisible(): R;
+      toHaveClass(className: string): R;
+      toHaveStyle(style: Record<string, any>): R;
+    }
+  }
+}
+
+// Create a custom render function
+interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
+  route?: string;
+  initialState?: Record<string, any>;
+}
+
 export function render(
   ui: React.ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'> & {
-    wrapper?: React.ComponentType<{ children: React.ReactNode }>;
-  }
+  options: CustomRenderOptions = {}
 ) {
-  const Wrapper = options?.wrapper || React.Fragment;
-  
-  return rtlRender(ui, {
-    ...options,
-    wrapper: Wrapper,
-  });
+  const { route, initialState, ...renderOptions } = options;
+
+  // Set up any providers needed (e.g., Router, Redux, etc.)
+  function Wrapper({ children }: { children: React.ReactNode }) {
+    return children;
+  }
+
+  return {
+    ...rtlRender(ui, { wrapper: Wrapper, ...renderOptions }),
+  };
 }
 
 /**
@@ -68,6 +87,68 @@ export function renderHook<TProps, TResult>(
         },
       };
     },
-    unmount: vi.fn(),
+    unmount: jest.fn(),
   };
-} 
+}
+
+// Re-export everything
+export { screen, fireEvent, waitFor, act };
+
+// Export mocking utilities
+export const mockFn = jest.fn;
+export const mockImplementation = jest.fn;
+export const mockResolvedValue = jest.fn().mockResolvedValue;
+export const mockRejectedValue = jest.fn().mockRejectedValue;
+
+// Export assertion utilities
+export {
+  expect,
+  describe,
+  it,
+  test,
+  beforeEach,
+  afterEach,
+  beforeAll,
+  afterAll,
+};
+
+const rootDir = process.cwd();
+
+/**
+ * Read and parse a configuration file
+ */
+export const readConfigFile = (filePath: string) => {
+  try {
+    const fullPath = path.join(rootDir, filePath);
+    if (!fs.existsSync(fullPath)) {
+      return null;
+    }
+
+    const content = fs.readFileSync(fullPath, 'utf8');
+    
+    if (filePath.endsWith('.js')) {
+      // For JS files, we need to evaluate them
+      const module = { exports: {} };
+      eval(`(function(module, exports) { ${content} })(module, module.exports)`);
+      return module.exports;
+    }
+    
+    return JSON.parse(content);
+  } catch (error) {
+    console.error('Error reading config file:', error);
+    return null;
+  }
+};
+
+/**
+ * Read and parse a JSON file
+ */
+export const readJsonFile = (filePath: string) => {
+  try {
+    const content = fs.readFileSync(path.join(rootDir, filePath), 'utf8');
+    return JSON.parse(content);
+  } catch (error) {
+    console.error('Error reading JSON file:', error);
+    return null;
+  }
+}; 

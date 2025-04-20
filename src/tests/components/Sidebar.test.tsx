@@ -50,7 +50,7 @@ describe('Sidebar Component', () => {
   // Test interactions
   describe('Interactions', () => {
     it('should handle toggle button click correctly', () => {
-      const handleToggle = vi.fn();
+      const handleToggle = jest.fn();
       const { rerender } = render(<Sidebar expanded={false} onToggle={handleToggle} />);
       const toggleButton = screen.getByRole('button', { name: /toggle sidebar/i });
       
@@ -67,7 +67,7 @@ describe('Sidebar Component', () => {
     });
 
     it('should call onToggle callback when toggle button is clicked', () => {
-      const handleToggle = vi.fn();
+      const handleToggle = jest.fn();
       render(<Sidebar expanded={false} onToggle={handleToggle} />);
       const toggleButton = screen.getByRole('button', { name: /toggle sidebar/i });
       
@@ -76,7 +76,7 @@ describe('Sidebar Component', () => {
     });
 
     it('should call onNavItemClick when a navigation item is clicked', () => {
-      const handleNavItemClick = vi.fn();
+      const handleNavItemClick = jest.fn();
       const navItems = [
         { id: 'home', label: 'Home', icon: 'home' },
         { id: 'projects', label: 'Projects', icon: 'folder' }

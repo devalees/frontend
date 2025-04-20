@@ -6,8 +6,12 @@
  * point for importing test utilities.
  */
 
+import * as path from 'path';
+import * as fs from 'fs';
+
 // Import from testingFramework for test structure
-export { describe, it, expect, vi, beforeEach, afterEach } from './testingFramework';
+export { describe, it, expect, beforeEach, afterEach } from './testingFramework';
+import { jest } from './testingFramework';
 
 // Re-export existing test utilities
 export { 
@@ -16,224 +20,281 @@ export {
   mockPerformance 
 } from './testUtils';
 
-// Unit Test Utilities
-export const componentTestHarness = {
+// Export testUtil implementation details
+export const testUtils = {
   /**
    * Sets up a component test with the given props and options
    */
-  setupComponentTest: vi.fn(() => ({
+  setupComponentTest: jest.fn(() => ({
     Component: {},
     defaultProps: {},
-    render: vi.fn()
+    render: jest.fn()
   })),
-  
+
+  /**
+   * Sets up an integration test with the given modules and options
+   */
+  setupIntegrationTest: jest.fn(() => ({
+    modules: [],
+    mocks: {},
+    execute: jest.fn()
+  })),
+
   /**
    * Renders a component with the given props
    */
-  renderComponent: vi.fn(),
-  
+  renderComponent: jest.fn(),
+
   /**
    * Simulates user interactions with a component
    */
-  simulateUserInteraction: vi.fn(),
-  
+  simulateUserInteraction: jest.fn(),
+
   /**
    * Verifies component state after interactions
    */
-  verifyComponentState: vi.fn()
+  verifyComponentState: jest.fn()
 };
 
-export const propsValidation = {
+// Export prop validation utilities
+export const propValidation = {
   /**
    * Validates required props for a component
    */
-  validateRequiredProps: vi.fn(),
-  
+  validateRequiredProps: jest.fn(),
+
   /**
    * Validates optional props for a component
    */
-  validateOptionalProps: vi.fn(),
-  
+  validateOptionalProps: jest.fn(),
+
   /**
    * Validates prop types for a component
    */
-  validatePropTypes: vi.fn(),
-  
+  validatePropTypes: jest.fn(),
+
   /**
    * Validates default props for a component
    */
-  validateDefaultProps: vi.fn()
+  validateDefaultProps: jest.fn()
 };
 
-export const hookTestUtils = {
+// Export hook testing utilities
+export const hookTesting = {
   /**
    * Renders a custom hook for testing
    */
-  renderCustomHook: vi.fn(),
-  
+  renderCustomHook: jest.fn(),
+
   /**
    * Wrapper for React's act function to update hook state
    */
-  actHook: vi.fn(),
-  
+  actHook: jest.fn(),
+
   /**
    * Waits for hook updates to complete
    */
-  waitForHookUpdate: vi.fn()
+  waitForHookUpdate: jest.fn()
 };
 
-export const pureFunctionTests = {
+// Export function testing utilities
+export const functionTesting = {
   /**
    * Tests a pure function with various inputs and expected outputs
    */
-  testPureFunction: vi.fn(),
-  
+  testPureFunction: jest.fn(),
+
   /**
    * Tests a function with various input variations
    */
-  testFunctionInputs: vi.fn(),
-  
+  testFunctionInputs: jest.fn(),
+
   /**
    * Tests a function's output characteristics
    */
-  testFunctionOutputs: vi.fn(),
-  
+  testFunctionOutputs: jest.fn(),
+
   /**
    * Tests a function with edge cases
    */
-  testFunctionEdgeCases: vi.fn()
+  testFunctionEdgeCases: jest.fn()
 };
 
-// Integration Test Utilities
+// Export component integration testing utilities
 export const componentIntegration = {
   /**
    * Mounts a component with all its dependencies
    */
-  mountWithDependencies: vi.fn(),
-  
+  mountWithDependencies: jest.fn(),
+
   /**
    * Simulates interaction between components
    */
-  simulateComponentInteraction: vi.fn(),
-  
+  simulateComponentInteraction: jest.fn(),
+
   /**
    * Verifies component integration
    */
-  verifyComponentIntegration: vi.fn()
+  verifyComponentIntegration: jest.fn()
 };
 
-export const apiIntegration = {
+// Export API testing utilities
+export const apiTesting = {
   /**
    * Mocks an API endpoint with a response
    */
-  mockApiEndpoint: vi.fn(),
-  
+  mockApiEndpoint: jest.fn(),
+
   /**
    * Simulates an API request
    */
-  simulateApiRequest: vi.fn(),
-  
+  simulateApiRequest: jest.fn(),
+
   /**
    * Verifies an API response
    */
-  verifyApiResponse: vi.fn(),
-  
+  verifyApiResponse: jest.fn(),
+
   /**
    * Tests API error handling
    */
-  testApiErrorHandling: vi.fn()
+  testApiErrorHandling: jest.fn()
 };
 
-export const storeIntegration = {
+// Export state management testing utilities
+export const stateTesting = {
   /**
    * Sets up a test store with initial state
    */
-  setupTestStore: vi.fn(),
-  
+  setupTestStore: jest.fn(),
+
   /**
    * Dispatches a test action to the store
    */
-  dispatchTestAction: vi.fn(),
-  
+  dispatchTestAction: jest.fn(),
+
   /**
    * Verifies store state after actions
    */
-  verifyStoreState: vi.fn(),
-  
+  verifyStoreState: jest.fn(),
+
   /**
    * Tests store selectors
    */
-  testStoreSelectors: vi.fn()
+  testStoreSelectors: jest.fn()
 };
 
-// End-to-End Test Utilities
-export const userFlowTesting = {
+// Export user flow testing utilities
+export const flowTesting = {
   /**
    * Sets up a user flow test with initial state and mocks
    */
-  setupUserFlowTest: vi.fn(),
-  
+  setupUserFlowTest: jest.fn(),
+
   /**
    * Simulates a complete user flow with multiple steps
    */
-  simulateUserFlow: vi.fn(),
-  
+  simulateUserFlow: jest.fn(),
+
   /**
    * Verifies the outcome of a user flow
    */
-  verifyFlowOutcome: vi.fn(),
-  
+  verifyFlowOutcome: jest.fn(),
+
   /**
    * Tests error handling in user flows
    */
-  testFlowErrors: vi.fn()
+  testFlowErrors: jest.fn()
 };
 
+// Export navigation testing utilities
 export const navigationTesting = {
   /**
    * Sets up a navigation test with mocked router
    */
-  setupNavigationTest: vi.fn(),
-  
+  setupNavigationTest: jest.fn(),
+
   /**
    * Simulates navigation between pages
    */
-  simulateNavigation: vi.fn(),
-  
+  simulateNavigation: jest.fn(),
+
   /**
    * Verifies the current route after navigation
    */
-  verifyCurrentRoute: vi.fn(),
-  
+  verifyCurrentRoute: jest.fn(),
+
   /**
    * Tests route parameters in navigation
    */
-  testRouteParameters: vi.fn()
+  testRouteParameters: jest.fn()
 };
 
+// Export form testing utilities
 export const formTesting = {
   /**
    * Sets up a form test with initial values and submit handler
    */
-  setupFormTest: vi.fn(),
-  
+  setupFormTest: jest.fn(),
+
   /**
    * Fills form fields with values
    */
-  fillFormFields: vi.fn(),
-  
+  fillFormFields: jest.fn(),
+
   /**
    * Simulates form submission
    */
-  simulateFormSubmission: vi.fn(),
-  
+  simulateFormSubmission: jest.fn(),
+
   /**
    * Verifies form submission result
    */
-  verifyFormSubmissionResult: vi.fn(),
-  
+  verifyFormSubmissionResult: jest.fn(),
+
   /**
    * Tests form validation
    */
-  testFormValidation: vi.fn()
+  testFormValidation: jest.fn()
+};
+
+const rootDir = process.cwd();
+
+/**
+ * Read and parse a configuration file
+ */
+export const readConfigFile = (filePath: string) => {
+  try {
+    const fullPath = path.join(rootDir, filePath);
+    if (!fs.existsSync(fullPath)) {
+      return null;
+    }
+
+    const content = fs.readFileSync(fullPath, 'utf8');
+    
+    if (filePath.endsWith('.js')) {
+      // For JS files, we need to evaluate them
+      const module = { exports: {} };
+      eval(`(function(module, exports) { ${content} })(module, module.exports)`);
+      return module.exports;
+    }
+    
+    return JSON.parse(content);
+  } catch (error) {
+    console.error('Error reading config file:', error);
+    return null;
+  }
+};
+
+/**
+ * Read and parse a JSON file
+ */
+export const readJsonFile = (filePath: string) => {
+  try {
+    const content = fs.readFileSync(path.join(rootDir, filePath), 'utf8');
+    return JSON.parse(content);
+  } catch (error) {
+    console.error('Error reading JSON file:', error);
+    return null;
+  }
 }; 

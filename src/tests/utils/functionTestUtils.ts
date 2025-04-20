@@ -6,7 +6,7 @@
  * and performance of utility functions.
  */
 
-import { vi } from 'vitest';
+import { jest } from '@jest/globals';
 
 /**
  * Pure Function Test Utilities
@@ -140,9 +140,9 @@ export const pureFunctionTests = {
       const inputCopy = JSON.parse(JSON.stringify(input));
       
       // Mock any potential side effect targets
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      const documentSpy = vi.spyOn(document, 'getElementById').mockImplementation(() => null);
-      const localStorageSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {});
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+      const documentSpy = jest.spyOn(document, 'getElementById').mockImplementation(() => null);
+      const localStorageSpy = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {});
       
       try {
         // Execute the function
@@ -165,4 +165,128 @@ export const pureFunctionTests = {
       }
     });
   }
-}; 
+};
+
+/**
+ * Function Test Utilities
+ * 
+ * This file provides utilities for testing JavaScript/TypeScript functions
+ */
+
+/**
+ * Simple performance test for a function
+ * 
+ * @param fn - Function to test
+ * @param args - Arguments to pass to the function
+ * @param iterations - Number of iterations (default: 1000)
+ * @returns Average execution time in milliseconds
+ */
+export function measurePerformance<T extends (...args: any[]) => any>(
+  fn: T,
+  args: Parameters<T>,
+  iterations = 1000
+): number {
+  // Run once first to avoid initial setup time affecting results
+  fn(...args);
+  
+  const start = performance.now();
+  
+  for (let i = 0; i < iterations; i++) {
+    fn(...args);
+  }
+  
+  const end = performance.now();
+  const totalTime = end - start;
+  
+  return totalTime / iterations;
+}
+
+/**
+ * Tests a function with different inputs and expected outputs
+ * 
+ * @param fn - Function to test
+ * @param testCases - Array of test cases with input and expected output
+ * @returns Array of test results
+ */
+export function testWithCases<T extends (...args: any[]) => any>(
+  fn: T,
+  testCases: Array<{
+    input: Parameters<T>;
+    expected: ReturnType<T>;
+    description?: string;
+  }>
+): Array<{
+  description: string;
+  passed: boolean;
+  input: Parameters<T>;
+  expected: ReturnType<T>;
+  actual: ReturnType<T>;
+}> {
+  return testCases.map(testCase => {
+    const { input, expected, description } = testCase;
+    const actual = fn(...input);
+    
+    const passed = JSON.stringify(actual) === JSON.stringify(expected);
+    
+    return {
+      description: description || `Test with input: ${JSON.stringify(input)}`,
+      passed,
+      input,
+      expected,
+      actual
+    };
+  });
+}
+
+/**
+ * Tests exception handling in a function
+ * 
+ * @param fn - Function to test
+ * @param input - Input that should cause an exception
+ * @param expectedError - Expected error (string or error instance)
+ * @returns Test result
+ */
+export function testException<T extends (...args: any[]) => any>(
+  fn: T,
+  input: Parameters<T>,
+  expectedError?: string | Error | RegExp
+): {
+  threw: boolean;
+  errorMessage?: string;
+  expected?: string;
+  passed: boolean;
+} {
+  try {
+    fn(...input);
+    
+    return {
+      threw: false,
+      passed: expectedError === undefined
+    };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    
+    let passed = true;
+    let expected;
+    
+    if (expectedError !== undefined) {
+      if (typeof expectedError === 'string') {
+        expected = expectedError;
+        passed = errorMessage.includes(expectedError);
+      } else if (expectedError instanceof RegExp) {
+        expected = expectedError.toString();
+        passed = expectedError.test(errorMessage);
+      } else if (expectedError instanceof Error) {
+        expected = expectedError.message;
+        passed = errorMessage.includes(expected);
+      }
+    }
+    
+    return {
+      threw: true,
+      errorMessage,
+      expected,
+      passed
+    };
+  }
+} 
