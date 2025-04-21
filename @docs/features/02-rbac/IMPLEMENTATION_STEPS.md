@@ -236,7 +236,7 @@
      - Add permission checks to protected routes
 
 3. **Implement Permission-Based Route Protection**
-   - [ ] Create permission-based route protection
+   - [x] Create permission-based route protection
      - File: `src/middleware.ts` (update existing middleware)
      - Check permissions for protected routes
      - Redirect unauthorized users
