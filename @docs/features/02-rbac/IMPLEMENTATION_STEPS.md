@@ -84,7 +84,7 @@
      - Support filtering and pagination
      - Add actions for edit and delete
 
-   - [ ] Implement permission form component
+   - [x] Implement permission form component
      - File: `src/components/features/rbac/PermissionForm.tsx`
      - Create form for adding/editing permissions
      - Use existing form components
