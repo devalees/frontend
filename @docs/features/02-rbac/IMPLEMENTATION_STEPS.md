@@ -209,13 +209,13 @@
 
 ### Phase 8: Permission Check Utility
 1. **Set Up Tests**
-   - [ ] Create permission check utility tests
+   - [x] Create permission check utility tests
      - File: `src/tests/utils/rbac.test.ts`
      - Test permission check functions
      - Test permission-based rendering hooks
 
 2. **Create Permission Check Utility**
-   - [ ] Implement permission check utility
+   - [x] Implement permission check utility
      - File: `src/utils/rbac.ts`
      - Create functions for checking permissions
      - Create hooks for permission-based rendering
