@@ -174,14 +174,14 @@
      - Use `componentTestUtils.ts` for component testing
 
 2. **Create Organization Context Components**
-   - [x] Implement organization context list component
-     - File: `src/components/features/rbac/organization-contexts/OrganizationContextList.tsx`
+   - [ ] Implement organization context list component
+     - File: `src/components/features/rbac/OrganizationContextList.tsx`
      - Display organization contexts in a table or list
      - Support filtering and pagination
      - Add actions for edit, delete, activate, and deactivate
 
-   - [x] Implement organization context form component
-     - File: `src/components/features/rbac/organization-contexts/OrganizationContextForm.tsx`
+   - [ ] Implement organization context form component
+     - File: `src/components/features/rbac/OrganizationContextForm.tsx`
      - Create form for adding/editing organization contexts
      - Use existing form components
      - Add validation and error handling
@@ -195,17 +195,11 @@
      - Use `componentTestUtils.ts` for component testing
 
 2. **Create Audit Log Components**
-   - [x] Implement audit log list component
-     - File: `src/components/features/rbac/AuditLogList.tsx`
-     - Display audit logs in a table or list
-     - Support filtering, pagination, and date range selection
-     - Add actions for view details
-
-   - [x] Implement audit log viewer component
-     - File: `src/components/features/rbac/AuditLogViewer.tsx`
-     - Display detailed audit log information
-     - Support for compliance reports
-     - Add filtering and export options
+   - [ ] Implement compliance report form component
+     - File: `src/components/features/rbac/ComplianceReportForm.tsx`
+     - Create form for generating compliance reports
+     - Add validation and error handling
+     - Support date range and filter options
 
 ### Phase 8: Permission Check Utility
 1. **Set Up Tests**
@@ -263,25 +257,25 @@
 
 ### Phase 11: Organization Context and Audit Log Pages
 1. **Set Up Tests**
-   - [ ] Create organization context page tests
+   - [x] Create organization context page tests
      - Directory: `src/tests/app/rbac/organization-contexts/`
      - Test page rendering and navigation
      - Test page integration with components and hooks
 
-   - [ ] Create audit log page tests
+   - [x] Create audit log page tests
      - Directory: `src/tests/app/rbac/audit-logs/`
      - Test page rendering and navigation
      - Test page integration with components and hooks
 
 2. **Create Organization Context Page**
-   - [ ] Implement organization contexts page
+   - [x] Implement organization contexts page
      - File: `src/app/(dashboard)/rbac/organization-contexts/page.tsx`
      - Use organization context list and form components
      - Add navigation and breadcrumbs
      - Handle organization context management actions
 
 3. **Create Audit Log Page**
-   - [ ] Implement audit logs page
+   - [x] Implement audit logs page
      - File: `src/app/(dashboard)/rbac/audit-logs/page.tsx`
      - Use audit log list and viewer components
      - Add navigation and breadcrumbs
