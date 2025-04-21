@@ -10,6 +10,9 @@ import { UserRole } from '../../../types/rbac';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import { Grid, GridItem } from '../../layout/Grid';
+import { Table } from '../ui/Table';
+import { Badge } from '../ui/Badge';
+import { formatDate } from '../../utils/date';
 
 interface UserRoleListProps {
   onActivateUserRole?: (userRole: UserRole) => void;
@@ -197,6 +200,76 @@ export const UserRoleList: React.FC<UserRoleListProps> = ({
     );
   }
 
+  const columns = [
+    {
+      header: 'User ID',
+      accessor: 'user_id',
+    },
+    {
+      header: 'Role ID',
+      accessor: 'role_id',
+    },
+    {
+      header: 'Status',
+      accessor: 'is_active',
+      cell: (value: boolean) => (
+        <Badge variant={value ? 'success' : 'danger'}>
+          {value ? 'Active' : 'Inactive'}
+        </Badge>
+      ),
+    },
+    {
+      header: 'Delegated By',
+      accessor: 'delegated_by',
+    },
+    {
+      header: 'Created At',
+      accessor: 'created_at',
+      cell: (value: string) => formatDate(value),
+    },
+    {
+      header: 'Actions',
+      accessor: 'id',
+      cell: (value: string, row: UserRole) => (
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onActivateUserRole && onActivateUserRole(row)}
+          >
+            Edit
+          </Button>
+          {row.is_active ? (
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => onDeactivateUserRole && onDeactivateUserRole(row)}
+            >
+              Deactivate
+            </Button>
+          ) : (
+            <Button
+              variant="success"
+              size="sm"
+              onClick={() => onActivateUserRole && onActivateUserRole(row)}
+            >
+              Activate
+            </Button>
+          )}
+          {onDelegateUserRole && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => onDelegateUserRole(row)}
+            >
+              Delegate
+            </Button>
+          )}
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Search and filter controls */}
@@ -213,77 +286,11 @@ export const UserRoleList: React.FC<UserRoleListProps> = ({
 
       {/* User roles table */}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                User ID
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Role ID
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {currentUserRoles.map((userRole) => (
-              <tr key={userRole.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {userRole.user_id}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {userRole.role_id}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    userRole.is_active 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {userRole.is_active ? 'Active' : 'Inactive'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                  {onActivateUserRole && (
-                    <Button 
-                      variant="tertiary" 
-                      size="small" 
-                      onClick={() => handleActivateUserRole(userRole)}
-                      disabled={isLoading}
-                    >
-                      Activate
-                    </Button>
-                  )}
-                  {onDeactivateUserRole && (
-                    <Button 
-                      variant="tertiary" 
-                      size="small" 
-                      onClick={() => handleDeactivateUserRole(userRole)}
-                      disabled={isLoading}
-                    >
-                      Deactivate
-                    </Button>
-                  )}
-                  {onDelegateUserRole && (
-                    <Button 
-                      variant="tertiary" 
-                      size="small" 
-                      onClick={() => handleDelegateUserRole(userRole)}
-                      disabled={isLoading}
-                    >
-                      Delegate
-                    </Button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <Table
+          data={currentUserRoles}
+          columns={columns}
+          emptyMessage="No user roles found"
+        />
       </div>
 
       {/* Pagination controls */}

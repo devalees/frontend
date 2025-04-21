@@ -25,6 +25,7 @@ export interface Role extends BaseEntity {
   is_active: boolean;
   activated_at?: string;
   deactivated_at?: string;
+  permissions: string[];
 }
 
 // Permission entity
@@ -34,15 +35,19 @@ export interface Permission extends BaseEntity {
   is_active: boolean;
   activated_at?: string;
   deactivated_at?: string;
+  resource: string;
+  action: string;
 }
 
 // UserRole entity
-export interface UserRole extends BaseEntity {
+export interface UserRole {
+  id: string;
   user_id: string;
   role_id: string;
   is_active: boolean;
-  activated_at?: string;
-  deactivated_at?: string;
+  delegated_by?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 // Resource entity
@@ -52,6 +57,7 @@ export interface Resource extends BaseEntity {
   is_active: boolean;
   activated_at?: string;
   deactivated_at?: string;
+  type: string;
 }
 
 // ResourceAccess entity
@@ -68,7 +74,7 @@ export interface ResourceAccess extends BaseEntity {
 export interface OrganizationContext extends BaseEntity {
   name: string;
   description: string;
-  parent_id: string | null;
+  parent_id?: string;
   is_active: boolean;
   activated_at?: string;
   deactivated_at?: string;

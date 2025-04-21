@@ -402,6 +402,65 @@ export const useRbac = () => {
     fetchAuditLogs();
   }, [fetchRoles, fetchPermissions, fetchUserRoles, fetchResources, fetchResourceAccess, fetchOrganizationContext, fetchAuditLogs]);
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const activateUserRole = async (userRoleId: string): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      // TODO: Implement API call to activate user role
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to activate user role');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deactivateUserRole = async (userRoleId: string): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      // TODO: Implement API call to deactivate user role
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to deactivate user role');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const delegateUserRole = async (userRoleId: string, delegatedBy: string): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      // TODO: Implement API call to delegate user role
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delegate user role');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const submitUserRole = async (userRole: Partial<UserRole>): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      // TODO: Implement API call to submit user role
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to submit user role');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     roles: {
       ...roles,
@@ -441,6 +500,12 @@ export const useRbac = () => {
       ...auditLogs,
       fetch: fetchAuditLogs,
       create: createAuditLog
-    }
+    },
+    loading,
+    error,
+    activateUserRole,
+    deactivateUserRole,
+    delegateUserRole,
+    submitUserRole,
   };
 }; 

@@ -125,7 +125,7 @@
      - Handle permission management actions
 
 4. **Create User Role Management Page**
-   - [ ] Implement user roles page
+   - [x] Implement user roles page
      - File: `src/app/(dashboard)/rbac/user-roles/page.tsx`
      - Use user role list and form components
      - Add navigation and breadcrumbs
