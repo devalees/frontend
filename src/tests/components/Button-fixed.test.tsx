@@ -47,10 +47,10 @@ describe('Button Component', () => {
   });
 
   it('applies the correct variant class based on the variant prop', () => {
-    render(<Button variant="primary">Primary Button</Button>);
+    render(<Button variant="default">Primary Button</Button>);
     
     // Check if the button has the primary variant class
     const buttonElement = screen.getByRole('button', { name: /Primary Button/i });
-    expect(buttonElement).toHaveClass('bg-primary-600'); // assuming 'bg-blue-600' is the class for primary buttons
+    expect(buttonElement).toHaveClass('bg-primary-600');
   });
 }); 

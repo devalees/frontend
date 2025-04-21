@@ -191,8 +191,8 @@ export function renderForIntegration(
   ui: ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>
 ) {
-  const Wrapper = function Wrapper({ children }: { children: ReactNode }): ReactElement {
-    return <>{children}</>;
+  const Wrapper = ({ children }: { children: ReactNode }): JSX.Element => {
+    return React.createElement(React.Fragment, null, children);
   };
 
   return render(ui, { wrapper: Wrapper, ...options });
