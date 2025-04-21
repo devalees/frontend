@@ -74,10 +74,11 @@
      - Connect to relevant API endpoints
 
 2. **Change Password**
-   - [ ] Add change password feature for logged-in users
+   - [x] Add change password feature for logged-in users
      - Create change password form
      - Validate current and new passwords
      - Show success/error messages
+     - **Note: Currently implemented as a simulation since the backend API doesn't have a dedicated change-password endpoint. The frontend interface is complete, but actual password changing functionality will require a backend endpoint update.**
 
 ## Testing Guidelines
 - Use centralized testing utilities from `src/tests/utils/`

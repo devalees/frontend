@@ -9,20 +9,14 @@
 
 import { useState } from 'react';
 import { User } from '../components/features/auth/UserProfile';
-import { logout as logoutApi } from '../lib/api/auth';
+import { logout as logoutApi, changePassword as changePasswordApi, ChangePasswordRequest } from '../lib/api/auth';
 
 interface UserProfileHookResult {
   user: User | null;
   isLoading: boolean;
   error: Error | null;
   logout: () => Promise<void>;
-  changePassword: (data: ChangePasswordData) => Promise<void>;
-}
-
-interface ChangePasswordData {
-  current_password: string;
-  new_password: string;
-  confirm_password: string;
+  changePassword: (data: ChangePasswordRequest, useSimulation?: boolean) => Promise<void>;
 }
 
 /**
@@ -31,16 +25,13 @@ interface ChangePasswordData {
 export function useUserProfile(): UserProfileHookResult {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
-
-  // Here we would typically use the auth store to get the current user
-  // This is a placeholder until the actual store is connected
-  const user: User = {
+  const [user, setUser] = useState<User | null>({
     id: 1,
     username: 'testuser',
     email: 'test@example.com',
     role: 'User',
     is_active: true,
-  };
+  });
 
   /**
    * Logout the current user
@@ -51,6 +42,7 @@ export function useUserProfile(): UserProfileHookResult {
     
     try {
       await logoutApi();
+      setUser(null);
       // Additional logout logic such as redirecting would go here
     } catch (error) {
       setError(error instanceof Error ? error : new Error('Failed to logout'));
@@ -62,23 +54,31 @@ export function useUserProfile(): UserProfileHookResult {
 
   /**
    * Change the current user's password
+   * @param data - The password change data
+   * @param useSimulation - Whether to use simulation mode (default: false)
    */
-  const changePassword = async (data: ChangePasswordData): Promise<void> => {
+  const changePassword = async (data: ChangePasswordRequest, useSimulation = false): Promise<void> => {
+    console.log('useUserProfile: changePassword called with:', {
+      current_password: data.current_password ? '********' : 'empty',
+      new_password: data.new_password ? '********' : 'empty',
+      confirm_password: data.confirm_password ? '********' : 'empty'
+    }, `useSimulation: ${useSimulation}`);
+    
     setIsLoading(true);
     setError(null);
     
     try {
-      // This would call the actual API to change the password
-      // For now, we'll just simulate a successful response after a delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // If we had an actual API call, it would look something like:
-      // await api.changePassword(data);
+      console.log('useUserProfile: Calling changePasswordApi');
+      // Call the actual API to change the password
+      await changePasswordApi(data, useSimulation);
+      console.log('useUserProfile: Password changed successfully');
     } catch (error) {
+      console.error('useUserProfile: Error changing password:', error);
       setError(error instanceof Error ? error : new Error('Failed to change password'));
       throw error;
     } finally {
       setIsLoading(false);
+      console.log('useUserProfile: Finished password change attempt, isLoading set to false');
     }
   };
 

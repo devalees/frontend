@@ -81,22 +81,32 @@ export const saveTokens = (tokens: AuthTokens): void => {
  * Returns null if tokens are not available
  */
 export const getTokens = (): AuthTokens | null => {
-  if (!isBrowser()) return null;
-
-  const access = localStorage.getItem(ACCESS_TOKEN_KEY);
-  // Try to get refresh token from cookie first, then fallback to localStorage
-  let refresh = Cookies.get(REFRESH_TOKEN_KEY);
-  
-  // Fallback to localStorage if cookie is not available
-  if (!refresh) {
-    refresh = localStorage.getItem(REFRESH_TOKEN_KEY) || undefined;
-  }
-  
-  if (!access || !refresh) {
+  if (!isBrowser()) {
+    console.warn('getTokens called in a non-browser environment');
     return null;
   }
-  
-  return { access, refresh };
+
+  try {
+    const access = localStorage.getItem(ACCESS_TOKEN_KEY);
+    // Try to get refresh token from cookie first, then fallback to localStorage
+    let refresh = Cookies.get(REFRESH_TOKEN_KEY);
+    
+    // Fallback to localStorage if cookie is not available
+    if (!refresh) {
+      refresh = localStorage.getItem(REFRESH_TOKEN_KEY) || undefined;
+    }
+    
+    if (!access || !refresh) {
+      console.warn(`Tokens incomplete: access=${!!access}, refresh=${!!refresh}`);
+      return null;
+    }
+    
+    console.log('Retrieved tokens successfully');
+    return { access, refresh };
+  } catch (error) {
+    console.error('Error retrieving tokens:', error);
+    return null;
+  }
 };
 
 /**

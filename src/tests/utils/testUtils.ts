@@ -1,5 +1,5 @@
 import { jest, expect, describe, it, test, beforeEach, afterEach, beforeAll, afterAll } from '@jest/globals';
-import { render as rtlRender, RenderOptions, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render as rtlRender, RenderOptions, screen, fireEvent, waitFor, act, cleanup } from '@testing-library/react';
 import React from 'react';
 import fs from 'fs';
 import path from 'path';
@@ -17,8 +17,21 @@ export const mockPerformance = {
   now: jest.fn().mockReturnValue(Date.now()),
 };
 
-// Re-export everything
+// Re-export everything from @testing-library/react
 export * from '@testing-library/react';
+
+// Re-export testing functions from @jest/globals
+export {
+  jest,
+  expect,
+  describe,
+  it,
+  test,
+  beforeEach,
+  afterEach,
+  beforeAll,
+  afterAll
+};
 
 // Extend the expect interface
 declare global {
@@ -96,20 +109,65 @@ export { screen, fireEvent, waitFor, act };
 
 // Export mocking utilities
 export const mockFn = jest.fn;
-export const mockImplementation = jest.fn;
-export const mockResolvedValue = jest.fn().mockResolvedValue;
-export const mockRejectedValue = jest.fn().mockRejectedValue;
 
-// Export assertion utilities
-export {
-  expect,
-  describe,
-  it,
-  test,
-  beforeEach,
-  afterEach,
-  beforeAll,
-  afterAll,
+// Cleanup after each test
+afterEach(() => {
+  cleanup();
+  jest.clearAllMocks();
+});
+
+// Helper to create mock API responses
+export const createMockApiResponse = <T>(data: T, status = 200) => {
+  return {
+    data,
+    status,
+    statusText: status === 200 ? 'OK' : 'Error',
+    headers: {},
+    config: {},
+  };
+};
+
+// Helper to create mock error responses
+export const createMockErrorResponse = (status = 400, message = 'Bad Request') => {
+  return {
+    response: {
+      data: { message },
+      status,
+      statusText: message,
+      headers: {},
+      config: {},
+    },
+  };
+};
+
+// Helper to wait for promises to resolve
+export const flushPromises = () => new Promise(resolve => setImmediate(resolve));
+
+// Helper to mock local storage
+export const mockLocalStorage = () => {
+  const store: Record<string, string> = {};
+  return {
+    getItem: jest.fn((key: string) => store[key] || null),
+    setItem: jest.fn((key: string, value: string) => {
+      store[key] = value.toString();
+    }),
+    removeItem: jest.fn((key: string) => {
+      delete store[key];
+    }),
+    clear: jest.fn(() => {
+      Object.keys(store).forEach(key => delete store[key]);
+    }),
+  };
+};
+
+// Helper to mock fetch
+export const mockFetch = (data: unknown) => {
+  return jest.fn().mockImplementation(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(data),
+    })
+  );
 };
 
 const rootDir = process.cwd();

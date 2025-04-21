@@ -1,15 +1,17 @@
 /**
  * User Profile Component
  * 
- * This component displays the currently authenticated user's profile and provides:
- * - User information display
- * - Logout functionality
- * - Change password functionality
+ * Displays the user profile information and provides actions:
+ * - View profile details
+ * - Change password
+ * - Logout
  */
 
-import React, { useState } from 'react';
-import { Button } from '../../ui/Button';
-import { Input } from '../../ui/Input';
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import ChangePasswordForm from './ChangePasswordForm';
+import { ChangePasswordRequest } from '@/lib/api/auth';
 
 // User type definition based on the auth slice
 export interface User {
@@ -20,17 +22,10 @@ export interface User {
   is_active: boolean;
 }
 
-// Change password form data type
-interface ChangePasswordData {
-  current_password: string;
-  new_password: string;
-  confirm_password: string;
-}
-
 interface UserProfileProps {
   user: User;
   onLogout: () => Promise<void>;
-  onChangePassword: (data: ChangePasswordData) => Promise<void>;
+  onChangePassword: (data: ChangePasswordRequest) => Promise<void>;
 }
 
 export const UserProfile: React.FC<UserProfileProps> = ({
@@ -38,118 +33,120 @@ export const UserProfile: React.FC<UserProfileProps> = ({
   onLogout,
   onChangePassword
 }) => {
-  // State for change password form visibility
-  const [showChangePasswordForm, setShowChangePasswordForm] = useState(false);
-  
-  // State for change password form data
-  const [passwordFormData, setPasswordFormData] = useState<ChangePasswordData>({
-    current_password: '',
-    new_password: '',
-    confirm_password: ''
+  // State for showing/hiding change password form
+  const [showChangePasswordForm, setShowChangePasswordForm] = useState<boolean>(false);
+  // Loading state for logout button
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
+  // Status message for operations
+  const [statusMessage, setStatusMessage] = useState<{text: string; type: 'success'|'error'|'none'}>({
+    text: '', 
+    type: 'none'
   });
-  
-  // State for form validation errors
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  
-  // State for loading during form submission
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // Toast notification for password change
+  const [showToast, setShowToast] = useState<boolean>(false);
 
-  // Handle logout button click
-  const handleLogout = async () => {
-    await onLogout();
-  };
+  // Auto-hide toast after delay
+  useEffect(() => {
+    let toastTimer: NodeJS.Timeout;
+    
+    if (showToast) {
+      toastTimer = setTimeout(() => {
+        setShowToast(false);
+      }, 5000);
+    }
+    
+    return () => {
+      if (toastTimer) clearTimeout(toastTimer);
+    };
+  }, [showToast]);
 
   // Toggle change password form visibility
   const toggleChangePasswordForm = () => {
     setShowChangePasswordForm(!showChangePasswordForm);
-    // Reset form data and errors when toggling form
-    if (!showChangePasswordForm) {
-      setPasswordFormData({
-        current_password: '',
-        new_password: '',
-        confirm_password: ''
-      });
-      setErrors({});
-    }
+    // Clear status message when toggling form
+    setStatusMessage({ text: '', type: 'none' });
   };
 
-  // Handle input change in the password form
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setPasswordFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Clear errors when field is changed
-    if (errors[name]) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-  };
-
-  // Validate password form data
-  const validatePasswordForm = (): boolean => {
-    const newErrors: Record<string, string> = {};
-    
-    // Check if current password is provided
-    if (!passwordFormData.current_password) {
-      newErrors.current_password = 'Current password is required';
-    }
-    
-    // Check if new password is provided
-    if (!passwordFormData.new_password) {
-      newErrors.new_password = 'New password is required';
-    } else if (passwordFormData.new_password.length < 8) {
-      newErrors.new_password = 'Password must be at least 8 characters';
-    }
-    
-    // Check if confirm password is provided and matches new password
-    if (!passwordFormData.confirm_password) {
-      newErrors.confirm_password = 'Please confirm your new password';
-    } else if (passwordFormData.new_password !== passwordFormData.confirm_password) {
-      newErrors.confirm_password = 'Passwords do not match';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Handle change password form submission
-  const handleSubmitPasswordForm = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    
-    // Validate form data
-    if (!validatePasswordForm()) {
-      return;
-    }
-    
-    setIsSubmitting(true);
-    
+  // Handle logout
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
     try {
-      // Call the change password function
-      await onChangePassword(passwordFormData);
-      
-      // Reset form and hide it on success
-      setPasswordFormData({
-        current_password: '',
-        new_password: '',
-        confirm_password: ''
-      });
-      setShowChangePasswordForm(false);
-    } catch (error) {
-      // Handle error (could add more specific error handling)
-      setErrors({
-        form: error instanceof Error ? error.message : 'Failed to change password'
-      });
+      await onLogout();
     } finally {
-      setIsSubmitting(false);
+      setIsLoggingOut(false);
+    }
+  };
+
+  // Handle password change with feedback
+  const handlePasswordChange = async (data: ChangePasswordRequest) => {
+    try {
+      await onChangePassword(data);
+      
+      // Simple direct success message - no animation dependency
+      setStatusMessage({ 
+        text: 'Password changed successfully!', 
+        type: 'success' 
+      });
+      
+      // Also show the toast notification
+      setShowToast(true);
+      
+      // Hide the form after successful password change
+      setShowChangePasswordForm(false);
+      
+      // Keep success message visible for longer (15 seconds)
+      setTimeout(() => {
+        setStatusMessage({ text: '', type: 'none' });
+      }, 15000);
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to change password';
+      setStatusMessage({ 
+        text: `${errorMessage}`, 
+        type: 'error' 
+      });
+      throw error; // Re-throw to let the form component handle the error display
     }
   };
 
   return (
     <div className="bg-white shadow-md rounded-lg p-6 max-w-lg mx-auto">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Profile</h2>
+      
+      {/* Simple, high-visibility status message */}
+      {statusMessage.type !== 'none' && (
+        <div 
+          className={`${
+            statusMessage.type === 'success' 
+              ? 'bg-green-500 text-white' 
+              : 'bg-red-500 text-white'
+          } px-4 py-3 rounded mb-6 shadow-md text-center font-bold`} 
+          role="alert"
+        >
+          {statusMessage.type === 'success' && (
+            <span className="text-2xl mr-2">✓</span>
+          )}
+          {statusMessage.type === 'error' && (
+            <span className="text-2xl mr-2">⚠</span>
+          )}
+          {statusMessage.text}
+        </div>
+      )}
+      
+      {/* Toast notification for password change */}
+      {showToast && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-6 py-4 rounded shadow-lg z-50 flex items-center">
+          <span className="text-xl mr-2">✓</span>
+          <span className="font-bold">Password updated successfully!</span>
+          <button 
+            onClick={() => setShowToast(false)}
+            className="ml-4 text-white hover:text-gray-200 focus:outline-none"
+            aria-label="Close notification"
+          >
+            <span className="text-xl">×</span>
+          </button>
+        </div>
+      )}
       
       {/* User Information Section */}
       <div className="mb-6 bg-gray-50 p-4 rounded">
@@ -186,101 +183,25 @@ export const UserProfile: React.FC<UserProfileProps> = ({
           onClick={toggleChangePasswordForm}
           aria-label="Change Password"
         >
-          Change Password
+          {showChangePasswordForm ? 'Hide Password Form' : 'Change Password'}
         </Button>
         
         <Button 
           variant="primary" 
           onClick={handleLogout}
           aria-label="Logout"
+          disabled={isLoggingOut}
         >
-          Logout
+          {isLoggingOut ? 'Logging out...' : 'Logout'}
         </Button>
       </div>
       
       {/* Change Password Form */}
       {showChangePasswordForm && (
         <div className="mt-6 bg-gray-50 p-4 rounded">
-          <h3 className="text-xl font-semibold mb-4">Change Password</h3>
-          
-          {errors.form && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
-              <span className="block sm:inline">{errors.form}</span>
-            </div>
-          )}
-          
-          <form onSubmit={handleSubmitPasswordForm} className="space-y-4">
-            <div>
-              <label htmlFor="current_password" className="block text-sm font-medium text-gray-700 mb-1">
-                Current Password
-              </label>
-              <Input
-                id="current_password"
-                name="current_password"
-                type="password"
-                value={passwordFormData.current_password}
-                onChange={handleInputChange}
-                error={!!errors.current_password}
-                errorMessage={errors.current_password}
-                disabled={isSubmitting}
-                aria-label="Current Password"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="new_password" className="block text-sm font-medium text-gray-700 mb-1">
-                New Password
-              </label>
-              <Input
-                id="new_password"
-                name="new_password"
-                type="password"
-                value={passwordFormData.new_password}
-                onChange={handleInputChange}
-                error={!!errors.new_password}
-                errorMessage={errors.new_password}
-                disabled={isSubmitting}
-                aria-label="New Password"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
-              </label>
-              <Input
-                id="confirm_password"
-                name="confirm_password"
-                type="password"
-                value={passwordFormData.confirm_password}
-                onChange={handleInputChange}
-                error={!!errors.confirm_password}
-                errorMessage={errors.confirm_password}
-                disabled={isSubmitting}
-                aria-label="Confirm Password"
-              />
-            </div>
-            
-            <div className="flex justify-end space-x-3 pt-3">
-              <Button
-                variant="tertiary"
-                onClick={toggleChangePasswordForm}
-                disabled={isSubmitting}
-                aria-label="Cancel"
-              >
-                Cancel
-              </Button>
-              
-              <button
-                type="submit"
-                className={`px-4 py-2 rounded-md font-medium bg-primary-600 text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={isSubmitting}
-                aria-label="Update Password"
-              >
-                {isSubmitting ? 'Updating...' : 'Update Password'}
-              </button>
-            </div>
-          </form>
+          <ChangePasswordForm 
+            onChangePassword={handlePasswordChange}
+          />
         </div>
       )}
     </div>

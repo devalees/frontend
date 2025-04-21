@@ -224,6 +224,9 @@ export const setupInterceptors = (instance: AxiosInstance): void => {
       if (token) {
         config.headers = config.headers || {};
         config.headers.Authorization = `Bearer ${token}`;
+        console.log('Added Authorization header to request:', config.url);
+      } else {
+        console.warn('No token available for request:', config.url);
       }
       return config;
     },

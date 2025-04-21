@@ -4,8 +4,8 @@
 import { render as rtlRender, screen, fireEvent, waitFor, act, cleanup } from '@testing-library/react';
 import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
-import { renderHook as rtlRenderHook } from '@testing-library/react-hooks';
 import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, jest } from '@jest/globals';
+import React from 'react';
 
 // Export testing library utilities
 export {
@@ -34,14 +34,37 @@ export const render = (ui: React.ReactElement, options = {}) => {
 };
 
 /**
- * Custom renderHook function that includes providers if needed
+ * Custom renderHook function that works with React hooks
+ * This is a replacement for @testing-library/react-hooks
  */
-export const renderHook = <TProps, TResult>(
-  callback: (props: TProps) => TResult,
-  options = {}
-) => {
-  return rtlRenderHook(callback, options);
-};
+export function renderHook<Result, Props>(
+  callback: (props: Props) => Result,
+  options: { initialProps?: Props } = {}
+) {
+  const { initialProps } = options;
+  
+  // Result ref to hold the hook result
+  let resultRef: { current: Result | null } = { current: null };
+  
+  // Component to wrap the hook
+  const TestComponent = ({ hookProps }: { hookProps?: Props }) => {
+    resultRef.current = callback(hookProps || initialProps as Props);
+    return null;
+  };
+  
+  // Use React.createElement instead of JSX to avoid syntax issues
+  const utils = render(React.createElement(TestComponent, { hookProps: initialProps }));
+  
+  return {
+    ...utils,
+    result: {
+      get current() { 
+        return resultRef.current as Result; 
+      }
+    },
+    rerender: (props?: Props) => utils.rerender(React.createElement(TestComponent, { hookProps: props }))
+  };
+}
 
 /**
  * Component test utilities

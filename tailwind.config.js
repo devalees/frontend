@@ -36,6 +36,20 @@ module.exports = {
       fontFamily: {
         // Add your custom fonts here
       },
+      animation: {
+        'fadeIn': 'fadeIn 0.5s ease-in-out',
+        'success-pulse': 'successPulse 2s ease-in-out 0.5s',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(-10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        successPulse: {
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(74, 222, 128, 0)' },
+          '50%': { boxShadow: '0 0 0 6px rgba(74, 222, 128, 0.4)' },
+        },
+      },
     },
   },
   plugins: [],

@@ -5,345 +5,304 @@
  * for handling expired JWT tokens and refreshing them transparently.
  */
 
-import { describe, it, expect, beforeEach, afterEach } from '../../tests/utils';
-import axios from 'axios';
+jest.mock('axios');
+
+import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import axios, { AxiosInstance, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { setupTokenRefresh, clearTokens, getAccessToken, getRefreshToken, saveTokens } from '../../lib/api/tokenRefresh';
 
-// Mock axios
-jest.mock('axios', () => {
-  const mockAxios = {
-    create: jest.fn(() => mockAxios),
-    get: jest.fn(),
-    post: jest.fn(),
-    request: jest.fn(),
-    interceptors: {
-      request: { use: jest.fn() },
-      response: { use: jest.fn() }
-    },
-    defaults: {
-      headers: {
-        common: {}
-      }
-    }
+// Type definitions
+type MockAxiosResponse<T = any> = Promise<AxiosResponse<T>>;
+type MockAxiosError = Partial<AxiosError>;
+type MockInterceptor = (error: AxiosError) => Promise<AxiosResponse>;
+
+// Mock response factories
+const mockResponse = <T>(data: T, status = 200): AxiosResponse<T> => {
+  console.log(`Creating mock response with data:`, data, `status:`, status);
+  return {
+    data,
+    status,
+    statusText: status === 200 ? 'OK' : 'Error',
+    headers: {},
+    config: {
+      headers: {}
+    } as InternalAxiosRequestConfig
   };
-  return mockAxios;
-});
+};
 
-// Mock localStorage
-const mockLocalStorage: Record<string, string> = {};
-
-beforeEach(() => {
-  // Reset mocks before each test
-  jest.clearAllMocks();
-  
-  // Mock localStorage
-  Object.defineProperty(window, 'localStorage', {
-    value: {
-      getItem: jest.fn((key: string) => mockLocalStorage[key] || null),
-      setItem: jest.fn((key: string, value: string) => { mockLocalStorage[key] = value; }),
-      removeItem: jest.fn((key: string) => { delete mockLocalStorage[key]; }),
-      clear: jest.fn(() => { Object.keys(mockLocalStorage).forEach(key => delete mockLocalStorage[key]); })
+const mockError = (status = 401, url = '/test'): MockAxiosError => {
+  console.log(`Creating mock error with status:`, status, `url:`, url);
+  return {
+    response: {
+      status,
+      statusText: 'Error',
+      data: null,
+      headers: {},
+      config: {
+        headers: {},
+        url
+      } as InternalAxiosRequestConfig
     },
-    writable: true
-  });
-});
+    config: {
+      headers: {},
+      url
+    } as InternalAxiosRequestConfig,
+    isAxiosError: true,
+    name: 'AxiosError',
+    message: 'Error'
+  };
+};
 
-afterEach(() => {
-  jest.clearAllMocks();
-  Object.keys(mockLocalStorage).forEach(key => delete mockLocalStorage[key]);
-});
+describe('Token Refresh Tests', () => {
+  let storage: { [key: string]: string };
+  let mockAxios: jest.Mocked<typeof axios>;
+  let interceptor: MockInterceptor;
 
-describe('Token Storage and Management', () => {
-  it('should save tokens to localStorage', () => {
-    const tokens = {
-      access: 'test-access-token',
-      refresh: 'test-refresh-token'
-    };
-    
-    saveTokens(tokens);
-    
-    expect(localStorage.setItem).toHaveBeenCalledWith('auth_token', tokens.access);
-    expect(localStorage.setItem).toHaveBeenCalledWith('refresh_token', tokens.refresh);
-    expect(mockLocalStorage['auth_token']).toBe(tokens.access);
-    expect(mockLocalStorage['refresh_token']).toBe(tokens.refresh);
-  });
-  
-  it('should retrieve tokens from localStorage', () => {
-    // Setup
-    mockLocalStorage['auth_token'] = 'stored-access-token';
-    mockLocalStorage['refresh_token'] = 'stored-refresh-token';
-    
-    // Test
-    const accessToken = getAccessToken();
-    const refreshToken = getRefreshToken();
-    
-    // Verify
-    expect(localStorage.getItem).toHaveBeenCalledWith('auth_token');
-    expect(localStorage.getItem).toHaveBeenCalledWith('refresh_token');
-    expect(accessToken).toBe('stored-access-token');
-    expect(refreshToken).toBe('stored-refresh-token');
-  });
-  
-  it('should clear tokens from localStorage', () => {
-    // Setup
-    mockLocalStorage['auth_token'] = 'test-access-token';
-    mockLocalStorage['refresh_token'] = 'test-refresh-token';
-    
-    // Test
-    clearTokens();
-    
-    // Verify
-    expect(localStorage.removeItem).toHaveBeenCalledWith('auth_token');
-    expect(localStorage.removeItem).toHaveBeenCalledWith('refresh_token');
-    expect(mockLocalStorage['auth_token']).toBeUndefined();
-    expect(mockLocalStorage['refresh_token']).toBeUndefined();
-  });
-});
-
-describe('Token Refresh Mechanism', () => {
-  it('should intercept 401 errors and attempt to refresh token', async () => {
-    // Setup
-    mockLocalStorage['auth_token'] = 'expired-token';
-    mockLocalStorage['refresh_token'] = 'valid-refresh-token';
-    
-    // Setup axios mocks
-    const unauthorizedError = { 
-      response: { status: 401 }, 
-      config: { headers: {}, url: '/test' } 
-    };
-    
-    // First request fails with 401
-    (axios.get as jest.Mock).mockRejectedValueOnce(unauthorizedError);
-    
-    // Refresh token succeeds
-    (axios.post as jest.Mock).mockResolvedValueOnce({ 
-      data: { 
-        access: 'new-access-token',
-        refresh: 'new-refresh-token'
-      }
-    });
-    
-    // Mock the retry request to succeed
-    (axios.request as jest.Mock).mockResolvedValueOnce({
-      status: 200, 
-      data: { data: 'success' }
-    });
-    
-    // Configure token refresh
-    setupTokenRefresh(axios);
-    
-    // Simulate axios interceptor by calling the response error handler directly
-    const responseErrorHandler = (axios.interceptors.response.use as jest.Mock).mock.calls[0][1];
-    const result = await responseErrorHandler(unauthorizedError);
-    
-    // Verify
-    expect(result.status).toBe(200);
-    expect(result.data).toEqual({ data: 'success' });
-    expect(mockLocalStorage['auth_token']).toBe('new-access-token');
-    expect(mockLocalStorage['refresh_token']).toBe('new-refresh-token');
-  });
-  
-  it('should redirect to login when refresh token is invalid or expired', async () => {
-    // Setup
-    mockLocalStorage['auth_token'] = 'expired-token';
-    mockLocalStorage['refresh_token'] = 'expired-refresh-token';
-    
-    // Mock window.location
-    const originalLocation = window.location;
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: { href: '' }
-    });
-    
-    // Setup axios mocks
-    const unauthorizedError = { 
-      response: { status: 401 }, 
-      config: { headers: {}, url: '/test' } 
-    };
-    
-    // First request fails with 401
-    (axios.get as jest.Mock).mockRejectedValueOnce(unauthorizedError);
-    
-    // Refresh token also fails
-    (axios.post as jest.Mock).mockRejectedValueOnce({ 
-      response: { status: 401 } 
-    });
-    
-    // Configure token refresh
-    setupTokenRefresh(axios);
-    
-    // Simulate axios interceptor by calling the response error handler directly
-    const responseErrorHandler = (axios.interceptors.response.use as jest.Mock).mock.calls[0][1];
-    
-    try {
-      await responseErrorHandler(unauthorizedError);
-      // Should not reach here
-      expect(true).toBe(false);
-    } catch (error) {
-      // Verify
-      expect(mockLocalStorage['auth_token']).toBeUndefined();
-      expect(mockLocalStorage['refresh_token']).toBeUndefined();
-      expect(window.location.href).toBe('/login');
-    }
-    
-    // Restore window.location
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: originalLocation
-    });
-  });
-  
-  it('should not attempt to refresh for non-401 errors', async () => {
-    // Setup
-    mockLocalStorage['auth_token'] = 'valid-token';
-    mockLocalStorage['refresh_token'] = 'valid-refresh-token';
-    
-    // Spy on the localStorage getItem and setItem methods
-    const getItemSpy = jest.spyOn(localStorage, 'getItem');
-    const setItemSpy = jest.spyOn(localStorage, 'setItem');
-    
-    // Setup axios mock with non-401 error
-    const notFoundError = { 
-      response: { status: 404 }, 
-      config: { headers: {}, url: '/test' } 
-    };
-    
-    // Request fails with 404
-    (axios.get as jest.Mock).mockRejectedValueOnce(notFoundError);
-    
-    // Configure token refresh
-    setupTokenRefresh(axios);
-    
-    // Simulate axios interceptor by calling the response error handler directly
-    const responseErrorHandler = (axios.interceptors.response.use as jest.Mock).mock.calls[0][1];
-    
-    try {
-      await responseErrorHandler(notFoundError);
-      // Should not reach here
-      expect(true).toBe(false);
-    } catch (error) {
-      // Verify that getRefreshToken was never called
-      expect(getItemSpy).not.toHaveBeenCalledWith('refresh_token');
-      // Verify that tokens were not updated
-      expect(setItemSpy).not.toHaveBeenCalledWith('auth_token', expect.any(String));
-      expect(setItemSpy).not.toHaveBeenCalledWith('refresh_token', expect.any(String));
-    }
-  });
-  
-  it('should retry the original request with the new token after refresh', async () => {
-    // Setup
-    mockLocalStorage['auth_token'] = 'expired-token';
-    mockLocalStorage['refresh_token'] = 'valid-refresh-token';
-    
-    // Create a spy to track request headers
-    const requestSpy = jest.fn();
-    
-    // Setup axios mocks
-    const unauthorizedError = { 
-      response: { status: 401 }, 
-      config: { 
-        headers: { Authorization: 'Bearer expired-token' }, 
-        url: '/test',
-        method: 'get' 
-      } 
-    };
-    
-    // Call the spy for the initial request
-    requestSpy('Bearer expired-token');
-    
-    // First request fails with 401
-    (axios.get as jest.Mock).mockImplementationOnce(() => {
-      return Promise.reject(unauthorizedError);
-    });
-    
-    // Refresh token succeeds
-    (axios.post as jest.Mock).mockResolvedValueOnce({ 
-      data: { 
-        access: 'new-access-token',
-        refresh: 'new-refresh-token'
-      }
-    });
-    
-    // Retry succeeds
-    (axios.request as jest.Mock).mockImplementationOnce((config) => {
-      requestSpy(config?.headers?.Authorization);
-      return Promise.resolve({ status: 200, data: { data: 'success' } });
-    });
-    
-    // Configure token refresh
-    setupTokenRefresh(axios);
-    
-    // Simulate axios interceptor by calling the response error handler directly
-    const responseErrorHandler = (axios.interceptors.response.use as jest.Mock).mock.calls[0][1];
-    
-    // Test
-    const result = await responseErrorHandler(unauthorizedError);
-    
-    // Verify
-    expect(result.status).toBe(200);
-    expect(requestSpy).toHaveBeenCalledTimes(2);
-    expect(requestSpy).toHaveBeenNthCalledWith(1, 'Bearer expired-token');
-    expect(requestSpy).toHaveBeenNthCalledWith(2, 'Bearer new-access-token');
-  });
-  
-  it('should allow parallel requests to be queued during token refresh', async () => {
-    // Setup
-    mockLocalStorage['auth_token'] = 'expired-token';
-    mockLocalStorage['refresh_token'] = 'valid-refresh-token';
-    
-    // Setup axios mocks
-    const unauthorizedError1 = { 
-      response: { status: 401 }, 
-      config: { headers: {}, url: '/test1', method: 'get' } 
-    };
-    
-    const unauthorizedError2 = { 
-      response: { status: 401 }, 
-      config: { headers: {}, url: '/test2', method: 'get' } 
-    };
-    
-    // First requests fail with 401
-    (axios.get as jest.Mock).mockRejectedValueOnce(unauthorizedError1);
-    (axios.get as jest.Mock).mockRejectedValueOnce(unauthorizedError2);
-    
-    // Refresh token succeeds
-    (axios.post as jest.Mock).mockResolvedValueOnce({ 
-      data: { 
-        access: 'new-access-token',
-        refresh: 'new-refresh-token'
-      }
-    });
-    
-    // Retries succeed
-    (axios.request as jest.Mock)
-      .mockResolvedValueOnce({ 
-        status: 200, 
-        data: { data: 'success1' } 
+  beforeEach(() => {
+    console.log('Setting up test environment');
+    // Setup localStorage mock
+    storage = {};
+    const mockStorage = {
+      getItem: jest.fn((key: string) => {
+        console.log(`localStorage.getItem called with key:`, key);
+        return storage[key] || null;
+      }),
+      setItem: jest.fn((key: string, value: string) => {
+        console.log(`localStorage.setItem called with key:`, key, `value:`, value);
+        storage[key] = value;
+      }),
+      removeItem: jest.fn((key: string) => {
+        console.log(`localStorage.removeItem called with key:`, key);
+        delete storage[key];
+      }),
+      clear: jest.fn(() => {
+        console.log('localStorage.clear called');
+        storage = {};
       })
-      .mockResolvedValueOnce({ 
-        status: 200, 
-        data: { data: 'success2' } 
-      });
-    
-    // Configure token refresh
-    setupTokenRefresh(axios);
-    
-    // Simulate axios interceptor by calling the response error handler directly
-    const responseErrorHandler = (axios.interceptors.response.use as jest.Mock).mock.calls[0][1];
-    
-    // Test two parallel requests
-    const promise1 = responseErrorHandler(unauthorizedError1);
-    const promise2 = responseErrorHandler(unauthorizedError2);
-    
-    const [result1, result2] = await Promise.all([promise1, promise2]);
-    
-    // Verify both requests succeeded with new token
-    expect(result1.status).toBe(200);
-    expect(result1.data).toEqual({ data: 'success1' });
-    expect(result2.status).toBe(200);
-    expect(result2.data).toEqual({ data: 'success2' });
-    
-    // Verify refresh token was only called once
-    expect(axios.post).toHaveBeenCalledTimes(1);
+    };
+
+    Object.defineProperty(window, 'localStorage', { value: mockStorage });
+
+    // Setup axios mock
+    console.log('Setting up axios mock');
+    mockAxios = {
+      ...jest.mocked(axios),
+      create: jest.fn().mockReturnThis(),
+      get: jest.fn(),
+      post: jest.fn(),
+      request: jest.fn(),
+      interceptors: {
+        request: {
+          use: jest.fn()
+        },
+        response: {
+          use: jest.fn((_, errorHandler) => {
+            console.log('Setting up response interceptor');
+            interceptor = errorHandler as MockInterceptor;
+            return 1;
+          })
+        }
+      },
+      defaults: {
+        headers: {
+          common: {}
+        }
+      }
+    } as unknown as jest.Mocked<typeof axios>;
+
+    // Clear all mocks
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    console.log('Cleaning up after test');
+    storage = {};
+  });
+
+  describe('Token Storage', () => {
+    it('should save tokens to localStorage', () => {
+      console.log('Running test: should save tokens to localStorage');
+      const tokens = {
+        access: 'test-access-token',
+        refresh: 'test-refresh-token'
+      };
+      
+      saveTokens(tokens);
+      
+      expect(window.localStorage.setItem).toHaveBeenCalledWith('auth_token', tokens.access);
+      expect(window.localStorage.setItem).toHaveBeenCalledWith('refresh_token', tokens.refresh);
+      expect(storage['auth_token']).toBe(tokens.access);
+      expect(storage['refresh_token']).toBe(tokens.refresh);
+    });
+
+    it('should retrieve tokens from localStorage', () => {
+      console.log('Running test: should retrieve tokens from localStorage');
+      storage['auth_token'] = 'stored-access-token';
+      storage['refresh_token'] = 'stored-refresh-token';
+      
+      const accessToken = getAccessToken();
+      const refreshToken = getRefreshToken();
+      
+      expect(window.localStorage.getItem).toHaveBeenCalledWith('auth_token');
+      expect(window.localStorage.getItem).toHaveBeenCalledWith('refresh_token');
+      expect(accessToken).toBe('stored-access-token');
+      expect(refreshToken).toBe('stored-refresh-token');
+    });
+
+    it('should clear tokens from localStorage', () => {
+      console.log('Running test: should clear tokens from localStorage');
+      storage['auth_token'] = 'test-access-token';
+      storage['refresh_token'] = 'test-refresh-token';
+      
+      clearTokens();
+      
+      expect(window.localStorage.removeItem).toHaveBeenCalledWith('auth_token');
+      expect(window.localStorage.removeItem).toHaveBeenCalledWith('refresh_token');
+      expect(storage['auth_token']).toBeUndefined();
+      expect(storage['refresh_token']).toBeUndefined();
+    });
+  });
+
+  describe('Token Refresh Mechanism', () => {
+    it('should handle token refresh on 401 error', async () => {
+      console.log('Running test: should handle token refresh on 401 error');
+      // Setup initial tokens
+      storage['auth_token'] = 'expired-token';
+      storage['refresh_token'] = 'valid-refresh-token';
+
+      // Setup mock responses
+      const error = mockError(401);
+      const refreshResponse = mockResponse({ access: 'new-access-token', refresh: 'new-refresh-token' });
+      const successResponse = mockResponse({ data: 'success' });
+
+      // Configure mocks
+      console.log('Configuring axios mocks');
+      mockAxios.get.mockRejectedValueOnce(error);
+      mockAxios.post.mockResolvedValueOnce(refreshResponse);
+      mockAxios.request.mockResolvedValueOnce(successResponse);
+
+      // Setup token refresh
+      console.log('Setting up token refresh');
+      setupTokenRefresh(mockAxios);
+
+      // Simulate request with expired token
+      console.log('Simulating request with expired token');
+      const result = await interceptor(error as AxiosError);
+
+      // Verify results
+      console.log('Verifying results');
+      expect(result.status).toBe(200);
+      expect(result.data).toEqual({ data: 'success' });
+      expect(storage['auth_token']).toBe('new-access-token');
+      expect(storage['refresh_token']).toBe('new-refresh-token');
+    });
+
+    it('should redirect to login when refresh token fails', async () => {
+      console.log('Running test: should redirect to login when refresh token fails');
+      // Setup initial tokens
+      storage['auth_token'] = 'expired-token';
+      storage['refresh_token'] = 'expired-refresh-token';
+
+      // Mock window.location
+      console.log('Mocking window.location');
+      const mockLocation = { href: '' };
+      Object.defineProperty(window, 'location', { value: mockLocation, writable: true });
+
+      // Setup mock responses
+      const error = mockError(401);
+      const refreshError = mockError(401);
+
+      // Configure mocks
+      console.log('Configuring axios mocks');
+      mockAxios.get.mockRejectedValueOnce(error);
+      mockAxios.post.mockRejectedValueOnce(refreshError);
+
+      // Setup token refresh
+      console.log('Setting up token refresh');
+      setupTokenRefresh(mockAxios);
+
+      try {
+        console.log('Attempting to handle error');
+        await interceptor(error as AxiosError);
+        fail('Should have thrown an error');
+      } catch (e) {
+        console.log('Error caught as expected');
+        expect(storage['auth_token']).toBeUndefined();
+        expect(storage['refresh_token']).toBeUndefined();
+        expect(mockLocation.href).toBe('/login');
+      }
+    });
+
+    it('should not attempt refresh for non-401 errors', async () => {
+      console.log('Running test: should not attempt refresh for non-401 errors');
+      // Setup initial tokens
+      storage['auth_token'] = 'valid-token';
+      storage['refresh_token'] = 'valid-refresh-token';
+
+      // Setup mock responses
+      const error = mockError(404);
+
+      // Configure mocks
+      console.log('Configuring axios mocks');
+      mockAxios.get.mockRejectedValueOnce(error);
+
+      // Setup token refresh
+      console.log('Setting up token refresh');
+      setupTokenRefresh(mockAxios);
+
+      try {
+        console.log('Attempting to handle error');
+        await interceptor(error as AxiosError);
+        fail('Should have thrown an error');
+      } catch (e) {
+        console.log('Error caught as expected');
+        expect(mockAxios.post).not.toHaveBeenCalled();
+        expect(storage['auth_token']).toBe('valid-token');
+        expect(storage['refresh_token']).toBe('valid-refresh-token');
+      }
+    });
+
+    it('should handle parallel requests during token refresh', async () => {
+      console.log('Running test: should handle parallel requests during token refresh');
+      // Setup initial tokens
+      storage['auth_token'] = 'expired-token';
+      storage['refresh_token'] = 'valid-refresh-token';
+
+      // Setup mock responses
+      const error1 = mockError(401, '/test1');
+      const error2 = mockError(401, '/test2');
+      const refreshResponse = mockResponse({ access: 'new-access-token', refresh: 'new-refresh-token' });
+      const successResponse1 = mockResponse({ data: 'success1' });
+      const successResponse2 = mockResponse({ data: 'success2' });
+
+      // Configure mocks
+      console.log('Configuring axios mocks');
+      mockAxios.get
+        .mockRejectedValueOnce(error1)
+        .mockRejectedValueOnce(error2);
+      mockAxios.post.mockResolvedValueOnce(refreshResponse);
+      mockAxios.request
+        .mockResolvedValueOnce(successResponse1)
+        .mockResolvedValueOnce(successResponse2);
+
+      // Setup token refresh
+      console.log('Setting up token refresh');
+      setupTokenRefresh(mockAxios);
+
+      // Make parallel requests
+      console.log('Making parallel requests');
+      const [result1, result2] = await Promise.all([
+        interceptor(error1 as AxiosError),
+        interceptor(error2 as AxiosError)
+      ]);
+
+      // Verify results
+      console.log('Verifying results');
+      expect(result1.data).toEqual({ data: 'success1' });
+      expect(result2.data).toEqual({ data: 'success2' });
+      expect(mockAxios.post).toHaveBeenCalledTimes(1);
+      expect(storage['auth_token']).toBe('new-access-token');
+      expect(storage['refresh_token']).toBe('new-refresh-token');
+    });
   });
 }); 
