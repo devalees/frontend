@@ -223,14 +223,14 @@
 
 ### Phase 9: Integration with Authentication
 1. **Set Up Tests**
-   - [ ] Create authentication integration tests
+   - [x] Create authentication integration tests
      - File: `src/tests/auth/rbac-integration.test.ts`
      - Test RBAC integration with authentication flow
      - Test permission-based route protection
      - Use `integrationTestUtils.ts` for integration testing
 
 2. **Update Authentication Flow**
-   - [x] Integrate RBAC with authentication
+   - [ ] Integrate RBAC with authentication
      - Update login flow to include RBAC permissions
      - Store user permissions in auth store
      - Add permission checks to protected routes
