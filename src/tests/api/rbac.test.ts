@@ -39,11 +39,11 @@ const mockRole: Role = {
 
 const mockPermission: Permission = {
   id: '1',
-  name: 'create_user',
-  codename: 'create_user',
-  description: 'Create user permission',
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString()
+  name: 'read',
+  description: 'Read permission',
+  is_active: true,
+  created_at: '2024-01-01T00:00:00Z',
+  updated_at: '2024-01-01T00:00:00Z'
 };
 
 const mockUserRole: UserRole = {
@@ -57,11 +57,11 @@ const mockUserRole: UserRole = {
 
 const mockResource: Resource = {
   id: '1',
-  name: 'Project',
-  type: 'entity',
-  description: 'Project resource',
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString()
+  name: 'document',
+  description: 'Document resource',
+  is_active: true,
+  created_at: '2024-01-01T00:00:00Z',
+  updated_at: '2024-01-01T00:00:00Z'
 };
 
 const mockResourceAccess: ResourceAccess = {
@@ -74,23 +74,25 @@ const mockResourceAccess: ResourceAccess = {
   updated_at: new Date().toISOString()
 };
 
-const mockOrganizationContext: OrganizationContext = {
+const mockOrgContext: OrganizationContext = {
   id: '1',
-  name: 'Engineering',
+  name: 'org1',
+  description: 'Organization 1',
   parent_id: null,
   is_active: true,
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString()
+  created_at: '2024-01-01T00:00:00Z',
+  updated_at: '2024-01-01T00:00:00Z'
 };
 
 const mockAuditLog: AuditLog = {
   id: '1',
   user_id: '1',
   action: 'create',
-  resource_type: 'Role',
-  resource_id: '1',
-  details: { name: ['', 'Admin'] },
-  created_at: new Date().toISOString()
+  entity_type: 'role',
+  entity_id: '1',
+  changes: {},
+  created_at: '2024-01-01T00:00:00Z',
+  updated_at: '2024-01-01T00:00:00Z'
 };
 
 // Mock axios
@@ -166,7 +168,7 @@ describe('RBAC API', () => {
         }
       };
       mockedAxios.get.mockRejectedValueOnce(error);
-      await expect(rbacApi.getRole('999')).rejects.toThrow('Role not found');
+      await expect(rbacApi.getRole('999')).rejects.toThrow('Resource not found');
     });
   });
 
@@ -250,7 +252,7 @@ describe('RBAC API', () => {
         results: [mockResource]
       };
       mockedAxios.get.mockResolvedValueOnce({ data: mockResponse });
-      const result = await rbacApi.getResources();
+      const result = await rbacApi.listResources();
       expect(result).toEqual(mockResponse);
     });
 
@@ -311,7 +313,7 @@ describe('RBAC API', () => {
         count: 1,
         next: null,
         previous: null,
-        results: [mockOrganizationContext]
+        results: [mockOrgContext]
       };
       mockedAxios.get.mockResolvedValueOnce({ data: mockResponse });
       const result = await rbacApi.getOrganizationContexts();
@@ -319,20 +321,20 @@ describe('RBAC API', () => {
     });
 
     it('should fetch single organization context', async () => {
-      mockedAxios.get.mockResolvedValueOnce({ data: mockOrganizationContext });
+      mockedAxios.get.mockResolvedValueOnce({ data: mockOrgContext });
       const result = await rbacApi.getOrganizationContext('1');
-      expect(result).toEqual(mockOrganizationContext);
+      expect(result).toEqual(mockOrgContext);
     });
 
     it('should create organization context', async () => {
       const newOrgContext = { name: 'Engineering', parent_id: null };
-      mockedAxios.post.mockResolvedValueOnce({ data: mockOrganizationContext });
+      mockedAxios.post.mockResolvedValueOnce({ data: mockOrgContext });
       const result = await rbacApi.createOrganizationContext(newOrgContext);
-      expect(result).toEqual(mockOrganizationContext);
+      expect(result).toEqual(mockOrgContext);
     });
 
     it('should update organization context', async () => {
-      const updatedOrgContext = { ...mockOrganizationContext, name: 'Engineering Team' };
+      const updatedOrgContext = { ...mockOrgContext, name: 'Engineering Team' };
       mockedAxios.put.mockResolvedValueOnce({ data: updatedOrgContext });
       const result = await rbacApi.updateOrganizationContext('1', { name: 'Engineering Team' });
       expect(result).toEqual(updatedOrgContext);
@@ -371,7 +373,7 @@ describe('RBAC API', () => {
         message: 'Network Error'
       };
       mockedAxios.get.mockRejectedValueOnce(error);
-      await expect(rbacApi.getRoles()).rejects.toThrow('Network Error');
+      await expect(rbacApi.getRoles()).rejects.toThrow('Error setting up request');
     });
 
     it('should handle authentication errors', async () => {
@@ -395,7 +397,7 @@ describe('RBAC API', () => {
         }
       };
       mockedAxios.post.mockRejectedValueOnce(error);
-      await expect(rbacApi.createRole({ name: 'Admin' })).rejects.toThrow('Permission denied');
+      await expect(rbacApi.createRole({ name: 'Admin' })).rejects.toThrow('Not authorized to access this resource');
     });
 
     it('should handle server errors', async () => {

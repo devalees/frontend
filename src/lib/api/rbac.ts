@@ -1,18 +1,17 @@
 /**
- * RBAC API Service
+ * RBAC API
  * 
- * This file contains API endpoints for Role-Based Access Control (RBAC):
- * - Role management
- * - Permission management
- * - User role management
- * - Resource management
- * - Resource access management
- * - Organization context management
- * - Audit log management
+ * API functions for Role-Based Access Control (RBAC) operations:
+ * - Roles
+ * - Permissions
+ * - UserRoles
+ * - Resources
+ * - ResourceAccess
+ * - OrganizationContext
+ * - AuditLog
  */
 
 import axios from 'axios';
-import type { AxiosError } from 'axios';
 import { 
   Role, 
   Permission, 
@@ -21,554 +20,519 @@ import {
   ResourceAccess, 
   OrganizationContext, 
   AuditLog,
-  PaginatedResponse
+  PaginatedResponse,
+  PaginationParams
 } from '../../types/rbac';
-import { 
-  ApiError, 
-  ValidationError, 
-  AuthenticationError, 
-  AuthorizationError, 
-  NotFoundError, 
-  ServerError,
-  NetworkError,
-  logError
-} from './errors';
 
-// API base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-const RBAC_BASE_URL = `${API_BASE_URL}/rbac`;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
-// Role endpoints
-const ROLES_URL = `${RBAC_BASE_URL}/roles/`;
-const ROLE_DETAIL_URL = (id: string) => `${RBAC_BASE_URL}/roles/${id}/`;
-const ROLE_PERMISSIONS_URL = (id: string) => `${RBAC_BASE_URL}/roles/${id}/permissions/`;
-
-// Permission endpoints
-const PERMISSIONS_URL = `${RBAC_BASE_URL}/permissions/`;
-const PERMISSION_DETAIL_URL = (id: string) => `${RBAC_BASE_URL}/permissions/${id}/`;
-
-// User role endpoints
-const USER_ROLES_URL = `${RBAC_BASE_URL}/user-roles/`;
-const USER_ROLE_DETAIL_URL = (id: string) => `${RBAC_BASE_URL}/user-roles/${id}/`;
-const USER_ROLE_ACTIVATE_URL = (id: string) => `${RBAC_BASE_URL}/user-roles/${id}/activate/`;
-const USER_ROLE_DEACTIVATE_URL = (id: string) => `${RBAC_BASE_URL}/user-roles/${id}/deactivate/`;
-const USER_ROLE_DELEGATE_URL = (id: string) => `${RBAC_BASE_URL}/user-roles/${id}/delegate/`;
-
-// Resource endpoints
-const RESOURCES_URL = `${RBAC_BASE_URL}/resources/`;
-const RESOURCE_DETAIL_URL = (id: string) => `${RBAC_BASE_URL}/resources/${id}/`;
-const RESOURCE_GRANT_ACCESS_URL = (id: string) => `${RBAC_BASE_URL}/resources/${id}/grant_access/`;
-const RESOURCE_REVOKE_ACCESS_URL = (id: string) => `${RBAC_BASE_URL}/resources/${id}/revoke_access/`;
-
-// Resource access endpoints
-const RESOURCE_ACCESSES_URL = `${RBAC_BASE_URL}/resource-accesses/`;
-const RESOURCE_ACCESS_DETAIL_URL = (id: string) => `${RBAC_BASE_URL}/resource-accesses/${id}/`;
-const RESOURCE_ACCESS_ACTIVATE_URL = (id: string) => `${RBAC_BASE_URL}/resource-accesses/${id}/activate/`;
-const RESOURCE_ACCESS_DEACTIVATE_URL = (id: string) => `${RBAC_BASE_URL}/resource-accesses/${id}/deactivate/`;
-
-// Organization context endpoints
-const ORGANIZATION_CONTEXTS_URL = `${RBAC_BASE_URL}/organization-contexts/`;
-const ORGANIZATION_CONTEXT_DETAIL_URL = (id: string) => `${RBAC_BASE_URL}/organization-contexts/${id}/`;
-const ORGANIZATION_CONTEXT_ACTIVATE_URL = (id: string) => `${RBAC_BASE_URL}/organization-contexts/${id}/activate/`;
-const ORGANIZATION_CONTEXT_DEACTIVATE_URL = (id: string) => `${RBAC_BASE_URL}/organization-contexts/${id}/deactivate/`;
-const ORGANIZATION_CONTEXT_ANCESTORS_URL = (id: string) => `${RBAC_BASE_URL}/organization-contexts/${id}/ancestors/`;
-const ORGANIZATION_CONTEXT_DESCENDANTS_URL = (id: string) => `${RBAC_BASE_URL}/organization-contexts/${id}/descendants/`;
-const ORGANIZATION_CONTEXT_CHILDREN_URL = (id: string) => `${RBAC_BASE_URL}/organization-contexts/${id}/children/`;
-const ORGANIZATION_CONTEXT_PARENTS_URL = (id: string) => `${RBAC_BASE_URL}/organization-contexts/${id}/parents/`;
-
-// Audit log endpoints
-const AUDIT_LOGS_URL = `${RBAC_BASE_URL}/audits/`;
-const AUDIT_LOG_DETAIL_URL = (id: string) => `${RBAC_BASE_URL}/audits/${id}/`;
-const AUDIT_LOG_COMPLIANCE_REPORT_URL = `${RBAC_BASE_URL}/audits/compliance_report/`;
-const AUDIT_LOG_CLEANUP_EXPIRED_URL = `${RBAC_BASE_URL}/audits/cleanup_expired/`;
-
-/**
- * Type guard for AxiosError
- */
-function isAxiosError(error: unknown): error is AxiosError {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'isAxiosError' in error &&
-    (error as any).isAxiosError === true
-  );
-}
-
-/**
- * API Error Response interface
- */
-interface ApiErrorResponse {
-  message?: string;
-  errors?: Record<string, string[]>;
-}
-
-/**
- * Generic function to handle API errors
- * @param error The error to handle
- * @throws Appropriate error type based on the error response
- */
-function handleApiError(error: unknown): never {
-  if (isAxiosError(error)) {
-    const { response, message } = error;
-    const status = response?.status || 0;
-    const data = response?.data as ApiErrorResponse;
-
-    // Network error
-    if (!response) {
-      throw new NetworkError(message || 'Network error occurred');
+// Helper function to handle API errors
+const handleError = (error: any) => {
+  if (!error.response) {
+    if (error.request) {
+      throw new Error('Network error');
     }
-
-    // Handle specific error types
-    switch (status) {
-      case 401:
-        throw new AuthenticationError(data?.message || 'Authentication required');
-      case 403:
-        throw new AuthorizationError(data?.message || 'Permission denied');
-      case 404:
-        throw new NotFoundError(data?.message || 'Resource not found');
-      case 500:
-        throw new ServerError(data?.message || 'Server error');
-      default:
-        throw new ApiError(data?.message || 'API error', status);
-    }
+    throw new Error('Error setting up request');
   }
+
+  const { status, config } = error.response;
+  const url = config?.url || '';
   
-  // Non-Axios error
-  if (error instanceof Error) {
-    logError(error);
-  } else {
-    logError(new Error(String(error)));
-  }
-  throw new ApiError('Unknown error occurred');
-}
+  // Extract resource type from URL path
+  const getResourceType = (url: string): string => {
+    const apiPath = url.split('/api/')[1];
+    if (!apiPath) return 'Resource';
+    
+    const pathParts = apiPath.split('/');
+    const resourceType = pathParts[0]; // e.g., 'roles', 'permissions'
+    if (!resourceType) return 'Resource';
+    
+    // Convert to singular and capitalize
+    const singular = resourceType.endsWith('s') ? resourceType.slice(0, -1) : resourceType;
+    const formatted = singular.split('-')
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+    
+    return formatted;
+  };
 
-// Role API methods
-export async function getRoles(params?: Record<string, any>): Promise<PaginatedResponse<Role>> {
+  const resourceType = getResourceType(url);
+
+  switch (status) {
+    case 400:
+      throw new Error(`Invalid ${resourceType.toLowerCase()} data`);
+    case 401:
+      throw new Error('Authentication required');
+    case 403:
+      throw new Error(`Not authorized to access this ${resourceType.toLowerCase()}`);
+    case 404:
+      throw new Error(`${resourceType} not found`);
+    case 409:
+      throw new Error(`${resourceType} already exists`);
+    case 422:
+      throw new Error(`Invalid ${resourceType.toLowerCase()} data format`);
+    case 500:
+      throw new Error('Internal server error');
+    default:
+      throw new Error(`Server error: ${status}`);
+  }
+};
+
+// Roles API
+export const getRoles = async (): Promise<PaginatedResponse<Role>> => {
   try {
-    const response = await axios.get(ROLES_URL, { params });
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/roles/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error; // This line will never be reached, but TypeScript needs it
   }
-}
+};
 
-export async function getRole(id: string): Promise<Role> {
+export const getRole = async (id: string): Promise<Role> => {
   try {
-    const response = await axios.get(ROLE_DETAIL_URL(id));
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/roles/${id}/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function createRole(role: Partial<Role>): Promise<Role> {
+export const createRole = async (role: Partial<Role>): Promise<Role> => {
   try {
-    const response = await axios.post(ROLES_URL, role);
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/roles/`, role);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function updateRole(id: string, role: Partial<Role>): Promise<Role> {
+export const updateRole = async (id: string, role: Partial<Role>): Promise<Role> => {
   try {
-    const response = await axios.put(ROLE_DETAIL_URL(id), role);
+    const response = await axios.put(`${API_BASE_URL}/v1/rbac/roles/${id}/`, role);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function deleteRole(id: string): Promise<void> {
+export const deleteRole = async (id: string): Promise<void> => {
   try {
-    await axios.delete(ROLE_DETAIL_URL(id));
+    await axios.delete(`${API_BASE_URL}/v1/rbac/roles/${id}/`);
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function getRolePermissions(id: string): Promise<Permission[]> {
+// Permissions API
+export const getPermissions = async (): Promise<PaginatedResponse<Permission>> => {
   try {
-    const response = await axios.get(ROLE_PERMISSIONS_URL(id));
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/permissions/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-// Permission API methods
-export async function getPermissions(params?: Record<string, any>): Promise<PaginatedResponse<Permission>> {
+export const getPermission = async (id: string): Promise<Permission> => {
   try {
-    const response = await axios.get(PERMISSIONS_URL, { params });
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/permissions/${id}/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function getPermission(id: string): Promise<Permission> {
+export const createPermission = async (permission: Partial<Permission>): Promise<Permission> => {
   try {
-    const response = await axios.get(PERMISSION_DETAIL_URL(id));
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/permissions/`, permission);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function createPermission(permission: Partial<Permission>): Promise<Permission> {
+export const updatePermission = async (id: string, permission: Partial<Permission>): Promise<Permission> => {
   try {
-    const response = await axios.post(PERMISSIONS_URL, permission);
+    const response = await axios.put(`${API_BASE_URL}/v1/rbac/permissions/${id}/`, permission);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function updatePermission(id: string, permission: Partial<Permission>): Promise<Permission> {
+export const deletePermission = async (id: string): Promise<void> => {
   try {
-    const response = await axios.put(PERMISSION_DETAIL_URL(id), permission);
+    await axios.delete(`${API_BASE_URL}/v1/rbac/permissions/${id}/`);
+  } catch (error) {
+    handleError(error);
+    throw error;
+  }
+};
+
+// UserRoles API
+export const getUserRoles = async (): Promise<PaginatedResponse<UserRole>> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/user-roles/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function deletePermission(id: string): Promise<void> {
+export const getUserRole = async (id: string): Promise<UserRole> => {
   try {
-    await axios.delete(PERMISSION_DETAIL_URL(id));
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
-
-// User Role API methods
-export async function getUserRoles(params?: Record<string, any>): Promise<PaginatedResponse<UserRole>> {
-  try {
-    const response = await axios.get(USER_ROLES_URL, { params });
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/user-roles/${id}/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function getUserRole(id: string): Promise<UserRole> {
+export const createUserRole = async (userRole: Partial<UserRole>): Promise<UserRole> => {
   try {
-    const response = await axios.get(USER_ROLE_DETAIL_URL(id));
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/user-roles/`, userRole);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function createUserRole(userRole: Partial<UserRole>): Promise<UserRole> {
+export const deleteUserRole = async (id: string): Promise<void> => {
   try {
-    const response = await axios.post(USER_ROLES_URL, userRole);
+    await axios.delete(`${API_BASE_URL}/v1/rbac/user-roles/${id}/`);
+  } catch (error) {
+    handleError(error);
+    throw error;
+  }
+};
+
+export const activateUserRole = async (id: string): Promise<UserRole> => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/user-roles/${id}/activate/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function updateUserRole(id: string, userRole: Partial<UserRole>): Promise<UserRole> {
+export const deactivateUserRole = async (id: string): Promise<UserRole> => {
   try {
-    const response = await axios.put(USER_ROLE_DETAIL_URL(id), userRole);
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/user-roles/${id}/deactivate/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function deleteUserRole(id: string): Promise<void> {
+export const delegateUserRole = async (id: string, targetUserId: string): Promise<UserRole> => {
   try {
-    await axios.delete(USER_ROLE_DETAIL_URL(id));
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
-
-export async function activateUserRole(id: string): Promise<UserRole> {
-  try {
-    const response = await axios.post(USER_ROLE_ACTIVATE_URL(id));
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/user-roles/${id}/delegate/`, { target_user_id: targetUserId });
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function deactivateUserRole(id: string): Promise<UserRole> {
+// Resources API
+export const listResources = async (params?: PaginationParams): Promise<PaginatedResponse<Resource>> => {
   try {
-    const response = await axios.post(USER_ROLE_DEACTIVATE_URL(id));
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/resources/`, { params });
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function delegateUserRole(id: string, data: { target_user_id: string }): Promise<UserRole> {
+export const getResource = async (id: string): Promise<Resource> => {
   try {
-    const response = await axios.post(USER_ROLE_DELEGATE_URL(id), data);
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/resources/${id}/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-// Resource API methods
-export async function getResources(params?: Record<string, any>): Promise<PaginatedResponse<Resource>> {
+export const createResource = async (data: Partial<Resource>): Promise<Resource> => {
   try {
-    const response = await axios.get(RESOURCES_URL, { params });
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/resources/`, data);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function getResource(id: string): Promise<Resource> {
+export const updateResource = async (id: string, data: Partial<Resource>): Promise<Resource> => {
   try {
-    const response = await axios.get(RESOURCE_DETAIL_URL(id));
+    const response = await axios.put(`${API_BASE_URL}/v1/rbac/resources/${id}/`, data);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function createResource(resource: Partial<Resource>): Promise<Resource> {
+export const deleteResource = async (id: string): Promise<void> => {
   try {
-    const response = await axios.post(RESOURCES_URL, resource);
+    await axios.delete(`${API_BASE_URL}/v1/rbac/resources/${id}/`);
+  } catch (error) {
+    handleError(error);
+    throw error;
+  }
+};
+
+export const grantAccess = async (id: string, roleId: string, permissionId: string): Promise<ResourceAccess> => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/resources/${id}/grant_access/`, { role_id: roleId, permission_id: permissionId });
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function updateResource(id: string, resource: Partial<Resource>): Promise<Resource> {
+export const revokeAccess = async (id: string, roleId: string, permissionId: string): Promise<void> => {
   try {
-    const response = await axios.put(RESOURCE_DETAIL_URL(id), resource);
+    await axios.post(`${API_BASE_URL}/v1/rbac/resources/${id}/revoke_access/`, { role_id: roleId, permission_id: permissionId });
+  } catch (error) {
+    handleError(error);
+    throw error;
+  }
+};
+
+// ResourceAccess API
+export const getResourceAccesses = async (): Promise<PaginatedResponse<ResourceAccess>> => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/resource-accesses/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function deleteResource(id: string): Promise<void> {
+export const getResourceAccess = async (id: string): Promise<ResourceAccess> => {
   try {
-    await axios.delete(RESOURCE_DETAIL_URL(id));
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
-
-export async function grantResourceAccess(id: string, data: { role_id: string; permission_id: string }): Promise<ResourceAccess> {
-  try {
-    const response = await axios.post(RESOURCE_GRANT_ACCESS_URL(id), data);
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/resource-accesses/${id}/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function revokeResourceAccess(id: string, data: { role_id: string; permission_id: string }): Promise<void> {
+export const createResourceAccess = async (resourceAccess: Partial<ResourceAccess>): Promise<ResourceAccess> => {
   try {
-    await axios.post(RESOURCE_REVOKE_ACCESS_URL(id), data);
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
-
-// Resource Access API methods
-export async function getResourceAccesses(params?: Record<string, any>): Promise<PaginatedResponse<ResourceAccess>> {
-  try {
-    const response = await axios.get(RESOURCE_ACCESSES_URL, { params });
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/resource-accesses/`, resourceAccess);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function getResourceAccess(id: string): Promise<ResourceAccess> {
+export const updateResourceAccess = async (id: string, data: Partial<ResourceAccess>): Promise<ResourceAccess> => {
   try {
-    const response = await axios.get(RESOURCE_ACCESS_DETAIL_URL(id));
+    const response = await axios.put(`${API_BASE_URL}/v1/rbac/resource-accesses/${id}/`, data);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function createResourceAccess(resourceAccess: Partial<ResourceAccess>): Promise<ResourceAccess> {
+export const deleteResourceAccess = async (id: string): Promise<void> => {
   try {
-    const response = await axios.post(RESOURCE_ACCESSES_URL, resourceAccess);
+    await axios.delete(`${API_BASE_URL}/v1/rbac/resource-accesses/${id}/`);
+  } catch (error) {
+    handleError(error);
+    throw error;
+  }
+};
+
+export const activateResourceAccess = async (id: string): Promise<ResourceAccess> => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/resource-accesses/${id}/activate/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function updateResourceAccess(id: string, resourceAccess: Partial<ResourceAccess>): Promise<ResourceAccess> {
+export const deactivateResourceAccess = async (id: string): Promise<ResourceAccess> => {
   try {
-    const response = await axios.put(RESOURCE_ACCESS_DETAIL_URL(id), resourceAccess);
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/resource-accesses/${id}/deactivate/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function deleteResourceAccess(id: string): Promise<void> {
+// OrganizationContext API
+export const getOrganizationContexts = async (): Promise<PaginatedResponse<OrganizationContext>> => {
   try {
-    await axios.delete(RESOURCE_ACCESS_DETAIL_URL(id));
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
-
-export async function activateResourceAccess(id: string): Promise<ResourceAccess> {
-  try {
-    const response = await axios.post(RESOURCE_ACCESS_ACTIVATE_URL(id));
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/organization-contexts/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function deactivateResourceAccess(id: string): Promise<ResourceAccess> {
+export const getOrganizationContext = async (id: string): Promise<OrganizationContext> => {
   try {
-    const response = await axios.post(RESOURCE_ACCESS_DEACTIVATE_URL(id));
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/organization-contexts/${id}/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-// Organization Context API methods
-export async function getOrganizationContexts(params?: Record<string, any>): Promise<PaginatedResponse<OrganizationContext>> {
+export const createOrganizationContext = async (context: Partial<OrganizationContext>): Promise<OrganizationContext> => {
   try {
-    const response = await axios.get(ORGANIZATION_CONTEXTS_URL, { params });
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/organization-contexts/`, context);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function getOrganizationContext(id: string): Promise<OrganizationContext> {
+export const updateOrganizationContext = async (id: string, context: Partial<OrganizationContext>): Promise<OrganizationContext> => {
   try {
-    const response = await axios.get(ORGANIZATION_CONTEXT_DETAIL_URL(id));
+    const response = await axios.put(`${API_BASE_URL}/v1/rbac/organization-contexts/${id}/`, context);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function createOrganizationContext(orgContext: Partial<OrganizationContext>): Promise<OrganizationContext> {
+export const deleteOrganizationContext = async (id: string): Promise<void> => {
   try {
-    const response = await axios.post(ORGANIZATION_CONTEXTS_URL, orgContext);
+    await axios.delete(`${API_BASE_URL}/v1/rbac/organization-contexts/${id}/`);
+  } catch (error) {
+    handleError(error);
+    throw error;
+  }
+};
+
+export const activateOrganizationContext = async (id: string): Promise<OrganizationContext> => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/organization-contexts/${id}/activate/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function updateOrganizationContext(id: string, orgContext: Partial<OrganizationContext>): Promise<OrganizationContext> {
+export const deactivateOrganizationContext = async (id: string): Promise<OrganizationContext> => {
   try {
-    const response = await axios.put(ORGANIZATION_CONTEXT_DETAIL_URL(id), orgContext);
+    const response = await axios.post(`${API_BASE_URL}/v1/rbac/organization-contexts/${id}/deactivate/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function deleteOrganizationContext(id: string): Promise<void> {
+export const getOrganizationContextAncestors = async (id: string): Promise<OrganizationContext[]> => {
   try {
-    await axios.delete(ORGANIZATION_CONTEXT_DETAIL_URL(id));
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
-
-export async function activateOrganizationContext(id: string): Promise<OrganizationContext> {
-  try {
-    const response = await axios.post(ORGANIZATION_CONTEXT_ACTIVATE_URL(id));
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/organization-contexts/${id}/ancestors/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function deactivateOrganizationContext(id: string): Promise<OrganizationContext> {
+export const getOrganizationContextDescendants = async (id: string): Promise<OrganizationContext[]> => {
   try {
-    const response = await axios.post(ORGANIZATION_CONTEXT_DEACTIVATE_URL(id));
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/organization-contexts/${id}/descendants/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function getOrganizationContextAncestors(id: string): Promise<OrganizationContext[]> {
+export const getOrganizationContextChildren = async (id: string): Promise<OrganizationContext[]> => {
   try {
-    const response = await axios.get(ORGANIZATION_CONTEXT_ANCESTORS_URL(id));
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/organization-contexts/${id}/children/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function getOrganizationContextDescendants(id: string): Promise<OrganizationContext[]> {
+export const getOrganizationContextParents = async (id: string): Promise<OrganizationContext[]> => {
   try {
-    const response = await axios.get(ORGANIZATION_CONTEXT_DESCENDANTS_URL(id));
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/organization-contexts/${id}/parents/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function getOrganizationContextChildren(id: string): Promise<OrganizationContext[]> {
+// AuditLog API
+export const getAuditLogs = async (): Promise<PaginatedResponse<AuditLog>> => {
   try {
-    const response = await axios.get(ORGANIZATION_CONTEXT_CHILDREN_URL(id));
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/audits/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function getOrganizationContextParents(id: string): Promise<OrganizationContext[]> {
+export const getAuditLog = async (id: string): Promise<AuditLog> => {
   try {
-    const response = await axios.get(ORGANIZATION_CONTEXT_PARENTS_URL(id));
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/audits/${id}/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-// Audit Log API methods
-export async function getAuditLogs(params?: Record<string, any>): Promise<PaginatedResponse<AuditLog>> {
+export const getComplianceReport = async (): Promise<any> => {
   try {
-    const response = await axios.get(AUDIT_LOGS_URL, { params });
+    const response = await axios.get(`${API_BASE_URL}/v1/rbac/audits/compliance_report/`);
     return response.data;
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
+};
 
-export async function getAuditLog(id: string): Promise<AuditLog> {
+export const cleanupExpiredAuditLogs = async (): Promise<void> => {
   try {
-    const response = await axios.get(AUDIT_LOG_DETAIL_URL(id));
-    return response.data;
+    await axios.post(`${API_BASE_URL}/v1/rbac/audits/cleanup_expired/`);
   } catch (error) {
-    return handleApiError(error);
+    handleError(error);
+    throw error;
   }
-}
-
-export async function getComplianceReport(params?: Record<string, any>): Promise<any> {
-  try {
-    const response = await axios.get(AUDIT_LOG_COMPLIANCE_REPORT_URL, { params });
-    return response.data;
-  } catch (error) {
-    return handleApiError(error);
-  }
-}
-
-export async function cleanupExpiredAuditLogs(): Promise<void> {
-  try {
-    await axios.post(AUDIT_LOG_CLEANUP_EXPIRED_URL);
-  } catch (error) {
-    return handleApiError(error);
-  }
-} 
+}; 
