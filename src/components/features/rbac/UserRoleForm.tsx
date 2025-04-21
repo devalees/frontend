@@ -8,7 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, FormSection } from '../../forms/Form';
 import { Select, SelectOption } from '../../forms/Select';
-import { Button } from '../../ui/button';
+import { Button } from '../../ui/Button';
 import { useRbac } from '../../../hooks/useRbac';
 import { UserRole } from '../../../types/rbac';
 import { useUserProfile } from '../../../hooks/useUserProfile';
@@ -188,7 +188,7 @@ export const UserRoleForm: React.FC<UserRoleFormProps> = ({
             </Button>
           )}
           <Button
-            variant="primary"
+            variant="default"
             disabled={isSubmitting}
             loading={isSubmitting}
           >

@@ -106,7 +106,7 @@ export const RoleList: React.FC<RoleListProps> = ({
         {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
           <Button
             key={page}
-            variant={page === currentPage ? 'primary' : 'tertiary'}
+            variant={page === currentPage ? 'default' : 'tertiary'}
             size="small"
             onClick={() => handlePageChange(page)}
             disabled={isLoading}
@@ -142,7 +142,7 @@ export const RoleList: React.FC<RoleListProps> = ({
       <div className="p-4 text-center text-red-600">
         <p>{error}</p>
         <Button 
-          variant="primary" 
+          variant="default" 
           onClick={() => roles.fetch()} 
           className="mt-2"
         >

@@ -111,7 +111,7 @@ export const PermissionList: React.FC<PermissionListProps> = ({
         {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
           <Button
             key={page}
-            variant={page === currentPage ? 'primary' : 'tertiary'}
+            variant={page === currentPage ? 'default' : 'tertiary'}
             size="small"
             onClick={() => handlePageChange(page)}
             disabled={isLoading}
@@ -147,7 +147,7 @@ export const PermissionList: React.FC<PermissionListProps> = ({
       <div className="p-4 text-center text-red-600">
         <p>{error}</p>
         <Button 
-          variant="primary" 
+          variant="default" 
           onClick={() => permissions.fetch()} 
           className="mt-2"
         >

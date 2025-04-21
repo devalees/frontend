@@ -52,9 +52,9 @@ describe('Development Tools', () => {
   describe('Tool Configuration', () => {
     it('should have correct TypeScript compiler options', () => {
       const tsConfig = readJsonFile('tsconfig.json');
-      expect(tsConfig.compilerOptions).toEqual(expect.objectContaining({
+      expect(tsConfig.compilerOptions).toEqual({
         target: 'es5',
-        lib: expect.arrayContaining(['dom', 'dom.iterable', 'esnext']),
+        lib: ['dom', 'dom.iterable', 'esnext'],
         allowJs: true,
         skipLibCheck: true,
         strict: true,
@@ -62,11 +62,20 @@ describe('Development Tools', () => {
         incremental: true,
         esModuleInterop: true,
         module: 'esnext',
-        moduleResolution: 'bundler',
+        moduleResolution: 'node',
         resolveJsonModule: true,
         isolatedModules: true,
-        jsx: 'preserve'
-      }));
+        jsx: 'preserve',
+        baseUrl: '.',
+        paths: {
+          '@/*': ['src/*']
+        },
+        plugins: [
+          {
+            name: 'next'
+          }
+        ]
+      });
     });
 
     it('should have correct ESLint rules', () => {

@@ -10,9 +10,9 @@ import { UserRole } from '../../../types/rbac';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import { Grid, GridItem } from '../../layout/Grid';
-import { Table } from '../ui/Table';
-import { Badge } from '../ui/Badge';
-import { formatDate } from '../../utils/date';
+import { Table } from '../../ui/Table';
+import { Badge } from '../../ui/Badge';
+import { formatDate } from '@/utils/date';
 
 interface UserRoleListProps {
   onActivateUserRole?: (userRole: UserRole) => void;
@@ -145,7 +145,7 @@ export const UserRoleList: React.FC<UserRoleListProps> = ({
         {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
           <Button
             key={page}
-            variant={page === currentPage ? 'primary' : 'tertiary'}
+            variant={page === currentPage ? 'default' : 'tertiary'}
             size="small"
             onClick={() => handlePageChange(page)}
             disabled={isLoading}
@@ -181,7 +181,7 @@ export const UserRoleList: React.FC<UserRoleListProps> = ({
       <div className="p-4 text-center text-red-600">
         <p>{error}</p>
         <Button 
-          variant="primary" 
+          variant="default" 
           onClick={() => userRoles.fetch()} 
           className="mt-2"
         >
@@ -203,54 +203,54 @@ export const UserRoleList: React.FC<UserRoleListProps> = ({
   const columns = [
     {
       header: 'User ID',
-      accessor: 'user_id',
+      accessor: 'user_id' as keyof UserRole,
     },
     {
       header: 'Role ID',
-      accessor: 'role_id',
+      accessor: 'role_id' as keyof UserRole,
     },
     {
       header: 'Status',
-      accessor: 'is_active',
+      accessor: 'is_active' as keyof UserRole,
       cell: (value: boolean) => (
-        <Badge variant={value ? 'success' : 'danger'}>
+        <Badge variant={value ? 'success' : 'error'}>
           {value ? 'Active' : 'Inactive'}
         </Badge>
       ),
     },
     {
       header: 'Delegated By',
-      accessor: 'delegated_by',
+      accessor: 'delegated_by' as keyof UserRole,
     },
     {
       header: 'Created At',
-      accessor: 'created_at',
+      accessor: 'created_at' as keyof UserRole,
       cell: (value: string) => formatDate(value),
     },
     {
       header: 'Actions',
-      accessor: 'id',
+      accessor: 'id' as keyof UserRole,
       cell: (value: string, row: UserRole) => (
         <div className="flex gap-2">
           <Button
             variant="outline"
-            size="sm"
+            size="small"
             onClick={() => onActivateUserRole && onActivateUserRole(row)}
           >
             Edit
           </Button>
           {row.is_active ? (
             <Button
-              variant="danger"
-              size="sm"
+              variant="destructive"
+              size="small"
               onClick={() => onDeactivateUserRole && onDeactivateUserRole(row)}
             >
               Deactivate
             </Button>
           ) : (
             <Button
-              variant="success"
-              size="sm"
+              variant="secondary"
+              size="small"
               onClick={() => onActivateUserRole && onActivateUserRole(row)}
             >
               Activate
@@ -258,8 +258,8 @@ export const UserRoleList: React.FC<UserRoleListProps> = ({
           )}
           {onDelegateUserRole && (
             <Button
-              variant="primary"
-              size="sm"
+              variant="default"
+              size="small"
               onClick={() => onDelegateUserRole(row)}
             >
               Delegate

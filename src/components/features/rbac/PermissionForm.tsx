@@ -169,7 +169,7 @@ export const PermissionForm: React.FC<PermissionFormProps> = ({
             Cancel
           </Button>
           <Button 
-            variant="primary"
+            variant="default"
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Saving...' : permission ? 'Update Permission' : 'Create Permission'}

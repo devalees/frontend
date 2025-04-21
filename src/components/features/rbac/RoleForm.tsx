@@ -11,21 +11,14 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/components/ui/use-toast';
-import { Role } from '../../types/rbac';
-import { useRbac } from '../../hooks/useRbac';
-import { Select, SelectOption } from '../../components/forms/Select';
+import { Form, FormSection } from '../../forms/Form';
+import { Input } from '../../ui/Input';
+import { Button } from '../../ui/Button';
+import { Textarea } from '../../ui/Textarea';
+import { useToast } from '../../ui/use-toast';
+import { Role } from '../../../types/rbac';
+import { useRbac } from '../../../hooks/useRbac';
+import { Select, SelectOption } from '../../forms/Select';
 
 const roleFormSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -78,10 +71,10 @@ export function RoleForm({ role, onClose }: RoleFormProps) {
 
       if (role) {
         // Update existing role
-        await roles.updateRole(role.id, roleData);
+        await roles.update(role.id, roleData);
       } else {
         // Create new role
-        await roles.createRole(roleData);
+        await roles.create(roleData);
       }
 
       toast({
@@ -100,44 +93,58 @@ export function RoleForm({ role, onClose }: RoleFormProps) {
     }
   };
 
+  // Create a wrapper function that matches the Form component's expected onSubmit type
+  const handleFormSubmit = (formData: FormData) => {
+    // Convert FormData to RoleFormValues
+    const data: RoleFormValues = {
+      name: formData.get('name') as string,
+      description: formData.get('description') as string,
+    };
+    
+    // Call the original onSubmit function
+    return onSubmit(data);
+  };
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter role name" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Enter role description" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="flex justify-end space-x-2">
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Saving...' : role ? 'Update' : 'Create'}
-          </Button>
+    <Form onSubmit={handleFormSubmit}>
+      <FormSection title="Role Details">
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              Name
+            </label>
+            <Input
+              id="name"
+              {...form.register('name')}
+              placeholder="Enter role name"
+              error={!!form.formState.errors.name}
+              errorMessage={form.formState.errors.name?.message}
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+              Description
+            </label>
+            <Textarea
+              id="description"
+              {...form.register('description')}
+              placeholder="Enter role description"
+              error={!!form.formState.errors.description}
+              helperText={form.formState.errors.description?.message}
+            />
+          </div>
         </div>
-      </form>
+      </FormSection>
+      
+      <div className="flex justify-end space-x-2 mt-6">
+        <Button variant="outline" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Saving...' : role ? 'Update' : 'Create'}
+        </Button>
+      </div>
     </Form>
   );
 }
