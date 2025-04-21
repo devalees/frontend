@@ -32,6 +32,8 @@ export interface User extends BaseUser {
   username: string;
   email: string;
   role?: string;
+  permissions?: string[];  // User's RBAC permissions
+  roles?: string[];        // User's RBAC roles
   // Additional user profile fields can be added here
 }
 
@@ -185,10 +187,15 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set, get) => {
         const tokens = { access, refresh };
         set(updateTokens(get(), tokens));
         
-        // Update user state
-        set(updateUser(get(), user));
+        // Update user state with RBAC permissions
+        const userWithPermissions = {
+          ...user,
+          permissions: user.permissions || [],
+          roles: user.roles || []
+        };
+        set(updateUser(get(), userWithPermissions));
         
-        return user;
+        return userWithPermissions;
       } catch (error) {
         // Handle error
         console.error('Login failed:', error);

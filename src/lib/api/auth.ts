@@ -41,6 +41,8 @@ export interface LoginResponse {
     email: string;
     role?: string;
     is_active: boolean;
+    permissions?: string[];  // User's RBAC permissions
+    roles?: string[];        // User's RBAC roles
   };
 }
 

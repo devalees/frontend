@@ -25,11 +25,20 @@ const STATIC_FILE_PATTERNS = [
   /^\/favicon.ico$/
 ];
 
+// Define protected routes and their required permissions
+const protectedRoutes = {
+  '/dashboard': ['view_dashboard'],
+  '/projects': ['view_projects'],
+  '/tasks': ['view_tasks'],
+  '/documents': ['view_documents'],
+  '/settings': ['manage_settings'],
+};
+
 /**
  * Check if a path is a public route
  */
 function isPublicRoute(path: string): boolean {
-  return PUBLIC_ROUTES.some(route => path.startsWith(route));
+  return path === '/login' || path === '/register' || path === '/forgot-password';
 }
 
 /**
@@ -43,19 +52,18 @@ function isApiRoute(path: string): boolean {
  * Check if a path is a dashboard route
  */
 function isDashboardRoute(path: string): boolean {
-  // Dashboard path
-  if (path === '/dashboard') return true;
-  
-  // These are our known dashboard routes
-  const dashboardRoutes = ['/profile', '/projects', '/tasks'];
-  return dashboardRoutes.some(route => path.startsWith(route));
+  return path.startsWith('/dashboard') || 
+         path.startsWith('/projects') || 
+         path.startsWith('/tasks') || 
+         path.startsWith('/documents') || 
+         path.startsWith('/settings');
 }
 
 /**
  * Check if a path matches any of the static file patterns
  */
 function isStaticFile(path: string): boolean {
-  return STATIC_FILE_PATTERNS.some(pattern => pattern.test(path));
+  return path.startsWith('/_next/') || path.startsWith('/static/');
 }
 
 /**
@@ -97,34 +105,15 @@ function getPathFromRequest(request: NextRequest): string {
  * Note: We can't use getTokens() here as it's a server-side function
  */
 function isAuthenticated(request: NextRequest): boolean {
-  // In test environment, allow special test cookies
-  if (process.env.NODE_ENV === 'test' || typeof jest !== 'undefined') {
-    const testAuth = request.headers?.get?.('x-test-auth');
-    if (testAuth === 'authenticated') {
-      return true;
-    }
-  }
+  // Check for auth token in cookies
+  const token = request.cookies.get('auth_token');
+  if (token) return true;
 
-  // Check if cookies object exists (for test environments)
-  if (!request.cookies || typeof request.cookies.get !== 'function') {
-    return false;
-  }
-  
-  // Check for auth token in cookies - try both possible names
-  const authCookie = request.cookies.get(process.env.NEXT_PUBLIC_AUTH_COOKIE_NAME || 'auth_access_token') || 
-                     request.cookies.get('auth_refresh_token');
-  
-  // Check for auth token in headers (for API requests)
-  const authHeader = request.headers.get('Authorization');
-  
-  // Log authentication details for debugging
-  console.log('[Middleware] Auth check details:', {
-    hasCookie: !!authCookie,
-    hasHeader: !!authHeader,
-    cookieNames: request.cookies ? [...request.cookies.getAll().map(c => c.name)] : []
-  });
-  
-  return !!authCookie || !!authHeader;
+  // Check for test authentication header
+  const testAuth = request.headers.get('x-test-auth');
+  if (testAuth === 'authenticated') return true;
+
+  return false;
 }
 
 /**
@@ -132,28 +121,23 @@ function isAuthenticated(request: NextRequest): boolean {
  */
 export async function middleware(request: NextRequest) {
   // Extract path from request
-  const path = getPathFromRequest(request);
-  console.log('[Middleware] Checking path:', path);
+  const path = request.nextUrl.pathname;
   
   // Skip the middleware for public routes, API routes, and static files
   if (isPublicRoute(path) || isApiRoute(path) || isStaticFile(path)) {
-    console.log('[Middleware] Skipping middleware for public path');
     return undefined;
   }
   
   // Only apply protection to dashboard routes
   if (!isDashboardRoute(path)) {
-    console.log('[Middleware] Not a dashboard route, skipping protection');
     return undefined;
   }
   
   // Check for authentication
   const authenticated = isAuthenticated(request);
-  console.log('[Middleware] Authentication check:', authenticated);
   
   // For protected routes without authentication, redirect to login
   if (!authenticated) {
-    console.log('[Middleware] No authentication found, redirecting to login');
     // Return standardized object for test environment
     if (process.env.NODE_ENV === 'test' || typeof jest !== 'undefined') {
       return {
@@ -166,12 +150,10 @@ export async function middleware(request: NextRequest) {
     // Normal redirect in production
     const redirectUrl = new URL('/login', request.url);
     redirectUrl.searchParams.set('redirect', request.url);
-    console.log('[Middleware] Redirecting to:', redirectUrl.toString());
     return NextResponse.redirect(redirectUrl);
   }
   
   // Allow access to protected routes when authenticated
-  console.log('[Middleware] Authentication valid, allowing access');
   return undefined;
 }
 
@@ -180,16 +162,14 @@ export async function middleware(request: NextRequest) {
  */
 export const config = {
   matcher: [
-    // Only match these specific routes:
-    '/',                 // Dashboard home
-    '/dashboard',        // Dashboard page
-    '/dashboard/:path*', // Nested dashboard routes
-    '/profile',          // Profile page
-    '/profile/:path*',   // Nested profile routes
-    '/projects',         // Projects page
-    '/projects/:path*',  // Nested project routes
-    '/tasks',            // Tasks page
-    '/tasks/:path*',     // Nested task routes
-    '/auth-test',        // Auth test page
+    '/',
+    '/dashboard/:path*',
+    '/projects/:path*',
+    '/tasks/:path*',
+    '/documents/:path*',
+    '/settings/:path*',
+    '/profile',
+    '/profile/:path*',
+    '/auth-test'
   ],
 }; 
