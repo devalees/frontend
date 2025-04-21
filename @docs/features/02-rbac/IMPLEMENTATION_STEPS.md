@@ -50,7 +50,7 @@
      - Handle loading states and error handling
 
 3. **Create RBAC Hooks**
-   - [ ] Implement RBAC hooks
+   - [x] Implement RBAC hooks
      - File: `src/hooks/useRbac.ts`
      - Create hooks for each RBAC entity
      - Provide access to store and API methods
@@ -58,20 +58,20 @@
 
 ### Phase 3: RBAC UI Components
 1. **Set Up Tests**
-   - [ ] Create RBAC component tests
+   - [x] Create RBAC component tests
      - Directory: `src/tests/components/features/rbac/`
      - Test each component individually
      - Test component integration with hooks and store
      - Use `componentTestUtils.ts` for component testing
 
 2. **Create Role Management Components**
-   - [ ] Implement role list component
+   - [x] Implement role list component
      - File: `src/components/features/rbac/RoleList.tsx`
      - Display roles in a table or list
      - Support filtering and pagination
      - Add actions for edit, delete, and view permissions
 
-   - [ ] Implement role form component
+   - [x] Implement role form component
      - File: `src/components/features/rbac/RoleForm.tsx`
      - Create form for adding/editing roles
      - Use existing form components
