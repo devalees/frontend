@@ -26,7 +26,7 @@ export const ResourceAccessList: React.FC<ResourceAccessListProps> = ({
 
   useEffect(() => {
     fetchResourceAccesses();
-  }, [fetchResourceAccesses]);
+  }, []);
 
   const filteredData = React.useMemo(() => {
     if (!resourceAccess?.data) return [];

@@ -5,19 +5,27 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { OrganizationContext } from '../../../types/rbac';
-import { Button } from '../../ui/Button';
-import { Input } from '../../ui/Input';
-import { Textarea } from '../../ui/Textarea';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Textarea } from '@/components/ui/Textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { Switch } from '@/components/ui/Switch';
 import { Label } from '@/components/ui/Label';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
-import { useRbac } from '@/hooks/useRbac';
+import { X } from 'lucide-react';
 
 interface OrganizationContextFormProps {
-  initialData?: OrganizationContext;
-  onSubmit: (data: Partial<OrganizationContext>) => void;
+  initialData?: {
+    id: string;
+    name: string;
+    description: string;
+    parent_id: string | null;
+    is_active: boolean;
+    level: number;
+    created_at: string;
+    updated_at: string;
+  };
+  onSubmit: (data: any) => void;
   onCancel: () => void;
 }
 
@@ -28,12 +36,19 @@ export const OrganizationContextForm: React.FC<OrganizationContextFormProps> = (
 }) => {
   const [name, setName] = useState(initialData?.name || '');
   const [description, setDescription] = useState(initialData?.description || '');
-  const [parentId, setParentId] = useState<string | undefined>(initialData?.parent_id);
+  const [parentId, setParentId] = useState<string>(initialData?.parent_id || '');
   const [isActive, setIsActive] = useState(initialData?.is_active !== false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  const { organizationContext } = useRbac();
+  // Mock parent contexts for the dropdown
+  const parentContexts = [
+    { id: '1', name: 'Global Context' },
+    { id: '2', name: 'North America Region' },
+    { id: '3', name: 'Europe Region' },
+    { id: '4', name: 'US Division' },
+    { id: '5', name: 'UK Division' }
+  ].filter(context => context.id !== initialData?.id); // Filter out current context to prevent circular reference
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -61,9 +76,10 @@ export const OrganizationContextForm: React.FC<OrganizationContextFormProps> = (
     
     try {
       await onSubmit({
+        id: initialData?.id,
         name,
         description,
-        parent_id: parentId,
+        parent_id: parentId || null,
         is_active: isActive,
       });
     } catch (error) {
@@ -76,12 +92,20 @@ export const OrganizationContextForm: React.FC<OrganizationContextFormProps> = (
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-2xl">
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>
             {initialData ? `Edit Organization Context: ${initialData.name}` : 'Add New Organization Context'}
           </CardTitle>
+          <Button
+            variant="tertiary"
+            size="small"
+            onClick={onCancel}
+            className="p-1 h-auto"
+          >
+            <X className="h-5 w-5" />
+          </Button>
         </CardHeader>
-        <form onSubmit={handleSubmit} data-testid="organization-context-form">
+        <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
@@ -116,21 +140,18 @@ export const OrganizationContextForm: React.FC<OrganizationContextFormProps> = (
               <Label htmlFor="parent">Parent Context (Optional)</Label>
               <Select 
                 value={parentId} 
-                onValueChange={(value) => setParentId(value || undefined)}
+                onValueChange={(value) => setParentId(value)}
               >
                 <SelectTrigger id="parent">
                   <SelectValue placeholder="Select a parent context" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">None (Root)</SelectItem>
-                  {organizationContext.data
-                    .filter(context => context.id !== initialData?.id) // Filter out current context to prevent circular reference
-                    .map(context => (
-                      <SelectItem key={context.id} value={context.id}>
-                        {context.name}
-                      </SelectItem>
-                    ))
-                  }
+                  {parentContexts.map(context => (
+                    <SelectItem key={context.id} value={context.id}>
+                      {context.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -146,18 +167,16 @@ export const OrganizationContextForm: React.FC<OrganizationContextFormProps> = (
           </CardContent>
           <CardFooter className="flex justify-end space-x-2">
             <Button 
-              variant="tertiary" 
+              variant="secondary" 
               onClick={onCancel} 
               type="button"
               disabled={isSubmitting}
-              data-testid="cancel-form-btn"
             >
               Cancel
             </Button>
             <Button 
               type="submit" 
               disabled={isSubmitting}
-              data-testid="submit-form-btn"
             >
               {isSubmitting ? 'Saving...' : initialData ? 'Update' : 'Create'}
             </Button>

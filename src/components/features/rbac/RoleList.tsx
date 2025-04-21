@@ -47,7 +47,8 @@ export const RoleList: React.FC<RoleListProps> = ({
     };
 
     loadRoles();
-  }, [roles]);
+    // Only run this effect once on component mount
+  }, []);
 
   // Filter roles based on search term
   const filteredRoles = roles.data.filter(role => 
@@ -69,7 +70,9 @@ export const RoleList: React.FC<RoleListProps> = ({
 
   // Handle role deletion
   const handleDeleteRole = async (role: Role) => {
-    if (window.confirm(`Are you sure you want to delete the role "${role.name}"?`)) {
+    if (onDeleteRole) {
+      onDeleteRole(role);
+    } else if (window.confirm(`Are you sure you want to delete the role "${role.name}"?`)) {
       setIsLoading(true);
       setError(null);
       try {

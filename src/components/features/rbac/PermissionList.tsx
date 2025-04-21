@@ -47,7 +47,8 @@ export const PermissionList: React.FC<PermissionListProps> = ({
     };
 
     loadPermissions();
-  }, [permissions]);
+    // Only run this effect once on component mount
+  }, []);
 
   // Filter permissions based on search term
   const filteredPermissions = permissions.data.filter(permission => 
@@ -69,16 +70,13 @@ export const PermissionList: React.FC<PermissionListProps> = ({
 
   // Handle permission deletion
   const handleDeletePermission = async (permission: Permission) => {
-    if (window.confirm(`Are you sure you want to delete the permission "${permission.name}"?`)) {
+    if (onDeletePermission) {
+      onDeletePermission(permission);
+    } else if (window.confirm(`Are you sure you want to delete the permission "${permission.name}"?`)) {
       setIsLoading(true);
       setError(null);
       try {
-        // Call the onDeletePermission callback if provided
-        if (onDeletePermission) {
-          await onDeletePermission(permission);
-        }
-        // Refresh the permissions list
-        await permissions.fetch();
+        await permissions.delete(permission.id);
       } catch (err) {
         setError('Failed to delete permission. Please try again.');
         console.error('Error deleting permission:', err);

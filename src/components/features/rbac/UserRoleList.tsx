@@ -50,7 +50,8 @@ export const UserRoleList: React.FC<UserRoleListProps> = ({
     };
 
     loadUserRoles();
-  }, [userRoles]);
+    // Only run this effect once on component mount
+  }, []);
 
   // Filter user roles based on search term
   const filteredUserRoles = userRoles.data.filter(userRole => 

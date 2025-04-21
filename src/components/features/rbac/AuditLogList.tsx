@@ -6,7 +6,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRbac } from '../../../hooks/useRbac';
-import { AuditLog } from '../../../types/rbac';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/Select';
@@ -14,10 +13,81 @@ import { DatePicker } from '../../ui/DatePicker';
 import { Table } from '../../ui/Table';
 import { Badge } from '../../ui/Badge';
 import { Eye, Filter } from 'lucide-react';
-import { formatDate } from '@/utils/date';
+
+// Mock audit log data interface
+interface AuditLogItem {
+  id: string;
+  timestamp: string;
+  user_id: string;
+  action: 'CREATE' | 'UPDATE' | 'DELETE' | 'VIEW';
+  resource_type: string;
+  resource_id: string;
+  details: string;
+  ip_address: string;
+  user_agent: string;
+}
+
+// Mock data
+const mockAuditLogs: AuditLogItem[] = [
+  {
+    id: '1',
+    timestamp: '2024-04-21T14:32:21Z',
+    user_id: 'admin',
+    action: 'CREATE',
+    resource_type: 'ROLE',
+    resource_id: 'role-123',
+    details: 'Created new admin role',
+    ip_address: '192.168.1.1',
+    user_agent: 'Mozilla/5.0'
+  },
+  {
+    id: '2',
+    timestamp: '2024-04-21T15:15:45Z',
+    user_id: 'admin',
+    action: 'UPDATE',
+    resource_type: 'PERMISSION',
+    resource_id: 'perm-456',
+    details: 'Updated view permission for documents',
+    ip_address: '192.168.1.1',
+    user_agent: 'Mozilla/5.0'
+  },
+  {
+    id: '3',
+    timestamp: '2024-04-22T09:05:12Z',
+    user_id: 'john.doe',
+    action: 'DELETE',
+    resource_type: 'USER_ROLE',
+    resource_id: 'user-role-789',
+    details: 'Removed editor role from user',
+    ip_address: '192.168.1.2',
+    user_agent: 'Mozilla/5.0'
+  },
+  {
+    id: '4',
+    timestamp: '2024-04-22T10:30:00Z',
+    user_id: 'jane.smith',
+    action: 'VIEW',
+    resource_type: 'RESOURCE',
+    resource_id: 'resource-101',
+    details: 'Viewed sensitive customer data',
+    ip_address: '192.168.1.3',
+    user_agent: 'Mozilla/5.0'
+  },
+  {
+    id: '5',
+    timestamp: '2024-04-22T11:45:33Z',
+    user_id: 'admin',
+    action: 'CREATE',
+    resource_type: 'RESOURCE_ACCESS',
+    resource_id: 'access-202',
+    details: 'Created new access permission for marketing team',
+    ip_address: '192.168.1.1',
+    user_agent: 'Mozilla/5.0'
+  }
+];
 
 interface AuditLogListProps {
-  onViewDetails?: (log: AuditLog) => void;
+  onViewDetails?: (log: AuditLogItem) => void;
   onFilterChange?: (filters: any) => void;
   className?: string;
 }
@@ -27,25 +97,25 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
   onFilterChange,
   className = '',
 }) => {
-  const { auditLog } = useRbac();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [isLoading, setIsLoading] = useState(false);
   const [filters, setFilters] = useState({
     startDate: '2024-01-01',
-    endDate: '2024-01-31',
-    action: 'CREATE',
-    resourceType: 'ROLE',
-    userId: 'user1'
+    endDate: '2024-12-31',
+    action: '',
+    resourceType: '',
+    userId: ''
   });
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
   // Filter audit logs based on search term
-  const filteredLogs = auditLog.data.filter(log => 
-    log.details?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    log.action?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    log.resource_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    log.user_id?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredLogs = mockAuditLogs.filter(log => 
+    log.details.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    log.action.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    log.resource_type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    log.user_id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Pagination logic
@@ -85,7 +155,7 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
     {
       header: 'Time',
       accessor: 'timestamp',
-      cell: (log: AuditLog) => (
+      cell: (log: AuditLogItem) => (
         <span className="whitespace-nowrap">
           {new Date(log.timestamp).toLocaleString()}
         </span>
@@ -94,12 +164,12 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
     {
       header: 'User',
       accessor: 'user_id',
-      cell: (log: AuditLog) => <span>{log.user_id}</span>,
+      cell: (log: AuditLogItem) => <span>{log.user_id}</span>,
     },
     {
       header: 'Action',
       accessor: 'action',
-      cell: (log: AuditLog) => (
+      cell: (log: AuditLogItem) => (
         <Badge 
           variant={
             log.action === 'CREATE' ? 'success' : 
@@ -114,19 +184,19 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
     {
       header: 'Resource Type',
       accessor: 'resource_type',
-      cell: (log: AuditLog) => <span>{log.resource_type}</span>,
+      cell: (log: AuditLogItem) => <span>{log.resource_type}</span>,
     },
     {
       header: 'Details',
       accessor: 'details',
-      cell: (log: AuditLog) => (
+      cell: (log: AuditLogItem) => (
         <span className="truncate max-w-xs inline-block">{log.details}</span>
       ),
     },
     {
       header: 'Actions',
       accessor: 'actions',
-      cell: (log: AuditLog) => (
+      cell: (log: AuditLogItem) => (
         <div className="flex justify-end">
           {onViewDetails && (
             <Button 
@@ -154,7 +224,7 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
           variant="tertiary" 
           size="small" 
           onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1 || auditLog.loading}
+          disabled={currentPage === 1 || isLoading}
         >
           Previous
         </Button>
@@ -165,7 +235,7 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
             variant={page === currentPage ? 'default' : 'tertiary'}
             size="small"
             onClick={() => handlePageChange(page)}
-            disabled={auditLog.loading}
+            disabled={isLoading}
           >
             {page}
           </Button>
@@ -175,7 +245,7 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
           variant="tertiary" 
           size="small" 
           onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages || auditLog.loading}
+          disabled={currentPage === totalPages || isLoading}
         >
           Next
         </Button>
@@ -216,12 +286,13 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
               onValueChange={(value) => handleFilterChange('action', value)}
             >
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Select action" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="CREATE">Create</SelectItem>
                 <SelectItem value="UPDATE">Update</SelectItem>
                 <SelectItem value="DELETE">Delete</SelectItem>
+                <SelectItem value="VIEW">View</SelectItem>
                 <SelectItem value="">All Actions</SelectItem>
               </SelectContent>
             </Select>
@@ -234,12 +305,14 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
               onValueChange={(value) => handleFilterChange('resourceType', value)}
             >
               <SelectTrigger>
-                <SelectValue />
+                <SelectValue placeholder="Select resource type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="ROLE">Role</SelectItem>
                 <SelectItem value="PERMISSION">Permission</SelectItem>
                 <SelectItem value="RESOURCE">Resource</SelectItem>
+                <SelectItem value="USER_ROLE">User Role</SelectItem>
+                <SelectItem value="RESOURCE_ACCESS">Resource Access</SelectItem>
                 <SelectItem value="">All Resources</SelectItem>
               </SelectContent>
             </Select>
@@ -249,67 +322,45 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
             <label className="block text-sm font-medium mb-1">User ID</label>
             <Input 
               type="text" 
+              placeholder="Enter user ID" 
               value={filters.userId} 
               onChange={(e) => handleFilterChange('userId', e.target.value)}
-              placeholder="Enter user ID"
             />
           </div>
         </div>
         
-        <div className="flex justify-end mt-4">
+        <div className="mt-4 flex justify-end space-x-2">
           <Button 
-            onClick={applyFilters}
-            className="flex items-center"
+            variant="tertiary" 
+            onClick={() => setFilters({
+              startDate: '2024-01-01',
+              endDate: '2024-12-31',
+              action: '',
+              resourceType: '',
+              userId: ''
+            })}
           >
-            Apply Filters
+            Reset
           </Button>
+          <Button onClick={applyFilters}>Apply Filters</Button>
         </div>
       </div>
     );
   };
 
-  // Render loading state
-  if (auditLog.loading && auditLog.data.length === 0) {
-    return (
-      <div className="p-4 text-center">
-        <p>Loading audit logs...</p>
-      </div>
-    );
-  }
-
-  // Render error state
-  if (auditLog.error) {
-    return (
-      <div className="p-4 text-center text-red-600">
-        <p>{auditLog.error}</p>
-      </div>
-    );
-  }
-
-  // Render empty state
-  if (auditLog.data.length === 0) {
-    return (
-      <div className="p-4 text-center">
-        <p>No audit logs found.</p>
-      </div>
-    );
-  }
-
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Search and filter controls */}
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
         <Input
           type="search"
           placeholder="Search audit logs..."
           value={searchTerm}
           onChange={handleSearchChange}
-          className="max-w-md flex-1"
-          aria-label="Search audit logs"
+          className="max-w-md"
         />
-        
         <Button 
-          variant="secondary" 
+          variant="tertiary" 
           onClick={() => setIsFilterExpanded(!isFilterExpanded)}
           className="flex items-center"
         >
@@ -322,21 +373,40 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
       {renderFilterPanel()}
 
       {/* Audit logs table */}
-      <div className="overflow-x-auto">
-        <Table
-          data={currentLogs}
-          columns={columns}
-          emptyMessage="No audit logs found"
-        />
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              {columns.map((column, index) => (
+                <th key={index} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {column.header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {currentLogs.map((log) => (
+              <tr key={log.id} className="hover:bg-gray-50">
+                {columns.map((column, index) => (
+                  <td key={index} className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {column.cell(log)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+
+      {/* Empty state */}
+      {filteredLogs.length === 0 && (
+        <div className="text-center py-8 bg-white rounded-lg shadow">
+          <p className="text-gray-500">No audit logs found.</p>
+        </div>
+      )}
 
       {/* Pagination controls */}
       {renderPagination()}
-
-      {/* Results count */}
-      <div className="text-sm text-gray-500 mt-2">
-        Showing {startIndex + 1}-{Math.min(endIndex, filteredLogs.length)} of {filteredLogs.length} audit logs
-      </div>
     </div>
   );
 }; 
