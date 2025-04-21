@@ -243,13 +243,13 @@
 
 ### Phase 10: Resource and Organization Context Pages
 1. **Set Up Tests**
-   - [ ] Create resource management page tests
+   - [x] Create resource management page tests
      - Directory: `src/tests/app/rbac/resources/`
      - Test page rendering and navigation
      - Test page integration with components and hooks
 
 2. **Create Resource Management Pages**
-   - [ ] Implement resources page
+   - [x] Implement resources page
      - File: `src/app/(dashboard)/rbac/resources/page.tsx`
      - Use resource list and form components
      - Add navigation and breadcrumbs

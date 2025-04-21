@@ -33,8 +33,8 @@ import {
   cleanup 
 } from '@testing-library/react';
 
-// Import and re-export userEvent
-import userEvent from '@testing-library/user-event';
+// Import and re-export userEvent from our mock instead
+import userEvent from './mockUserEvent';
 
 // React hooks - direct imports
 import {
