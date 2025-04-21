@@ -36,14 +36,14 @@
 
 ### Phase 2: RBAC State Management
 1. **Set Up Tests**
-   - [ ] Create RBAC store tests
+   - [x] Create RBAC store tests
      - File: `src/tests/store/rbac.test.ts`
      - Use centralized testing utilities
      - Test store actions and state management
      - Test store selectors and computed properties
 
 2. **Create RBAC Store**
-   - [ ] Implement RBAC store with Zustand
+   - [x] Implement RBAC store with Zustand
      - File: `src/lib/store/slices/rbacSlice.ts`
      - Create store slices for each RBAC entity
      - Implement actions for fetching, creating, updating, and deleting

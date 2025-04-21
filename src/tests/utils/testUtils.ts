@@ -69,8 +69,8 @@ export function render(
 }
 
 /**
- * Simple renderHook implementation for testing
- * This is a basic implementation that doesn't require @testing-library/react-hooks
+ * Enhanced renderHook implementation for testing
+ * This implementation provides better support for testing hooks with state updates
  */
 export function renderHook<TProps, TResult>(
   render: (initialProps: TProps) => TResult,
@@ -79,24 +79,36 @@ export function renderHook<TProps, TResult>(
     initialProps?: TProps;
   }
 ) {
-  // For simplicity, we'll just return a mock implementation
-  // that satisfies the test requirements
-  const initialProps = options?.initialProps || {} as TProps;
-  const result = render(initialProps);
-  
+  let currentProps = options?.initialProps || {} as TProps;
+  let currentResult: TResult;
+  let error: Error | null = null;
+
+  try {
+    currentResult = render(currentProps);
+  } catch (e) {
+    error = e as Error;
+    currentResult = {} as TResult;
+  }
+
+  const result = {
+    current: currentResult,
+    error,
+  };
+
   return {
-    result: {
-      current: result,
-      error: null,
-    },
+    result,
     rerender: (newProps?: TProps) => {
-      const newInitialProps = newProps || initialProps;
-      const newResult = render(newInitialProps);
-      
+      currentProps = newProps || currentProps;
+      try {
+        currentResult = render(currentProps);
+        error = null;
+      } catch (e) {
+        error = e as Error;
+      }
       return {
         result: {
-          current: newResult,
-          error: null,
+          current: currentResult,
+          error,
         },
       };
     },

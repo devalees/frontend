@@ -8,7 +8,7 @@
  */
 
 // Import testing utilities from centralized testing framework
-import { describe, it, expect, beforeEach, vi, renderHook } from '../../tests/utils';
+import { describe, it, expect, beforeEach, jest, renderHook } from '../../tests/utils';
 
 // Import the feature configuration module that will be implemented
 import { 
@@ -19,7 +19,8 @@ import {
   registerFeature,
   getFeatureRegistry,
   integrateWithService,
-  resetFeatureRegistry
+  resetFeatureRegistry,
+  FeatureService
 } from '../../lib/features/featureConfig';
 
 describe('Feature Configuration', () => {
@@ -163,6 +164,11 @@ describe('Feature Configuration', () => {
   });
 
   describe('Feature Hook', () => {
+    beforeEach(() => {
+      // Register the feature before each test
+      registerFeature(mockFeatureConfig);
+    });
+
     it('should provide feature state and methods', () => {
       // Arrange & Act
       const { result } = renderHook(() => useFeature(mockFeatureConfig.id));
@@ -172,31 +178,31 @@ describe('Feature Configuration', () => {
       expect(result.current.isEnabled).toBe(true);
       expect(typeof result.current.enable).toBe('function');
       expect(typeof result.current.disable).toBe('function');
+      expect(result.current.config).toEqual(mockFeatureConfig);
     });
 
     it('should throw an error when using an unregistered feature', () => {
-      // Arrange & Act
-      const hookFn = () => {
-        const { result } = renderHook(() => useFeature('non-existent-feature'));
-        return result.current;
-      };
+      // Reset registry to ensure feature is not registered
+      resetFeatureRegistry();
       
-      // Assert
-      expect(hookFn).toThrow('Feature not registered: non-existent-feature');
+      // Act & Assert - using renderHook with error checking
+      const { result } = renderHook(() => useFeature('non-existent-feature'));
+      
+      // Check that the error was captured
+      expect(result.error).toBeDefined();
+      expect(result.error?.message).toBe('Feature not registered: non-existent-feature');
     });
 
     it('should call enable and disable methods to change feature state', () => {
       // Arrange
       const { result } = renderHook(() => useFeature(mockFeatureConfig.id));
       
-      // Act - call methods to increase function coverage
-      result.current.enable();
+      // Act & Assert
       result.current.disable();
+      expect(result.current.isEnabled).toBe(false);
       
-      // Assert - these won't actually change anything in our skeleton implementation
-      // but will execute the function bodies to increase coverage
-      expect(typeof result.current.enable).toBe('function');
-      expect(typeof result.current.disable).toBe('function');
+      result.current.enable();
+      expect(result.current.isEnabled).toBe(true);
     });
 
     it('should use default state for uninitialized features', () => {
@@ -256,8 +262,8 @@ describe('Feature Configuration', () => {
 
     it('should integrate feature with external service', async () => {
       // Arrange
-      const mockService = {
-        registerFeature: jest.fn().mockResolvedValue({ success: true }),
+      const mockService: FeatureService = {
+        registerFeature: jest.fn().mockReturnValue(Promise.resolve({ success: true })),
         notifyOnChange: jest.fn()
       };
       
@@ -273,8 +279,8 @@ describe('Feature Configuration', () => {
 
     it('should handle integration failures gracefully', async () => {
       // Arrange
-      const mockService = {
-        registerFeature: jest.fn().mockRejectedValue(new Error('Integration failed')),
+      const mockService: FeatureService = {
+        registerFeature: jest.fn().mockReturnValue(Promise.reject(new Error('Integration failed'))),
         notifyOnChange: jest.fn()
       };
       
@@ -285,8 +291,8 @@ describe('Feature Configuration', () => {
 
     it('should set up change notifications during integration', async () => {
       // Arrange
-      const mockService = {
-        registerFeature: jest.fn().mockResolvedValue({ success: true }),
+      const mockService: FeatureService = {
+        registerFeature: jest.fn().mockReturnValue(Promise.resolve({ success: true })),
         notifyOnChange: jest.fn()
       };
       

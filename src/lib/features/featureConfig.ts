@@ -132,25 +132,33 @@ export function useFeature(featureId: string): FeatureHookResult {
   // Check if feature exists
   const feature = featureRegistry.find(f => f.id === featureId);
   
-  if (!feature && featureId !== 'test-feature') {
+  if (!feature) {
+    console.log(`Feature not found: ${featureId}`);
     throw new Error(`Feature not registered: ${featureId}`);
   }
   
-  // Get feature state
-  const state = featureState.get(featureId) || { enabled: true };
+  // Get feature state with default value
+  const state = featureState.get(featureId) || { enabled: feature.enabled };
+  
+  // Create a mutable reference to track the current state
+  let currentState = state.enabled;
   
   // Create result with controls
   return {
-    isEnabled: state.enabled,
+    get isEnabled() {
+      return currentState;
+    },
     enable: () => {
-      const state = featureState.get(featureId) || { enabled: false };
-      featureState.set(featureId, { ...state, enabled: true });
+      console.log(`Enabling feature: ${featureId}`);
+      featureState.set(featureId, { enabled: true });
+      currentState = true;
     },
     disable: () => {
-      const state = featureState.get(featureId) || { enabled: true };
-      featureState.set(featureId, { ...state, enabled: false });
+      console.log(`Disabling feature: ${featureId}`);
+      featureState.set(featureId, { enabled: false });
+      currentState = false;
     },
-    config: feature || null
+    config: feature
   };
 }
 
@@ -200,23 +208,21 @@ export async function integrateWithService(
   service: FeatureService
 ): Promise<{ success: boolean }> {
   try {
-    // Set up notification handler for real-time updates
+    // Register with service
+    const result = await service.registerFeature(config);
+    
+    // Set up change notification
     service.notifyOnChange(config.id, (updatedFeature) => {
-      // Find and update feature in registry
+      // Update feature state when changes occur
       const index = featureRegistry.findIndex(f => f.id === updatedFeature.id);
       if (index !== -1) {
         featureRegistry[index] = updatedFeature;
+        featureState.set(updatedFeature.id, { enabled: updatedFeature.enabled });
       }
-      
-      // Update feature state
-      featureState.set(updatedFeature.id, { enabled: updatedFeature.enabled });
     });
     
-    // Register the feature with the service
-    const result = await service.registerFeature(config);
     return result;
   } catch (error) {
-    // Propagate errors to caller
     throw error;
   }
 } 
