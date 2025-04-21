@@ -81,13 +81,15 @@ export interface OrganizationContext extends BaseEntity {
 }
 
 // AuditLog entity
-export interface AuditLog extends BaseEntity {
+export interface AuditLog {
+  id: string;
   user_id: string;
-  action: string;
+  action: 'create' | 'update' | 'delete';
   entity_type: string;
   entity_id: string;
   changes: Record<string, any>;
-  metadata?: Record<string, any>;
+  created_at: string;
+  updated_at: string;
 }
 
 // Paginated response type
