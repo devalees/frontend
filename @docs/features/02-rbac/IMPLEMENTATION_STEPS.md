@@ -132,8 +132,15 @@
      - Handle user role management actions
 
 ### Phase 5: Resource Management
-1. **Create Resource Management Components**
-   - [ ] Implement resource list component
+1. **Set Up Tests**
+   - [x] Create resource management component tests
+     - Directory: `src/tests/components/features/rbac/resources/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+
+2. **Create Resource Management Components**
+   - [x] Implement resource list component
      - File: `src/components/features/rbac/ResourceList.tsx`
      - Display resources in a table or list
      - Support filtering and pagination
@@ -145,7 +152,7 @@
      - Use existing form components
      - Add validation and error handling
 
-2. **Create Resource Access Components**
+3. **Create Resource Access Components**
    - [ ] Implement resource access list component
      - File: `src/components/features/rbac/ResourceAccessList.tsx`
      - Display resource access entries in a table or list
@@ -158,21 +165,15 @@
      - Use existing form components
      - Add validation and error handling
 
-3. **Create Resource Management Pages**
-   - [ ] Implement resources page
-     - File: `src/app/(dashboard)/rbac/resources/page.tsx`
-     - Use resource list and form components
-     - Add navigation and breadcrumbs
-     - Handle resource management actions
-
-   - [ ] Implement resource access page
-     - File: `src/app/(dashboard)/rbac/resource-accesses/page.tsx`
-     - Use resource access list and form components
-     - Add navigation and breadcrumbs
-     - Handle resource access management actions
-
 ### Phase 6: Organization Context Management
-1. **Create Organization Context Components**
+1. **Set Up Tests**
+   - [ ] Create organization context component tests
+     - Directory: `src/tests/components/features/rbac/organization-contexts/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+
+2. **Create Organization Context Components**
    - [ ] Implement organization context list component
      - File: `src/components/features/rbac/OrganizationContextList.tsx`
      - Display organization contexts in a table or list
@@ -185,15 +186,15 @@
      - Use existing form components
      - Add validation and error handling
 
-2. **Create Organization Context Page**
-   - [ ] Implement organization contexts page
-     - File: `src/app/(dashboard)/rbac/organization-contexts/page.tsx`
-     - Use organization context list and form components
-     - Add navigation and breadcrumbs
-     - Handle organization context management actions
-
 ### Phase 7: Audit Log Management
-1. **Create Audit Log Components**
+1. **Set Up Tests**
+   - [ ] Create audit log component tests
+     - Directory: `src/tests/components/features/rbac/audit-logs/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+
+2. **Create Audit Log Components**
    - [ ] Implement audit log list component
      - File: `src/components/features/rbac/AuditLogList.tsx`
      - Display audit logs in a table or list
@@ -205,13 +206,6 @@
      - Display detailed audit log information
      - Support for compliance reports
      - Add filtering and export options
-
-2. **Create Audit Log Page**
-   - [ ] Implement audit logs page
-     - File: `src/app/(dashboard)/rbac/audit-logs/page.tsx`
-     - Use audit log list and viewer components
-     - Add navigation and breadcrumbs
-     - Handle audit log management actions
 
 ### Phase 8: Permission Check Utility
 1. **Set Up Tests**
@@ -228,17 +222,70 @@
      - Integrate with user profile and roles
 
 ### Phase 9: Integration with Authentication
-1. **Update Authentication Flow**
+1. **Set Up Tests**
+   - [ ] Create authentication integration tests
+     - File: `src/tests/auth/rbac-integration.test.ts`
+     - Test RBAC integration with authentication flow
+     - Test permission-based route protection
+     - Use `integrationTestUtils.ts` for integration testing
+
+2. **Update Authentication Flow**
    - [ ] Integrate RBAC with authentication
      - Update login flow to include RBAC permissions
      - Store user permissions in auth store
      - Add permission checks to protected routes
 
-2. **Implement Permission-Based Route Protection**
+3. **Implement Permission-Based Route Protection**
    - [ ] Create permission-based route protection
      - File: `src/middleware.ts` (update existing middleware)
      - Check permissions for protected routes
      - Redirect unauthorized users
+
+### Phase 10: Resource and Organization Context Pages
+1. **Set Up Tests**
+   - [ ] Create resource management page tests
+     - Directory: `src/tests/app/rbac/resources/`
+     - Test page rendering and navigation
+     - Test page integration with components and hooks
+
+2. **Create Resource Management Pages**
+   - [ ] Implement resources page
+     - File: `src/app/(dashboard)/rbac/resources/page.tsx`
+     - Use resource list and form components
+     - Add navigation and breadcrumbs
+     - Handle resource management actions
+
+   - [ ] Implement resource access page
+     - File: `src/app/(dashboard)/rbac/resource-accesses/page.tsx`
+     - Use resource access list and form components
+     - Add navigation and breadcrumbs
+     - Handle resource access management actions
+
+### Phase 11: Organization Context and Audit Log Pages
+1. **Set Up Tests**
+   - [ ] Create organization context page tests
+     - Directory: `src/tests/app/rbac/organization-contexts/`
+     - Test page rendering and navigation
+     - Test page integration with components and hooks
+
+   - [ ] Create audit log page tests
+     - Directory: `src/tests/app/rbac/audit-logs/`
+     - Test page rendering and navigation
+     - Test page integration with components and hooks
+
+2. **Create Organization Context Page**
+   - [ ] Implement organization contexts page
+     - File: `src/app/(dashboard)/rbac/organization-contexts/page.tsx`
+     - Use organization context list and form components
+     - Add navigation and breadcrumbs
+     - Handle organization context management actions
+
+3. **Create Audit Log Page**
+   - [ ] Implement audit logs page
+     - File: `src/app/(dashboard)/rbac/audit-logs/page.tsx`
+     - Use audit log list and viewer components
+     - Add navigation and breadcrumbs
+     - Handle audit log management actions
 
 ## Testing Guidelines
 - Use centralized testing utilities from `src/tests/utils/`
