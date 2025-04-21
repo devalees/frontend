@@ -174,14 +174,14 @@
      - Use `componentTestUtils.ts` for component testing
 
 2. **Create Organization Context Components**
-   - [ ] Implement organization context list component
-     - File: `src/components/features/rbac/OrganizationContextList.tsx`
+   - [x] Implement organization context list component
+     - File: `src/components/features/rbac/organization-contexts/OrganizationContextList.tsx`
      - Display organization contexts in a table or list
      - Support filtering and pagination
      - Add actions for edit, delete, activate, and deactivate
 
-   - [ ] Implement organization context form component
-     - File: `src/components/features/rbac/OrganizationContextForm.tsx`
+   - [x] Implement organization context form component
+     - File: `src/components/features/rbac/organization-contexts/OrganizationContextForm.tsx`
      - Create form for adding/editing organization contexts
      - Use existing form components
      - Add validation and error handling

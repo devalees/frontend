@@ -9,189 +9,61 @@
 import { jest } from '@jest/globals';
 import { render, screen, fireEvent, act, RenderOptions } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import React, { ReactElement } from 'react';
+import { create } from 'zustand';
 
 type ComponentType<P> = React.ComponentType<P>;
 
 /**
- * Custom render function with provider wrappers
- * 
- * @param ui - The component to render
+ * Custom render function that includes providers
+ * @param ui - The React component to render
  * @param options - Render options
- * @returns The rendered component with additional helpers
+ * @returns Render result with providers
  */
-export function renderWithProviders(
-  ui: React.ReactElement,
+export const renderWithProviders = (
+  ui: ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>
-) {
-  // Here you would add your providers if needed
-  const AllProviders = ({ children }: { children: React.ReactNode }) => {
-    return (
-      React.createElement(React.Fragment, null, children)
-    );
+) => {
+  // Create a mock store for testing
+  const useStore = create(() => ({
+    rbac: {
+      roles: [],
+      permissions: [],
+      userRoles: [],
+      resources: [],
+      resourceAccesses: [],
+      organizationContexts: [],
+      auditLogs: [],
+      loading: false,
+      error: null
+    }
+  }));
+
+  const Wrapper = ({ children }: { children: React.ReactNode }) => {
+    return children;
   };
-  
-  return render(ui, { wrapper: AllProviders, ...options });
-}
+
+  return render(ui, { wrapper: Wrapper, ...options });
+};
 
 /**
  * Component test harness provides a unified way to test components
  * 
  * @param Component - The component to test
- * @param defaultProps - Default props for the component
- * @returns Object with test utilities
+ * @param props - Component props
+ * @returns Object with render result and utilities
  */
-export function componentTestHarness<Props>(
-  Component: React.ComponentType<Props>,
-  defaultProps: Props
-) {
+export const componentTestHarness = <P extends object>(
+  Component: React.ComponentType<P>,
+  props: P
+) => {
+  const element = React.createElement(Component, props);
+  const renderResult = renderWithProviders(element);
+
   return {
-    /**
-     * Render the component with custom props
-     */
-    render: (customProps?: Partial<Props>) => {
-      const props = { ...defaultProps, ...customProps } as Props;
-      return renderWithProviders(React.createElement(Component, props));
-    },
-    
-    /**
-     * Get component with props for snapshot testing
-     */
-    getComponent: (customProps?: Partial<Props>) => {
-      const props = { ...defaultProps, ...customProps } as Props;
-      return React.createElement(Component, props);
-    }
+    ...renderResult,
+    // Add any additional utilities here
   };
-}
-
-/**
- * Props validation tester
- * 
- * @param Component - The component to test
- * @param validProps - Valid props for the component
- * @returns Object with test utilities for prop validation
- */
-export function propsValidation<Props>(
-  Component: React.ComponentType<Props>,
-  validProps: Props
-) {
-  return {
-    /**
-     * Test if the component renders without errors with valid props
-     */
-    testValidProps: () => {
-      const result = renderWithProviders(React.createElement(Component, validProps));
-      return result;
-    },
-    
-    /**
-     * Test if the component handles missing required props as expected
-     * 
-     * @param requiredPropName - Name of the required prop to omit
-     */
-    testMissingRequiredProp: (requiredPropName: keyof Props) => {
-      // Create a copy of validProps without the specified required prop
-      const { [requiredPropName]: _, ...propsWithoutRequired } = validProps as any;
-      
-      // This should produce a console error for required props
-      const renderWithMissingProp = () => {
-        renderWithProviders(React.createElement(Component, propsWithoutRequired as Props));
-      };
-      
-      return renderWithMissingProp;
-    }
-  };
-}
-
-/**
- * Component Test Harness
- * Provides utilities for testing React components
- */
-export const componentTestHarness = {
-  /**
-   * Sets up a component test with the given props and options
-   */
-  setupComponentTest<P extends Record<string, any>>(
-    Component: ComponentType<P>, 
-    defaultProps: P = {} as P
-  ) {
-    return {
-      Component,
-      defaultProps,
-      render: (props: Partial<P> = {}) => {
-        const allProps = { ...defaultProps, ...props } as P;
-        return render(React.createElement(Component, allProps));
-      }
-    };
-  },
-
-  /**
-   * Renders a component with the given props
-   */
-  renderComponent<P extends Record<string, any>>(
-    Component: ComponentType<P>,
-    props: P
-  ) {
-    return render(React.createElement(Component, props));
-  },
-
-  /**
-   * Simulates user interactions with a component
-   */
-  simulateUserInteraction: {
-    click: async (element: HTMLElement) => {
-      await userEvent.click(element);
-    },
-    type: async (element: HTMLElement, text: string) => {
-      await userEvent.type(element, text);
-    },
-    selectOption: async (element: HTMLElement, value: string) => {
-      await userEvent.selectOptions(element, value);
-    },
-    clear: async (element: HTMLElement) => {
-      await userEvent.clear(element);
-    },
-    hover: async (element: HTMLElement) => {
-      await userEvent.hover(element);
-    },
-    pressKey: async (key: string) => {
-      await userEvent.keyboard(key);
-    }
-  },
-
-  /**
-   * Verifies component state after interactions
-   */
-  verifyComponentState: {
-    exists: (testId: string) => {
-      return expect(screen.queryByTestId(testId)).toBeInTheDocument();
-    },
-    notExists: (testId: string) => {
-      return expect(screen.queryByTestId(testId)).not.toBeInTheDocument();
-    },
-    hasText: (testId: string, text: string) => {
-      return expect(screen.getByTestId(testId)).toHaveTextContent(text);
-    },
-    hasClass: (testId: string, className: string) => {
-      return expect(screen.getByTestId(testId)).toHaveClass(className);
-    },
-    isDisabled: (testId: string) => {
-      return expect(screen.getByTestId(testId)).toBeDisabled();
-    },
-    isEnabled: (testId: string) => {
-      return expect(screen.getByTestId(testId)).toBeEnabled();
-    },
-    isFocused: (testId: string) => {
-      return expect(screen.getByTestId(testId)).toHaveFocus();
-    },
-    hasAttribute: (testId: string, attr: string, value?: string) => {
-      const element = screen.getByTestId(testId);
-      if (value) {
-        return expect(element).toHaveAttribute(attr, value);
-      }
-      return expect(element).toHaveAttribute(attr);
-    }
-  }
 };
 
 /**

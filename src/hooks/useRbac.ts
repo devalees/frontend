@@ -59,7 +59,11 @@ interface Store extends RootState {
   organizationContexts: {
     data: PaginatedResponse<OrganizationContext> | null;
     fetchOrganizationContexts: () => Promise<void>;
+    createOrganizationContext: (context: Partial<OrganizationContext>) => Promise<void>;
     updateOrganizationContext: (id: string, context: Partial<OrganizationContext>) => Promise<void>;
+    deleteOrganizationContext: (id: string) => Promise<void>;
+    activateOrganizationContext: (id: string) => Promise<void>;
+    deactivateOrganizationContext: (id: string) => Promise<void>;
   };
   auditLogs: {
     data: PaginatedResponse<AuditLog> | null;
@@ -314,40 +318,94 @@ export const useRbac = () => {
     }
   }, [store]);
 
-  // Organization Context
-  const [organizationContext, setOrganizationContext] = useState<SingleHookState<OrganizationContext>>({
-    data: null,
+  // Organization Contexts
+  const [organizationContexts, setOrganizationContexts] = useState<HookState<OrganizationContext>>({
+    data: [],
     loading: false,
     error: null
   });
 
-  const fetchOrganizationContext = useCallback(async () => {
-    console.log('Fetching organization context from store');
-    setOrganizationContext(prev => ({ ...prev, loading: true, error: null }));
+  const fetchOrganizationContexts = useCallback(async () => {
+    console.log('Fetching organization contexts from store');
+    setOrganizationContexts(prev => ({ ...prev, loading: true, error: null }));
     try {
       await store.organizationContexts.fetchOrganizationContexts();
       const storeContexts = store.organizationContexts.data?.results || [];
-      const context = storeContexts[0] || null;
-      console.log('Organization context fetched from store:', context);
-      setOrganizationContext({ data: context, loading: false, error: null });
+      console.log('Organization contexts fetched from store:', storeContexts);
+      setOrganizationContexts({ data: storeContexts, loading: false, error: null });
     } catch (error) {
-      console.error('Error fetching organization context:', error);
-      setOrganizationContext(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to fetch organization context' }));
+      console.error('Error fetching organization contexts:', error);
+      setOrganizationContexts(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to fetch organization contexts' }));
+    }
+  }, [store]);
+
+  const createOrganizationContext = useCallback(async (context: Partial<OrganizationContext>) => {
+    console.log('Creating organization context:', context);
+    setOrganizationContexts(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      await store.organizationContexts.createOrganizationContext(context);
+      const storeContexts = store.organizationContexts.data?.results || [];
+      console.log('Organization context created, updated contexts:', storeContexts);
+      setOrganizationContexts({ data: storeContexts, loading: false, error: null });
+    } catch (error) {
+      console.error('Error creating organization context:', error);
+      setOrganizationContexts(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to create organization context' }));
     }
   }, [store]);
 
   const updateOrganizationContext = useCallback(async (id: string, context: Partial<OrganizationContext>) => {
     console.log('Updating organization context:', id, context);
-    setOrganizationContext(prev => ({ ...prev, loading: true, error: null }));
+    setOrganizationContexts(prev => ({ ...prev, loading: true, error: null }));
     try {
       await store.organizationContexts.updateOrganizationContext(id, context);
       const storeContexts = store.organizationContexts.data?.results || [];
-      const updatedContext = storeContexts.find(c => c.id === id) || null;
-      console.log('Organization context updated:', updatedContext);
-      setOrganizationContext({ data: updatedContext, loading: false, error: null });
+      console.log('Organization context updated, updated contexts:', storeContexts);
+      setOrganizationContexts({ data: storeContexts, loading: false, error: null });
     } catch (error) {
       console.error('Error updating organization context:', error);
-      setOrganizationContext(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to update organization context' }));
+      setOrganizationContexts(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to update organization context' }));
+    }
+  }, [store]);
+
+  const deleteOrganizationContext = useCallback(async (id: string) => {
+    console.log('Deleting organization context:', id);
+    setOrganizationContexts(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      await store.organizationContexts.deleteOrganizationContext(id);
+      const storeContexts = store.organizationContexts.data?.results || [];
+      console.log('Organization context deleted, updated contexts:', storeContexts);
+      setOrganizationContexts({ data: storeContexts, loading: false, error: null });
+    } catch (error) {
+      console.error('Error deleting organization context:', error);
+      setOrganizationContexts(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to delete organization context' }));
+    }
+  }, [store]);
+
+  const activateOrganizationContext = useCallback(async (id: string) => {
+    console.log('Activating organization context:', id);
+    setOrganizationContexts(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      await store.organizationContexts.activateOrganizationContext(id);
+      const storeContexts = store.organizationContexts.data?.results || [];
+      console.log('Organization context activated, updated contexts:', storeContexts);
+      setOrganizationContexts({ data: storeContexts, loading: false, error: null });
+    } catch (error) {
+      console.error('Error activating organization context:', error);
+      setOrganizationContexts(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to activate organization context' }));
+    }
+  }, [store]);
+
+  const deactivateOrganizationContext = useCallback(async (id: string) => {
+    console.log('Deactivating organization context:', id);
+    setOrganizationContexts(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      await store.organizationContexts.deactivateOrganizationContext(id);
+      const storeContexts = store.organizationContexts.data?.results || [];
+      console.log('Organization context deactivated, updated contexts:', storeContexts);
+      setOrganizationContexts({ data: storeContexts, loading: false, error: null });
+    } catch (error) {
+      console.error('Error deactivating organization context:', error);
+      setOrganizationContexts(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to deactivate organization context' }));
     }
   }, [store]);
 
@@ -398,9 +456,9 @@ export const useRbac = () => {
     fetchUserRoles();
     fetchResources();
     fetchResourceAccess();
-    fetchOrganizationContext();
+    fetchOrganizationContexts();
     fetchAuditLogs();
-  }, [fetchRoles, fetchPermissions, fetchUserRoles, fetchResources, fetchResourceAccess, fetchOrganizationContext, fetchAuditLogs]);
+  }, [fetchRoles, fetchPermissions, fetchUserRoles, fetchResources, fetchResourceAccess, fetchOrganizationContexts, fetchAuditLogs]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -491,11 +549,13 @@ export const useRbac = () => {
       fetch: fetchResourceAccess,
       create: createResourceAccess
     },
-    organizationContext: {
-      ...organizationContext,
-      fetch: fetchOrganizationContext,
-      update: updateOrganizationContext
-    },
+    organizationContexts,
+    fetchOrganizationContexts,
+    createOrganizationContext,
+    updateOrganizationContext,
+    deleteOrganizationContext,
+    activateOrganizationContext,
+    deactivateOrganizationContext,
     auditLogs: {
       ...auditLogs,
       fetch: fetchAuditLogs,

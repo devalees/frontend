@@ -21,13 +21,13 @@ export type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
 export function createMockResponse<T>(
   data: T, 
   status = 200, 
-  statusText = '', 
+  statusText = 'OK', 
   headers = { 'Content-Type': 'application/json' }
 ): AxiosResponse<T> {
   return {
     data,
     status,
-    statusText: statusText || (status === 200 ? 'OK' : 'Error'),
+    statusText,
     headers,
     config: { headers: {} } as InternalAxiosRequestConfig
   };
@@ -63,11 +63,13 @@ export function createMockError(
  * @returns The mocked function
  */
 export function mockApiMethod<T>(method: HttpMethod, response: T, status = 200) {
-  // @ts-ignore - Ignore type issues with mockResolvedValue
-  const mockedFn = jest.fn().mockResolvedValue(createMockResponse(response, status));
-  // In our Jest setup, axios is already mocked, so we're just overriding its implementation
-  (axios as any)[method] = mockedFn;
-  return mockedFn;
+  // Create a mock function that returns a resolved promise with the mock response
+  const mockFn = jest.fn().mockResolvedValue(createMockResponse(response, status));
+  
+  // Set the mock on axios
+  (axios as any)[method] = mockFn;
+  
+  return mockFn;
 }
 
 /**
@@ -85,11 +87,13 @@ export function mockApiError(
   status = 500,
   code = 'INTERNAL_SERVER_ERROR'
 ) {
-  // @ts-ignore - Ignore type issues with mockRejectedValue
-  const mockedFn = jest.fn().mockRejectedValue(createMockError(message, status, code));
-  // In our Jest setup, axios is already mocked, so we're just overriding its implementation
-  (axios as any)[method] = mockedFn;
-  return mockedFn;
+  // Create a mock function that returns a rejected promise with the mock error
+  const mockFn = jest.fn().mockRejectedValue(createMockError(message, status, code));
+  
+  // Set the mock on axios
+  (axios as any)[method] = mockFn;
+  
+  return mockFn;
 }
 
 /**
@@ -137,11 +141,10 @@ export class ApiMocker {
     status = 200
   ): jest.Mock {
     const key = this.getPatternKey(method, endpoint);
-    // @ts-ignore - Ignore type issues with mockResolvedValue
     const mock = jest.fn().mockResolvedValue(createMockResponse(response, status));
     
-    // @ts-ignore - Ignore type mismatch with map
     this.mocks.set(key, mock);
+    
     // Set up the mock on axios
     (axios as any)[method] = (url: string, ...args: any[]) => {
       // Find the matching mock based on the URL pattern
@@ -174,11 +177,10 @@ export class ApiMocker {
     code = 'INTERNAL_SERVER_ERROR'
   ): jest.Mock {
     const key = this.getPatternKey(method, endpoint);
-    // @ts-ignore - Ignore type issues with mockRejectedValue
     const mock = jest.fn().mockRejectedValue(createMockError(message, status, code));
     
-    // @ts-ignore - Ignore type mismatch with map
     this.mocks.set(key, mock);
+    
     // Set up the mock on axios
     (axios as any)[method] = (url: string, ...args: any[]) => {
       // Find the matching mock based on the URL pattern
@@ -198,27 +200,21 @@ export class ApiMocker {
    * Finds a matching mock based on the method and URL
    * 
    * @param method HTTP method
-   * @param url URL to match against
+   * @param url URL to match
+   * @returns The matching mock or null if no match is found
    */
   private findMatchingMock(method: HttpMethod, url: string): jest.Mock | null {
-    // Convert to an array to avoid MapIterator issue
-    const entries = Array.from(this.mocks.entries());
-    for (const [key, mock] of entries) {
-      const [mockMethod, mockEndpoint] = key.split(':');
-      
-      if (mockMethod !== method.toUpperCase()) {
-        continue;
-      }
-      
-      // Convert endpoint pattern to regex
-      const pattern = mockEndpoint.replace(/\//g, '\\/').replace(/\*/g, '.*');
-      const regex = new RegExp(`^${pattern}$`);
-      
-      if (regex.test(url)) {
-        return mock;
+    for (const [key, mock] of this.mocks.entries()) {
+      const [mockMethod, pattern] = key.split(':');
+      if (mockMethod === method.toUpperCase()) {
+        // Convert pattern to regex
+        const regexPattern = pattern.replace(/\*/g, '.*');
+        const regex = new RegExp(`^${regexPattern}$`);
+        if (regex.test(url)) {
+          return mock;
+        }
       }
     }
-    
     return null;
   }
 
@@ -227,6 +223,11 @@ export class ApiMocker {
    */
   reset(): void {
     this.mocks.clear();
-    resetApiMocks();
+    // Reset axios methods
+    ['get', 'post', 'put', 'patch', 'delete'].forEach(method => {
+      if ((axios as any)[method]) {
+        (axios as any)[method] = jest.fn();
+      }
+    });
   }
 } 

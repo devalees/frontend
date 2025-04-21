@@ -1,4 +1,13 @@
 /**
+ * Export all test utilities
+ */
+
+export * from './componentTestUtils';
+export * from './mockApi';
+export * from './dateUtils';
+export * from './functionTestUtils';
+
+/**
  * Fixed Test Utilities Index
  * 
  * This file exports all test utilities without the reference to the undefined 'user' variable.
