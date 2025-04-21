@@ -159,7 +159,7 @@
      - Support filtering and pagination
      - Add actions for edit, delete, activate, and deactivate
 
-   - [ ] Implement resource access form component
+   - [x] Implement resource access form component
      - File: `src/components/features/rbac/ResourceAccessForm.tsx`
      - Create form for granting/revoking resource access
      - Use existing form components
