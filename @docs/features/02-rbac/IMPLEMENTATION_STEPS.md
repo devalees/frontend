@@ -167,7 +167,7 @@
 
 ### Phase 6: Organization Context Management
 1. **Set Up Tests**
-   - [ ] Create organization context component tests
+   - [x] Create organization context component tests
      - Directory: `src/tests/components/features/rbac/organization-contexts/`
      - Test each component individually
      - Test component integration with hooks and store

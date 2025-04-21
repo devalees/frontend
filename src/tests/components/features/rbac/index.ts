@@ -15,6 +15,9 @@ import './UserRoleForm.test';
 // Import resource management tests
 import './resources';
 
+// Import organization context tests
+import './organization-contexts';
+
 // Export tests
 export * from './RoleList.test';
 export * from './RoleForm.test';
@@ -22,4 +25,5 @@ export * from './PermissionList.test';
 export * from './PermissionForm.test';
 export * from './UserRoleList.test';
 export * from './UserRoleForm.test';
-export * from './resources'; 
+export * from './resources';
+export * from './organization-contexts'; 
