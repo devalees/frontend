@@ -10,6 +10,7 @@
 
 import axios from './axiosConfig';
 import { saveTokens, clearTokens, getTokens } from '../features/auth/token';
+import Cookies from 'js-cookie';
 
 // API endpoints
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
@@ -82,6 +83,16 @@ export async function login(credentials: LoginCredentials): Promise<LoginRespons
       
       // Save tokens (in case this happens in real code)
       saveTokens({ access: defaultResponse.access, refresh: defaultResponse.refresh });
+      
+      // Store user data in cookies
+      const isSecure = window.location.protocol === 'https:';
+      Cookies.set('user_data', JSON.stringify(defaultResponse.user), {
+        expires: 7, // 7 days
+        secure: isSecure,
+        sameSite: 'lax',
+        path: '/'
+      });
+      
       console.log('Login successful (default response):', defaultResponse.user.username);
       
       // Verify tokens were saved
@@ -101,6 +112,16 @@ export async function login(credentials: LoginCredentials): Promise<LoginRespons
     
     // Save tokens
     saveTokens({ access, refresh });
+    
+    // Store user data in cookies
+    const isSecure = window.location.protocol === 'https:';
+    Cookies.set('user_data', JSON.stringify(user), {
+      expires: 7, // 7 days
+      secure: isSecure,
+      sameSite: 'lax',
+      path: '/'
+    });
+    
     console.log('Login successful:', user.username);
     
     // Verify tokens were saved

@@ -60,7 +60,7 @@ function isPublicRoute(path: string): boolean {
  */
 function isAuthenticated(request: NextRequest): boolean {
   // Check for auth token in cookies
-  const token = request.cookies.get('auth_token');
+  const token = request.cookies.get('auth_access_token');
   if (token) return true;
 
   // Check for test authentication header
@@ -85,11 +85,19 @@ function getUserPermissions(request: NextRequest): string[] {
     return ['view_dashboard']; // Default test permission
   }
 
-  // In production, we would decode the JWT token here
-  // For now, we'll use a header for demonstration
-  const permissionsHeader = request.headers.get('x-user-permissions');
-  if (permissionsHeader) {
-    return permissionsHeader.split(',');
+  // Get user data from the auth store
+  const userData = request.cookies.get('user_data');
+  if (userData) {
+    try {
+      const user = JSON.parse(userData.value);
+      // If user is a superuser, return all permissions
+      if (user.is_superuser) {
+        return PROTECTED_ROUTES.flatMap(route => route.permissions);
+      }
+      return user.permissions || [];
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+    }
   }
 
   // If no permissions found, return empty array
