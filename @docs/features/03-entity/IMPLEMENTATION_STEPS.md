@@ -1,251 +1,464 @@
-# Entity Feature Implementation Steps
+# Entity Feature - Simplified Implementation Plan
 
-## Test-Driven Development Approach
-Each entity task follows the Red-Green-Refactor cycle:
-1. Write failing tests (Red)
-2. Implement minimum code to pass tests (Green)
-3. Refactor while keeping tests passing (Refactor)
+## Simplification Principles
+1. Focus on one feature at a time
+2. Reuse existing components and utilities
+3. Use centralized testing utilities for all tests
+4. Follow the existing project architecture
 
-1. **Entity Management**
-   - [ ] Entity Creation
-     - [ ] Test Setup
-       - [ ] Create test file (`src/tests/features/entity/entityCreation.test.ts`)
-         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
-         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
-       - [ ] Write failing tests for entity validation
-       - [ ] Write failing tests for entity persistence
-       - [ ] Write failing tests for entity relationships
-       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
-     - [ ] Implementation
-       - [ ] Implement entity components:
-         - [ ] Entity form (`src/components/features/entity/EntityForm.tsx`)
-           - Leverage existing Form and Input components
-           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
-         - [ ] Entity creator (`src/components/features/entity/EntityCreator.tsx`)
-           - Implement loading states using UI components
-         - [ ] Entity type selector (`src/components/features/entity/EntityTypeSelector.tsx`)
-       - [ ] Create entity pages:
-         - [ ] Create entity (`src/app/(dashboard)/entities/create/page.tsx`)
-         - [ ] Entity type selection (`src/app/(dashboard)/entities/types/page.tsx`)
-       - [ ] Implement entity API services (`src/lib/features/entity/entityService.ts`)
-         - Use axios client from `src/lib/api/axiosConfig.ts`
-         - Implement error handling with `src/lib/api/responseHandlers.ts`
-         - Use request builders from `src/lib/api/requestBuilders.ts`
-       - [ ] Set up entity state management (`src/lib/store/slices/entities.ts`)
-         - Implement with Zustand following state pattern
-         - Integrate with browser cache using `src/lib/cache/browserCache.ts` for offline support
-       - [ ] Create entity validation utilities (`src/lib/features/entity/validation.ts`)
-       - [ ] Set up performance monitoring using `src/lib/performance/performanceAnalysis.ts`
-     - [ ] Refactoring
-       - [ ] Optimize entity creation
-       - [ ] Update documentation in `src/lib/documentation/`
-       - [ ] Review and adjust
+## Implementation Phases
 
-   - [ ] Entity Operations
-     - [ ] Test Setup
-       - [ ] Create test file (`src/tests/features/entity/entityOperations.test.ts`)
-         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
-         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
-       - [ ] Write failing tests for CRUD operations
-       - [ ] Write failing tests for batch operations
-       - [ ] Write failing tests for search operations
-       - [ ] Write failing tests for performance using `src/tests/utils/mockPerformance.ts`
-     - [ ] Implementation
-       - [ ] Implement entity operation components:
-         - [ ] Entity list (`src/components/features/entity/EntityList.tsx`)
-           - Implement virtual scrolling for large lists
-         - [ ] Entity detail (`src/components/features/entity/EntityDetail.tsx`)
-           - Add error boundary using `src/lib/utils/TestErrorBoundary.tsx`
-         - [ ] Entity editor (`src/components/features/entity/EntityEditor.tsx`)
-           - Implement optimistic updates using `src/lib/api/optimisticUpdates.ts`
-         - [ ] Entity search (`src/components/features/entity/EntitySearch.tsx`)
-         - [ ] Batch operation UI (`src/components/features/entity/BatchOperations.tsx`)
-       - [ ] Create entity pages:
-         - [ ] Entity list page (`src/app/(dashboard)/entities/page.tsx`)
-         - [ ] Entity detail page (`src/app/(dashboard)/entities/[id]/page.tsx`)
-         - [ ] Entity edit page (`src/app/(dashboard)/entities/[id]/edit/page.tsx`)
-       - [ ] Implement operations API services (`src/lib/features/entity/operations.ts`)
-         - Integrate real-time updates using `src/lib/api/socketClient.ts`
-         - Implement optimistic UI with `src/lib/api/optimisticUpdates.ts`
-       - [ ] Create entity search hook (`src/lib/hooks/entity/useEntitySearch.ts`)
-         - Use React Query for efficient data fetching and caching
-         - Implement caching strategy with `src/lib/cache/browserCache.ts`
-       - [ ] Implement batch operations utility (`src/lib/features/entity/batchOperations.ts`)
-     - [ ] Refactoring
-       - [ ] Optimize operations
-       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
-       - [ ] Review and adjust
+### Phase 1: Core Entity Types and API Integration
+1. **Set Up Tests**
+   - [x] Create Entity type tests using centralized testing utilities
+     - File: `src/tests/types/entity.test.ts`
+     - Import utilities from `src/tests/utils/` (NOT directly from testing libraries)
+     - Test type definitions and interfaces
 
-2. **Entity Relationships**
-   - [ ] Relationship Management
-     - [ ] Test Setup
-       - [ ] Create test file (`src/tests/features/entity/relationshipManagement.test.ts`)
-         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
-         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
-       - [ ] Write failing tests for relationship creation
-       - [ ] Write failing tests for relationship validation
-       - [ ] Write failing tests for relationship traversal
-       - [ ] Write failing performance tests for relationship operations
-     - [ ] Implementation
-       - [ ] Implement relationship components:
-         - [ ] Relationship creator (`src/components/features/entity/RelationshipCreator.tsx`)
-           - Add error handling with descriptive messages
-         - [ ] Relationship visualizer (`src/components/features/entity/RelationshipVisualizer.tsx`)
-           - Implement lazy loading for better performance
-         - [ ] Entity selector (`src/components/features/entity/EntitySelector.tsx`)
-           - Implement virtualized list for large entity sets
-       - [ ] Create relationship pages:
-         - [ ] Create relationship (`src/app/(dashboard)/entities/relationships/create/page.tsx`)
-         - [ ] View relationships (`src/app/(dashboard)/entities/relationships/page.tsx`)
-       - [ ] Implement relationship API services (`src/lib/features/entity/relationshipService.ts`)
-         - Use standardized request/response handling
-         - Implement real-time updates with `src/lib/api/realtimeUpdates.ts`
-       - [ ] Set up relationship state management
-         - Extend entities store or create relationships store
-         - Implement caching strategy with React Query
-       - [ ] Create relationship validation utilities (`src/lib/features/entity/relationshipValidation.ts`)
-     - [ ] Refactoring
-       - [ ] Optimize relationships with memoization
-       - [ ] Update documentation in `src/lib/documentation/`
-       - [ ] Review and adjust
+   - [ ] Create Entity API tests
+     - File: `src/tests/api/entity.test.ts`
+     - Use `mockApi.ts` for API mocking
+     - Test API methods for all Entity endpoints
+     - Test error handling and response parsing
 
-   - [ ] Relationship Operations
-     - [ ] Test Setup
-       - [ ] Create test file (`src/tests/features/entity/relationshipOperations.test.ts`)
-         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
-         - [ ] Set up API mocks using `src/tests/utils/mockApi.ts`
-       - [ ] Write failing tests for relationship queries
-       - [ ] Write failing tests for relationship updates
-       - [ ] Write failing tests for relationship deletion
-       - [ ] Write failing tests for collaborative editing
-     - [ ] Implementation
-       - [ ] Implement relationship operation components:
-         - [ ] Relationship list (`src/components/features/entity/RelationshipList.tsx`)
-           - Implement virtual scrolling
-         - [ ] Relationship editor (`src/components/features/entity/RelationshipEditor.tsx`)
-           - Add real-time collaboration using WebSockets
-         - [ ] Relationship filter (`src/components/features/entity/RelationshipFilter.tsx`)
-       - [ ] Create relationship operation pages:
-         - [ ] Edit relationship (`src/app/(dashboard)/entities/relationships/[id]/edit/page.tsx`)
-         - [ ] View relationship details (`src/app/(dashboard)/entities/relationships/[id]/page.tsx`)
-       - [ ] Implement relationship operations API (`src/lib/features/entity/relationshipOperations.ts`)
-         - Integrate with `src/lib/api/responseHandlers.ts` for error handling
-       - [ ] Create relationship query hook (`src/lib/hooks/entity/useRelationshipQuery.ts`)
-         - Use React Query for caching relationship data
-         - Implement optimistic updates for better UX
-     - [ ] Refactoring
-       - [ ] Optimize operations
-       - [ ] Update API documentation in `src/lib/documentation/apiReference.ts`
-       - [ ] Create entity relationship diagram documentation
-       - [ ] Review and adjust
+2. **Define Entity Types**
+   - [x] Create Entity type definitions
+     - File: `src/types/entity.ts`
+     - Define interfaces for Organization, Department, Team, TeamMember, OrganizationSettings
+     - Define PaginatedResponse type for list endpoints
 
-3. **Entity Validation**
-   - [ ] Validation Rules
-     - [ ] Test Setup
-       - [ ] Create test file (`src/tests/features/entity/validationRules.test.ts`)
-         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
-       - [ ] Write failing tests for rule creation
-       - [ ] Write failing tests for rule application
-       - [ ] Write failing tests for rule validation
-       - [ ] Write failing tests for performance implications
-     - [ ] Implementation
-       - [ ] Implement validation rule components:
-         - [ ] Rule creator (`src/components/features/entity/ValidationRuleCreator.tsx`)
-         - [ ] Rule list (`src/components/features/entity/ValidationRuleList.tsx`)
-           - Implement virtualized list for large rule sets
-         - [ ] Rule editor (`src/components/features/entity/ValidationRuleEditor.tsx`)
-       - [ ] Create validation rule pages:
-         - [ ] Manage rules (`src/app/(dashboard)/entities/validation/page.tsx`)
-         - [ ] Create rule (`src/app/(dashboard)/entities/validation/create/page.tsx`)
-         - [ ] Edit rule (`src/app/(dashboard)/entities/validation/[id]/edit/page.tsx`)
-       - [ ] Implement validation rule services (`src/lib/features/entity/validationRuleService.ts`)
-         - Use standardized API error handling
-       - [ ] Create rule engine (`src/lib/features/entity/ruleEngine.ts`)
-         - Build validation processing pipeline
-         - Implement performance monitoring for rule execution
-     - [ ] Refactoring
-       - [ ] Optimize validation with memoization
-       - [ ] Update documentation
-       - [ ] Document validation rules in `src/lib/documentation/`
-       - [ ] Review and adjust
+3. **Create Entity API Service**
+   - [ ] Implement API service for Entity
+     - File: `src/lib/api/entity.ts`
+     - Implement methods for all Entity endpoints
+     - Use axios for API requests
+     - Handle authentication and error responses
 
-   - [ ] Validation Logic
-     - [ ] Test Setup
-       - [ ] Create test file (`src/tests/features/entity/validationLogic.test.ts`)
-         - [ ] Import test utilities from `src/tests/utils/testUtils.ts`
-       - [ ] Write failing tests for logic implementation
-       - [ ] Write failing tests for error handling
-       - [ ] Write failing tests for validation messages
-       - [ ] Write failing tests for accessibility
-     - [ ] Implementation
-       - [ ] Implement validation logic components:
-         - [ ] Validation feedback (`src/components/features/entity/ValidationFeedback.tsx`)
-           - Ensure accessibility compliance
-         - [ ] Error display (`src/components/features/entity/ValidationErrors.tsx`)
-           - Implement descriptive error messages
-         - [ ] Custom validators (`src/components/features/entity/CustomValidators.tsx`)
-       - [ ] Create validation utilities:
-         - [ ] Validation context provider (`src/lib/features/entity/ValidationContext.tsx`)
-         - [ ] Validation hook (`src/lib/hooks/entity/useValidation.ts`)
-         - [ ] Error formatter (`src/lib/features/entity/errorFormatter.ts`)
-           - Integrate with `src/lib/api/responseHandlers.ts`
-       - [ ] Implement validation logic services (`src/lib/features/entity/validationLogicService.ts`)
-       - [ ] Create validation message system (`src/lib/features/entity/validationMessages.ts`)
-         - Support internationalization for validation messages
-     - [ ] Refactoring
-       - [ ] Optimize logic
-       - [ ] Update documentation in `src/lib/documentation/`
-       - [ ] Create user documentation in `src/lib/documentation/userDocs.ts`
-       - [ ] Review and adjust
+### Phase 2: Entity State Management
+1. **Set Up Tests**
+   - [ ] Create Entity store tests
+     - File: `src/tests/store/entity.test.ts`
+     - Use centralized testing utilities
+     - Test store actions and state management
+     - Test store selectors and computed properties
 
-## Architecture Integration Points
-- **UI Components**: 
-  - Leverage existing components from `src/components/ui/` and `src/components/forms/`
-  - Use modular composition for complex entity UIs
-  - Apply error boundaries with `src/lib/utils/TestErrorBoundary.tsx`
-- **API Client**: 
-  - Use the established API client from `src/lib/api/axiosConfig.ts`
-  - Implement error handling with `src/lib/api/responseHandlers.ts`
-  - Build requests with `src/lib/api/requestBuilders.ts`
-  - Implement entity-specific API services with proper error handling
-- **State Management**: 
-  - Follow Zustand patterns in `src/lib/store/slices/entities.ts`
-  - Use React Query for server state, especially for relationship data
-  - Implement optimistic updates with `src/lib/api/optimisticUpdates.ts`
-  - Integrate with browser cache using `src/lib/cache/browserCache.ts` for offline support
-- **Real-time Updates**:
-  - Use WebSockets via `src/lib/api/socketClient.ts` for collaborative editing
-  - Implement real-time notifications with `src/lib/api/realtimeUpdates.ts`
-- **Validation**: 
-  - Create reusable validation rules that can be composed
-  - Implement client-side validation for immediate feedback
-  - Connect with server-side validation through API services
-  - Ensure accessible error messages and feedback
-- **Data Flow**:
-  - Implement clear unidirectional data flow for entity operations
-  - Use React Query for automatic cache invalidation on entity changes
-  - Implement offline-first strategy with `src/lib/cache/browserCache.ts`
-- **Performance**:
-  - Implement pagination and virtual scrolling for large entity lists
-  - Use memoization for expensive entity operations
-  - Implement lazy loading for entity relationship visualization
-  - Monitor performance with `src/lib/performance/performanceAnalysis.ts`
-- **Testing**: 
-  - Maintain minimum 80% test coverage following TDD approach
-  - Use test utilities from `src/tests/utils/testUtils.ts`
-  - Mock API calls with `src/tests/utils/mockApi.ts`
-  - Test complex entity relationships thoroughly
-  - Test performance with `src/tests/utils/mockPerformance.ts`
-- **Documentation**:
-  - Update API reference in `src/lib/documentation/apiReference.ts`
-  - Create user documentation in `src/lib/documentation/userDocs.ts`
-  - Document component usage in `src/lib/documentation/apiExamples.ts`
-  - Generate entity relationship diagrams
+2. **Create Entity Store**
+   - [ ] Implement Entity store with Zustand
+     - File: `src/lib/store/slices/entitySlice.ts`
+     - Create store slices for each Entity type
+     - Implement actions for fetching, creating, updating, and deleting
+     - Handle loading states and error handling
 
-Status Indicators:
-- [ ] Not started
-- [~] In progress
-- [x] Completed
-- [!] Blocked/Issues
+3. **Create Entity Hooks**
+   - [ ] Implement Entity hooks
+     - File: `src/hooks/useEntity.ts`
+     - Create hooks for each Entity type
+     - Provide access to store and API methods
+     - Handle loading states and error handling
 
-Last Updated: Enhanced with comprehensive infrastructure integration and fixed path inconsistencies. 
+### Phase 3: Organization Management
+1. **Set Up Tests**
+   - [ ] Create Organization component tests
+     - Directory: `src/tests/components/features/entity/organizations/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+
+2. **Create Organization Components**
+   - [ ] Implement organization list component
+     - File: `src/components/features/entity/organizations/OrganizationList.tsx`
+     - Display organizations in a table or list
+     - Support filtering and pagination
+     - Add actions for edit, delete, and view details
+
+   - [ ] Implement organization form component
+     - File: `src/components/features/entity/organizations/OrganizationForm.tsx`
+     - Create form for adding/editing organizations
+     - Use existing form components
+     - Add validation and error handling
+
+   - [ ] Implement organization detail component
+     - File: `src/components/features/entity/organizations/OrganizationDetail.tsx`
+     - Display organization details
+     - Show related departments and teams
+     - Add actions for managing organization
+
+3. **Create Organization Pages**
+   - [ ] Implement organizations page
+     - File: `src/app/(dashboard)/entities/organizations/page.tsx`
+     - Use organization list component
+     - Add navigation and breadcrumbs
+     - Handle organization management actions
+
+   - [ ] Implement organization detail page
+     - File: `src/app/(dashboard)/entities/organizations/[id]/page.tsx`
+     - Use organization detail component
+     - Add navigation and breadcrumbs
+     - Handle organization detail actions
+
+   - [ ] Implement organization edit page
+     - File: `src/app/(dashboard)/entities/organizations/[id]/edit/page.tsx`
+     - Use organization form component
+     - Add navigation and breadcrumbs
+     - Handle organization edit actions
+
+### Phase 4: Department Management
+1. **Set Up Tests**
+   - [ ] Create Department component tests
+     - Directory: `src/tests/components/features/entity/departments/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+
+2. **Create Department Components**
+   - [ ] Implement department list component
+     - File: `src/components/features/entity/departments/DepartmentList.tsx`
+     - Display departments in a table or list
+     - Support filtering and pagination
+     - Add actions for edit, delete, and view details
+
+   - [ ] Implement department form component
+     - File: `src/components/features/entity/departments/DepartmentForm.tsx`
+     - Create form for adding/editing departments
+     - Use existing form components
+     - Add validation and error handling
+
+   - [ ] Implement department detail component
+     - File: `src/components/features/entity/departments/DepartmentDetail.tsx`
+     - Display department details
+     - Show related teams and members
+     - Add actions for managing department
+
+3. **Create Department Pages**
+   - [ ] Implement departments page
+     - File: `src/app/(dashboard)/entities/departments/page.tsx`
+     - Use department list component
+     - Add navigation and breadcrumbs
+     - Handle department management actions
+
+   - [ ] Implement department detail page
+     - File: `src/app/(dashboard)/entities/departments/[id]/page.tsx`
+     - Use department detail component
+     - Add navigation and breadcrumbs
+     - Handle department detail actions
+
+   - [ ] Implement department edit page
+     - File: `src/app/(dashboard)/entities/departments/[id]/edit/page.tsx`
+     - Use department form component
+     - Add navigation and breadcrumbs
+     - Handle department edit actions
+
+### Phase 5: Team Management
+1. **Set Up Tests**
+   - [ ] Create Team component tests
+     - Directory: `src/tests/components/features/entity/teams/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+
+2. **Create Team Components**
+   - [ ] Implement team list component
+     - File: `src/components/features/entity/teams/TeamList.tsx`
+     - Display teams in a table or list
+     - Support filtering and pagination
+     - Add actions for edit, delete, and view details
+
+   - [ ] Implement team form component
+     - File: `src/components/features/entity/teams/TeamForm.tsx`
+     - Create form for adding/editing teams
+     - Use existing form components
+     - Add validation and error handling
+
+   - [ ] Implement team detail component
+     - File: `src/components/features/entity/teams/TeamDetail.tsx`
+     - Display team details
+     - Show related members
+     - Add actions for managing team
+
+3. **Create Team Pages**
+   - [ ] Implement teams page
+     - File: `src/app/(dashboard)/entities/teams/page.tsx`
+     - Use team list component
+     - Add navigation and breadcrumbs
+     - Handle team management actions
+
+   - [ ] Implement team detail page
+     - File: `src/app/(dashboard)/entities/teams/[id]/page.tsx`
+     - Use team detail component
+     - Add navigation and breadcrumbs
+     - Handle team detail actions
+
+   - [ ] Implement team edit page
+     - File: `src/app/(dashboard)/entities/teams/[id]/edit/page.tsx`
+     - Use team form component
+     - Add navigation and breadcrumbs
+     - Handle team edit actions
+
+### Phase 6: Team Member Management
+1. **Set Up Tests**
+   - [ ] Create Team Member component tests
+     - Directory: `src/tests/components/features/entity/team-members/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+
+2. **Create Team Member Components**
+   - [ ] Implement team member list component
+     - File: `src/components/features/entity/team-members/TeamMemberList.tsx`
+     - Display team members in a table or list
+     - Support filtering and pagination
+     - Add actions for edit, delete, and view details
+
+   - [ ] Implement team member form component
+     - File: `src/components/features/entity/team-members/TeamMemberForm.tsx`
+     - Create form for adding/editing team members
+     - Use existing form components
+     - Add validation and error handling
+
+   - [ ] Implement team member detail component
+     - File: `src/components/features/entity/team-members/TeamMemberDetail.tsx`
+     - Display team member details
+     - Show related teams and roles
+     - Add actions for managing team member
+
+3. **Create Team Member Pages**
+   - [ ] Implement team members page
+     - File: `src/app/(dashboard)/entities/team-members/page.tsx`
+     - Use team member list component
+     - Add navigation and breadcrumbs
+     - Handle team member management actions
+
+   - [ ] Implement team member detail page
+     - File: `src/app/(dashboard)/entities/team-members/[id]/page.tsx`
+     - Use team member detail component
+     - Add navigation and breadcrumbs
+     - Handle team member detail actions
+
+   - [ ] Implement team member edit page
+     - File: `src/app/(dashboard)/entities/team-members/[id]/edit/page.tsx`
+     - Use team member form component
+     - Add navigation and breadcrumbs
+     - Handle team member edit actions
+
+### Phase 7: Organization Settings Management
+1. **Set Up Tests**
+   - [ ] Create Organization Settings component tests
+     - Directory: `src/tests/components/features/entity/organization-settings/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+
+2. **Create Organization Settings Components**
+   - [ ] Implement organization settings form component
+     - File: `src/components/features/entity/organization-settings/OrganizationSettingsForm.tsx`
+     - Create form for managing organization settings
+     - Use existing form components
+     - Add validation and error handling
+
+   - [ ] Implement organization settings detail component
+     - File: `src/components/features/entity/organization-settings/OrganizationSettingsDetail.tsx`
+     - Display organization settings details
+     - Add actions for managing settings
+
+3. **Create Organization Settings Pages**
+   - [ ] Implement organization settings page
+     - File: `src/app/(dashboard)/entities/organization-settings/page.tsx`
+     - Use organization settings form component
+     - Add navigation and breadcrumbs
+     - Handle organization settings management actions
+
+   - [ ] Implement organization settings edit page
+     - File: `src/app/(dashboard)/entities/organization-settings/[id]/edit/page.tsx`
+     - Use organization settings form component
+     - Add navigation and breadcrumbs
+     - Handle organization settings edit actions
+
+### Phase 8: Entity Analytics and Reporting
+1. **Set Up Tests**
+   - [ ] Create Entity Analytics component tests
+     - Directory: `src/tests/components/features/entity/analytics/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+
+2. **Create Entity Analytics Components**
+   - [ ] Implement organization analytics component
+     - File: `src/components/features/entity/analytics/OrganizationAnalytics.tsx`
+     - Display organization analytics
+     - Show key metrics and charts
+     - Add actions for exporting data
+
+   - [ ] Implement organization activity component
+     - File: `src/components/features/entity/analytics/OrganizationActivity.tsx`
+     - Display organization activity
+     - Show recent activities and engagement metrics
+     - Add actions for filtering and exporting
+
+   - [ ] Implement organization performance component
+     - File: `src/components/features/entity/analytics/OrganizationPerformance.tsx`
+     - Display organization performance
+     - Show team and department performance
+     - Add actions for filtering and exporting
+
+   - [ ] Implement organization growth component
+     - File: `src/components/features/entity/analytics/OrganizationGrowth.tsx`
+     - Display organization growth
+     - Show member, team, and department growth
+     - Add actions for filtering and exporting
+
+3. **Create Entity Analytics Pages**
+   - [ ] Implement organization analytics page
+     - File: `src/app/(dashboard)/entities/organizations/[id]/analytics/page.tsx`
+     - Use organization analytics components
+     - Add navigation and breadcrumbs
+     - Handle analytics actions
+
+### Phase 9: Entity Hierarchy Visualization
+1. **Set Up Tests**
+   - [ ] Create Entity Hierarchy component tests
+     - Directory: `src/tests/components/features/entity/hierarchy/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+
+2. **Create Entity Hierarchy Components**
+   - [ ] Implement organization hierarchy component
+     - File: `src/components/features/entity/hierarchy/OrganizationHierarchy.tsx`
+     - Display organization hierarchy
+     - Show departments and teams in a tree structure
+     - Add actions for navigating and managing hierarchy
+
+   - [ ] Implement department hierarchy component
+     - File: `src/components/features/entity/hierarchy/DepartmentHierarchy.tsx`
+     - Display department hierarchy
+     - Show teams in a tree structure
+     - Add actions for navigating and managing hierarchy
+
+3. **Create Entity Hierarchy Pages**
+   - [ ] Implement organization hierarchy page
+     - File: `src/app/(dashboard)/entities/organizations/[id]/hierarchy/page.tsx`
+     - Use organization hierarchy component
+     - Add navigation and breadcrumbs
+     - Handle hierarchy actions
+
+   - [ ] Implement department hierarchy page
+     - File: `src/app/(dashboard)/entities/departments/[id]/hierarchy/page.tsx`
+     - Use department hierarchy component
+     - Add navigation and breadcrumbs
+     - Handle hierarchy actions
+
+### Phase 10: Entity Search and Filtering
+1. **Set Up Tests**
+   - [ ] Create Entity Search component tests
+     - Directory: `src/tests/components/features/entity/search/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+
+2. **Create Entity Search Components**
+   - [ ] Implement entity search component
+     - File: `src/components/features/entity/search/EntitySearch.tsx`
+     - Create search interface for entities
+     - Support filtering by entity type
+     - Add actions for searching and filtering
+
+   - [ ] Implement entity filter component
+     - File: `src/components/features/entity/search/EntityFilter.tsx`
+     - Create filter interface for entities
+     - Support filtering by various criteria
+     - Add actions for applying filters
+
+3. **Create Entity Search Pages**
+   - [ ] Implement entity search page
+     - File: `src/app/(dashboard)/entities/search/page.tsx`
+     - Use entity search and filter components
+     - Add navigation and breadcrumbs
+     - Handle search and filter actions
+
+### Phase 11: Entity Batch Operations
+1. **Set Up Tests**
+   - [ ] Create Entity Batch Operations component tests
+     - Directory: `src/tests/components/features/entity/batch/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+
+2. **Create Entity Batch Operations Components**
+   - [ ] Implement entity batch operations component
+     - File: `src/components/features/entity/batch/EntityBatchOperations.tsx`
+     - Create interface for batch operations
+     - Support selecting multiple entities
+     - Add actions for batch operations
+
+3. **Create Entity Batch Operations Pages**
+   - [ ] Implement entity batch operations page
+     - File: `src/app/(dashboard)/entities/batch/page.tsx`
+     - Use entity batch operations component
+     - Add navigation and breadcrumbs
+     - Handle batch operation actions
+
+## Testing Guidelines
+- Use centralized testing utilities from `src/tests/utils/`
+- NO direct imports from testing libraries
+- Use `componentTestUtils.ts` for React component tests
+- Use `functionTestUtils.ts` for utility function tests
+- Use `integrationTestUtils.ts` for integration tests
+- Use `mockApi.ts` for mocking API responses
+
+## API Integration Details
+Based on `/home/ehab/Desktop/backend/docs/front-end/entity.md`:
+
+### Organization Endpoints
+- **List Organizations**: `GET /api/v1/entity/organizations/`
+- **Get Organization**: `GET /api/v1/entity/organizations/{id}/`
+- **Create Organization**: `POST /api/v1/entity/organizations/`
+- **Update Organization**: `PUT/PATCH /api/v1/entity/organizations/{id}/`
+- **Delete Organization**: `DELETE /api/v1/entity/organizations/{id}/`
+- **Hard Delete Organization**: `DELETE /api/v1/entity/organizations/{id}/hard_delete/`
+- **Get Organization Departments**: `GET /api/v1/entity/organizations/{id}/department/`
+- **Get Organization Team Members**: `GET /api/v1/entity/organizations/{id}/team_member/`
+- **Get Organization Analytics**: `GET /api/v1/entity/organizations/{id}/analytics/`
+- **Get Organization Activity**: `GET /api/v1/entity/organizations/{id}/activity/`
+- **Get Organization Performance**: `GET /api/v1/entity/organizations/{id}/performance/`
+- **Get Organization Growth**: `GET /api/v1/entity/organizations/{id}/growth/`
+
+### Department Endpoints
+- **List Departments**: `GET /api/v1/entity/departments/`
+- **Get Department**: `GET /api/v1/entity/departments/{id}/`
+- **Create Department**: `POST /api/v1/entity/departments/`
+- **Update Department**: `PUT/PATCH /api/v1/entity/departments/{id}/`
+- **Delete Department**: `DELETE /api/v1/entity/departments/{id}/`
+- **Hard Delete Department**: `DELETE /api/v1/entity/departments/{id}/hard_delete/`
+- **Get Department Teams**: `GET /api/v1/entity/departments/{id}/team/`
+- **Get Department Team Members**: `GET /api/v1/entity/departments/{id}/team_member/`
+- **Get Child Departments**: `GET /api/v1/entity/departments/{id}/child_department/`
+
+### Team Endpoints
+- **List Teams**: `GET /api/v1/entity/teams/`
+- **Get Team**: `GET /api/v1/entity/teams/{id}/`
+- **Create Team**: `POST /api/v1/entity/teams/`
+- **Update Team**: `PUT/PATCH /api/v1/entity/teams/{id}/`
+- **Delete Team**: `DELETE /api/v1/entity/teams/{id}/`
+- **Hard Delete Team**: `DELETE /api/v1/entity/teams/{id}/hard_delete/`
+- **Get Team Members**: `GET /api/v1/entity/teams/{id}/team_member/`
+
+### Team Member Endpoints
+- **List Team Members**: `GET /api/v1/entity/team-members/`
+- **Get Team Member**: `GET /api/v1/entity/team-members/{id}/`
+- **Create Team Member**: `POST /api/v1/entity/team-members/`
+- **Update Team Member**: `PUT/PATCH /api/v1/entity/team-members/{id}/`
+- **Delete Team Member**: `DELETE /api/v1/entity/team-members/{id}/`
+- **Hard Delete Team Member**: `DELETE /api/v1/entity/team-members/{id}/hard_delete/`
+
+### Organization Settings Endpoints
+- **List Organization Settings**: `GET /api/v1/entity/organization-settings/`
+- **Get Organization Settings**: `GET /api/v1/entity/organization-settings/{id}/`
+- **Create Organization Settings**: `POST /api/v1/entity/organization-settings/`
+- **Update Organization Settings**: `PUT/PATCH /api/v1/entity/organization-settings/{id}/`
+- **Delete Organization Settings**: `DELETE /api/v1/entity/organization-settings/{id}/`
+- **Hard Delete Organization Settings**: `DELETE /api/v1/entity/organization-settings/{id}/hard_delete/`
+- **Get Settings by Organization**: `GET /api/v1/entity/organization-settings/get_by_organization/`
+
+Status Key:
+- [ ] To Do
+- [x] Completed 
