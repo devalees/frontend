@@ -91,13 +91,13 @@
      - Add validation and error handling
 
 4. **Create User Role Management Components**
-   - [ ] Implement user role list component
+   - [x] Implement user role list component
      - File: `src/components/features/rbac/UserRoleList.tsx`
      - Display user roles in a table or list
      - Support filtering and pagination
      - Add actions for activate, deactivate, and delegate
 
-   - [ ] Implement user role form component
+   - [x] Implement user role form component
      - File: `src/components/features/rbac/UserRoleForm.tsx`
      - Create form for assigning roles to users
      - Use existing form components
