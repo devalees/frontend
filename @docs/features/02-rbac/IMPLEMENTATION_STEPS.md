@@ -153,7 +153,7 @@
      - Add validation and error handling
 
 3. **Create Resource Access Components**
-   - [ ] Implement resource access list component
+   - [x] Implement resource access list component
      - File: `src/components/features/rbac/ResourceAccessList.tsx`
      - Display resource access entries in a table or list
      - Support filtering and pagination
