@@ -146,7 +146,7 @@
      - Support filtering and pagination
      - Add actions for edit, delete, and manage access
 
-   - [ ] Implement resource form component
+   - [x] Implement resource form component
      - File: `src/components/features/rbac/ResourceForm.tsx`
      - Create form for adding/editing resources
      - Use existing form components
