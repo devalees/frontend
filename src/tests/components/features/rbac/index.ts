@@ -18,6 +18,9 @@ import './resources';
 // Import organization context tests
 import './organization-contexts';
 
+// Import audit log tests
+import './audit-logs';
+
 // Export tests
 export * from './RoleList.test';
 export * from './RoleForm.test';
@@ -26,4 +29,5 @@ export * from './PermissionForm.test';
 export * from './UserRoleList.test';
 export * from './UserRoleForm.test';
 export * from './resources';
-export * from './organization-contexts'; 
+export * from './organization-contexts';
+export * from './audit-logs'; 
