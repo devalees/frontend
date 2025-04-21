@@ -348,9 +348,9 @@ export const createResourceAccess = async (resourceAccess: Partial<ResourceAcces
   }
 };
 
-export const updateResourceAccess = async (id: string, data: Partial<ResourceAccess>): Promise<ResourceAccess> => {
+export const updateResourceAccess = async (id: string, resourceAccess: Partial<ResourceAccess>): Promise<ResourceAccess> => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/v1/rbac/resource-accesses/${id}/`, data);
+    const response = await axios.put(`${API_BASE_URL}/v1/rbac/resource-accesses/${id}/`, resourceAccess);
     return response.data;
   } catch (error) {
     handleError(error);

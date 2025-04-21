@@ -38,13 +38,11 @@ describe('ResourceAccessList', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (useRbac as jest.Mock).mockReturnValue({
-      resourceAccesses: {
-        data: { results: mockResourceAccesses },
+      resourceAccess: {
+        data: mockResourceAccesses,
         loading: false,
         error: null
       },
-      loading: false,
-      error: null,
       fetchResourceAccesses: mockFetchResourceAccesses
     });
   });
@@ -59,6 +57,9 @@ describe('ResourceAccessList', () => {
       />
     );
 
+    // Add console.log to debug what's rendered
+    console.log('Rendered content:', document.body.innerHTML);
+    
     expect(screen.getByText('resource1')).toBeInTheDocument();
     expect(screen.getByText('role1')).toBeInTheDocument();
     expect(screen.getByText('permission1')).toBeInTheDocument();
@@ -67,30 +68,26 @@ describe('ResourceAccessList', () => {
 
   it('shows loading state', () => {
     (useRbac as jest.Mock).mockReturnValue({
-      resourceAccesses: {
+      resourceAccess: {
         data: null,
         loading: true,
         error: null
       },
-      loading: true,
-      error: null,
       fetchResourceAccesses: mockFetchResourceAccesses
     });
 
     render(<ResourceAccessList />);
-    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getByTestId('spinner')).toBeInTheDocument();
   });
 
   it('shows error state', () => {
     const errorMessage = 'Failed to load resource accesses';
     (useRbac as jest.Mock).mockReturnValue({
-      resourceAccesses: {
+      resourceAccess: {
         data: null,
         loading: false,
         error: errorMessage
       },
-      loading: false,
-      error: errorMessage,
       fetchResourceAccesses: mockFetchResourceAccesses
     });
 
@@ -104,6 +101,9 @@ describe('ResourceAccessList', () => {
     const searchInput = screen.getByPlaceholderText('Search resources...');
     fireEvent.change(searchInput, { target: { value: 'resource1' } });
 
+    // Add console.log to debug filtered content
+    console.log('Filtered content:', document.body.innerHTML);
+    
     expect(screen.getByText('resource1')).toBeInTheDocument();
     expect(screen.queryByText('resource2')).not.toBeInTheDocument();
   });
@@ -118,9 +118,12 @@ describe('ResourceAccessList', () => {
       />
     );
 
-    const rows = screen.getAllByRole('row');
-    const firstRow = rows[1]; // First data row (index 0 is header)
-    const editButton = within(firstRow).getByText('Edit');
+    // Find the row containing resource1 and then the edit button within that row
+    const resource1Cell = screen.getByText('resource1');
+    const row = resource1Cell.closest('tr');
+    if (!row) throw new Error('Row not found');
+    
+    const editButton = within(row).getByText('Edit');
     fireEvent.click(editButton);
 
     expect(mockOnEdit).toHaveBeenCalledWith(mockResourceAccesses[0]);
@@ -136,9 +139,12 @@ describe('ResourceAccessList', () => {
       />
     );
 
-    const rows = screen.getAllByRole('row');
-    const firstRow = rows[1]; // First data row (index 0 is header)
-    const deleteButton = within(firstRow).getByText('Delete');
+    // Find the row containing resource1 and then the delete button within that row
+    const resource1Cell = screen.getByText('resource1');
+    const row = resource1Cell.closest('tr');
+    if (!row) throw new Error('Row not found');
+    
+    const deleteButton = within(row).getByText('Delete');
     fireEvent.click(deleteButton);
 
     expect(mockOnDelete).toHaveBeenCalledWith(mockResourceAccesses[0]);

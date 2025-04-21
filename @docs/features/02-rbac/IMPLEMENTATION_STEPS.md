@@ -255,7 +255,7 @@
      - Add navigation and breadcrumbs
      - Handle resource management actions
 
-   - [ ] Implement resource access page
+   - [x] Implement resource access page
      - File: `src/app/(dashboard)/rbac/resource-accesses/page.tsx`
      - Use resource access list and form components
      - Add navigation and breadcrumbs

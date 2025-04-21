@@ -55,6 +55,10 @@ interface Store extends RootState {
     data: PaginatedResponse<ResourceAccess> | null;
     fetchResourceAccesses: () => Promise<void>;
     createResourceAccess: (access: Partial<ResourceAccess>) => Promise<void>;
+    updateResourceAccess: (id: string, access: Partial<ResourceAccess>) => Promise<void>;
+    deleteResourceAccess: (id: string) => Promise<void>;
+    activateResourceAccess: (id: string) => Promise<void>;
+    deactivateResourceAccess: (id: string) => Promise<void>;
   };
   organizationContexts: {
     data: PaginatedResponse<OrganizationContext> | null;
@@ -68,6 +72,7 @@ interface Store extends RootState {
   auditLogs: {
     data: PaginatedResponse<AuditLog> | null;
     fetchAuditLogs: () => Promise<void>;
+    createAuditLog: (log: Partial<AuditLog>) => Promise<void>;
   };
 }
 
@@ -318,6 +323,62 @@ export const useRbac = () => {
     }
   }, [store]);
 
+  const updateResourceAccess = useCallback(async (id: string, access: Partial<ResourceAccess>) => {
+    console.log('Updating resource access:', access);
+    setResourceAccess(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      await store.resourceAccesses.updateResourceAccess(id, access);
+      const storeResourceAccess = store.resourceAccesses.data?.results || [];
+      console.log('Resource access updated, updated resource access:', storeResourceAccess);
+      setResourceAccess({ data: storeResourceAccess, loading: false, error: null });
+    } catch (error) {
+      console.error('Error updating resource access:', error);
+      setResourceAccess(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to update resource access' }));
+    }
+  }, [store]);
+
+  const deleteResourceAccess = useCallback(async (id: string) => {
+    console.log('Deleting resource access:', id);
+    setResourceAccess(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      await store.resourceAccesses.deleteResourceAccess(id);
+      const storeResourceAccess = store.resourceAccesses.data?.results || [];
+      console.log('Resource access deleted, updated resource access:', storeResourceAccess);
+      setResourceAccess({ data: storeResourceAccess, loading: false, error: null });
+    } catch (error) {
+      console.error('Error deleting resource access:', error);
+      setResourceAccess(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to delete resource access' }));
+    }
+  }, [store]);
+
+  const activateResourceAccess = useCallback(async (id: string) => {
+    console.log('Activating resource access:', id);
+    setResourceAccess(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      await store.resourceAccesses.activateResourceAccess(id);
+      const storeResourceAccess = store.resourceAccesses.data?.results || [];
+      console.log('Resource access activated, updated resource access:', storeResourceAccess);
+      setResourceAccess({ data: storeResourceAccess, loading: false, error: null });
+    } catch (error) {
+      console.error('Error activating resource access:', error);
+      setResourceAccess(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to activate resource access' }));
+    }
+  }, [store]);
+
+  const deactivateResourceAccess = useCallback(async (id: string) => {
+    console.log('Deactivating resource access:', id);
+    setResourceAccess(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      await store.resourceAccesses.deactivateResourceAccess(id);
+      const storeResourceAccess = store.resourceAccesses.data?.results || [];
+      console.log('Resource access deactivated, updated resource access:', storeResourceAccess);
+      setResourceAccess({ data: storeResourceAccess, loading: false, error: null });
+    } catch (error) {
+      console.error('Error deactivating resource access:', error);
+      setResourceAccess(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to deactivate resource access' }));
+    }
+  }, [store]);
+
   // Organization Contexts
   const [organizationContexts, setOrganizationContexts] = useState<HookState<OrganizationContext>>({
     data: [],
@@ -519,6 +580,24 @@ export const useRbac = () => {
     }
   };
 
+  const fetchResourceAccesses = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await rbacApi.getResourceAccesses();
+      setResourceAccess({
+        data: response.results,
+        loading: false,
+        error: null
+      });
+    } catch (err) {
+      const error = err as Error;
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     roles: {
       ...roles,
@@ -547,7 +626,11 @@ export const useRbac = () => {
     resourceAccess: {
       ...resourceAccess,
       fetch: fetchResourceAccess,
-      create: createResourceAccess
+      create: createResourceAccess,
+      update: updateResourceAccess,
+      delete: deleteResourceAccess,
+      activate: activateResourceAccess,
+      deactivate: deactivateResourceAccess
     },
     organizationContexts,
     fetchOrganizationContexts,
@@ -567,5 +650,11 @@ export const useRbac = () => {
     deactivateUserRole,
     delegateUserRole,
     submitUserRole,
+    fetchResourceAccesses,
+    createResourceAccess,
+    updateResourceAccess,
+    deleteResourceAccess,
+    activateResourceAccess,
+    deactivateResourceAccess
   };
 }; 

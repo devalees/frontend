@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import { useRbac } from '@/hooks/useRbac';
-import { Table } from '@/components/ui/Table';
-import { Button } from '@/components/ui/Button';
+import { Column } from '@/components/ui/Table';
 import { Badge } from '@/components/ui/Badge';
+import { Table } from '@/components/ui/Table';
 import { Input } from '@/components/ui/Input';
 import { Spinner } from '@/components/ui/Spinner';
 import { ResourceAccess } from '@/types/rbac';
-import { Column } from '@/components/ui/Table';
 
 interface ResourceAccessListProps {
-  onEdit?: (access: ResourceAccess) => void;
-  onDelete?: (access: ResourceAccess) => void;
-  onActivate?: (access: ResourceAccess) => void;
-  onDeactivate?: (access: ResourceAccess) => void;
+  onEdit?: (resourceAccess: ResourceAccess) => void;
+  onDelete?: (resourceAccess: ResourceAccess) => void;
+  onActivate?: (resourceAccess: ResourceAccess) => void;
+  onDeactivate?: (resourceAccess: ResourceAccess) => void;
 }
 
 export const ResourceAccessList: React.FC<ResourceAccessListProps> = ({
@@ -21,44 +20,43 @@ export const ResourceAccessList: React.FC<ResourceAccessListProps> = ({
   onActivate,
   onDeactivate
 }) => {
-  const { resourceAccesses, loading, error, fetchResourceAccesses } = useRbac();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const { resourceAccess, fetchResourceAccesses } = useRbac();
 
   useEffect(() => {
     fetchResourceAccesses();
   }, [fetchResourceAccesses]);
 
-  const filteredData = resourceAccesses?.data?.results?.filter((access: ResourceAccess) => 
-    access.resource_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    access.role_id.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredData = React.useMemo(() => {
+    if (!resourceAccess?.data) return [];
+    return resourceAccess.data.filter((access: ResourceAccess) => 
+      access.resource_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      access.role_id.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [resourceAccess?.data, searchTerm]);
 
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = Math.ceil(filteredData.length / 10);
 
   const columns: Column<ResourceAccess>[] = [
     {
       header: 'Resource',
-      accessor: 'resource_id',
+      accessor: 'resource_id' as keyof ResourceAccess,
       cell: (value: string) => <span>{value}</span>
     },
     {
       header: 'Role',
-      accessor: 'role_id',
+      accessor: 'role_id' as keyof ResourceAccess,
       cell: (value: string) => <span>{value}</span>
     },
     {
       header: 'Permission',
-      accessor: 'permission_id',
-      cell: (value: string) => <span>{value}</span>
+      accessor: 'permission_id' as keyof ResourceAccess,
+      cell: (value: string) => <Badge variant="info">{value}</Badge>
     },
     {
       header: 'Status',
-      accessor: 'is_active',
+      accessor: 'is_active' as keyof ResourceAccess,
       cell: (value: boolean) => (
         <Badge variant={value ? 'success' : 'error'}>
           {value ? 'Active' : 'Inactive'}
@@ -68,74 +66,73 @@ export const ResourceAccessList: React.FC<ResourceAccessListProps> = ({
     {
       header: 'Actions',
       accessor: 'id',
-      cell: (_: unknown, row: ResourceAccess) => (
+      cell: (_value: string, item: ResourceAccess) => (
         <div className="flex space-x-2">
           {onEdit && (
-            <Button
-              variant="outline"
-              size="small"
-              onClick={() => onEdit(row)}
+            <button
+              onClick={() => onEdit(item)}
+              className="text-blue-600 hover:text-blue-800"
             >
               Edit
-            </Button>
+            </button>
           )}
           {onDelete && (
-            <Button
-              variant="destructive"
-              size="small"
-              onClick={() => onDelete(row)}
+            <button
+              onClick={() => onDelete(item)}
+              className="text-red-600 hover:text-red-800"
             >
               Delete
-            </Button>
+            </button>
           )}
-          {onActivate && !row.is_active && (
-            <Button
-              variant="default"
-              size="small"
-              onClick={() => onActivate(row)}
-            >
-              Activate
-            </Button>
-          )}
-          {onDeactivate && row.is_active && (
-            <Button
-              variant="default"
-              size="small"
-              onClick={() => onDeactivate(row)}
-            >
-              Deactivate
-            </Button>
+          {item.is_active ? (
+            onDeactivate && (
+              <button
+                onClick={() => onDeactivate(item)}
+                className="text-yellow-600 hover:text-yellow-800"
+              >
+                Deactivate
+              </button>
+            )
+          ) : (
+            onActivate && (
+              <button
+                onClick={() => onActivate(item)}
+                className="text-green-600 hover:text-green-800"
+              >
+                Activate
+              </button>
+            )
           )}
         </div>
       )
     }
   ];
 
-  if (loading) {
-    return <Spinner />;
+  if (resourceAccess?.loading) {
+    return <div role="status"><Spinner data-testid="spinner" /></div>;
   }
 
-  if (error) {
-    return <div className="text-red-500">Error: {error}</div>;
+  if (resourceAccess?.error) {
+    return <div className="text-red-500">Error: {resourceAccess.error}</div>;
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <Input
-          type="text"
-          placeholder="Search resources..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
-        />
-      </div>
+      <Input
+        type="search"
+        value={searchTerm}
+        onChange={(e: ChangeEvent<HTMLInputElement>) => {
+          setSearchTerm(e.target.value);
+        }}
+        placeholder="Search resources..."
+        className="max-w-md"
+      />
       <Table
-        data={paginatedData}
+        data={filteredData}
         columns={columns}
         pagination={{
           currentPage,
-          totalPages: Math.ceil((filteredData.length || 0) / itemsPerPage),
+          totalPages,
           onPageChange: setCurrentPage
         }}
       />
