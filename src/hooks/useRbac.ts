@@ -38,6 +38,8 @@ interface Store extends RootState {
     data: PaginatedResponse<Permission> | null;
     fetchPermissions: () => Promise<void>;
     createPermission: (permission: Partial<Permission>) => Promise<void>;
+    updatePermission: (id: string, permission: Partial<Permission>) => Promise<void>;
+    deletePermission: (id: string) => Promise<void>;
   };
   userRoles: {
     data: PaginatedResponse<UserRole> | null;
@@ -176,6 +178,34 @@ export const useRbac = () => {
     } catch (error) {
       console.error('Error creating permission:', error);
       setPermissions(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to create permission' }));
+    }
+  }, [store]);
+
+  const updatePermission = useCallback(async (id: string, permission: Partial<Permission>) => {
+    console.log('Updating permission:', id, permission);
+    setPermissions(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      await store.permissions.updatePermission(id, permission);
+      const storePermissions = store.permissions.data?.results || [];
+      console.log('Permission updated, updated permissions:', storePermissions);
+      setPermissions({ data: storePermissions, loading: false, error: null });
+    } catch (error) {
+      console.error('Error updating permission:', error);
+      setPermissions(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to update permission' }));
+    }
+  }, [store]);
+
+  const deletePermission = useCallback(async (id: string) => {
+    console.log('Deleting permission:', id);
+    setPermissions(prev => ({ ...prev, loading: true, error: null }));
+    try {
+      await store.permissions.deletePermission(id);
+      const storePermissions = store.permissions.data?.results || [];
+      console.log('Permission deleted, updated permissions:', storePermissions);
+      setPermissions({ data: storePermissions, loading: false, error: null });
+    } catch (error) {
+      console.error('Error deleting permission:', error);
+      setPermissions(prev => ({ ...prev, loading: false, error: error instanceof Error ? error.message : 'Failed to delete permission' }));
     }
   }, [store]);
 
@@ -383,7 +413,9 @@ export const useRbac = () => {
     permissions: {
       ...permissions,
       fetch: fetchPermissions,
-      create: createPermission
+      create: createPermission,
+      update: updatePermission,
+      delete: deletePermission
     },
     userRoles: {
       ...userRoles,
