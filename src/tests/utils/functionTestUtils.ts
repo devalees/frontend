@@ -289,4 +289,53 @@ export function testException<T extends (...args: any[]) => any>(
       passed
     };
   }
+}
+
+/**
+ * Creates test utilities for function testing
+ * @returns Object containing test utility functions
+ */
+export const createTestUtils = () => {
+  return {
+    /**
+     * Waits for a specified number of milliseconds
+     * @param ms Number of milliseconds to wait
+     */
+    wait: (ms: number) => new Promise(resolve => setTimeout(resolve, ms)),
+
+    /**
+     * Creates a mock function that resolves after a delay
+     * @param returnValue Value to return
+     * @param delay Delay in milliseconds
+     */
+    createDelayedMock: <T>(returnValue: T, delay = 100) => 
+      jest.fn().mockImplementation(() => new Promise(resolve => 
+        setTimeout(() => resolve(returnValue), delay)
+      )),
+
+    /**
+     * Creates a mock function that rejects after a delay
+     * @param error Error to throw
+     * @param delay Delay in milliseconds
+     */
+    createDelayedErrorMock: (error: Error, delay = 100) =>
+      jest.fn().mockImplementation(() => new Promise((_, reject) =>
+        setTimeout(() => reject(error), delay)
+      )),
+
+    /**
+     * Creates a mock function that counts calls
+     * @param returnValue Value to return
+     */
+    createCountingMock: <T>(returnValue: T) => {
+      let callCount = 0
+      return {
+        mock: jest.fn().mockImplementation(() => {
+          callCount++
+          return returnValue
+        }),
+        getCallCount: () => callCount
+      }
+    }
+  }
 } 

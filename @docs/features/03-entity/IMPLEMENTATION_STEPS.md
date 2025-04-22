@@ -48,21 +48,21 @@
 
 ### Phase 2: Entity State Management
 1. **Set Up Tests**
-   - [ ] Create Entity store tests
+   - [x] Create Entity store tests
      - File: `src/tests/store/entity.test.ts`
      - Use centralized testing utilities
      - Test store actions and state management
      - Test store selectors and computed properties
 
 2. **Create Entity Store**
-   - [ ] Implement Entity store with Zustand
+   - [x] Implement Entity store with Zustand
      - File: `src/lib/store/slices/entitySlice.ts`
      - Create store slices for each Entity type
      - Implement actions for fetching, creating, updating, and deleting
      - Handle loading states and error handling
 
 3. **Create Entity Hooks**
-   - [ ] Implement Entity hooks
+   - [x] Implement Entity hooks
      - File: `src/hooks/useEntity.ts`
      - Create hooks for each Entity type
      - Provide access to store and API methods
