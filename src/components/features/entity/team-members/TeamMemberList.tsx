@@ -7,6 +7,7 @@ import { Select } from '@/components/ui/Select';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { TeamMember } from '@/types/entity';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { PaginatedList } from '@/components/PaginatedList';
 
@@ -90,22 +91,24 @@ export const TeamMemberList: React.FC<TeamMemberListProps> = ({
       accessor: 'id',
       cell: (_, row) => (
         <div className="flex space-x-2">
-          <Button
+          <NavButton
             variant="outline"
             size="small"
+            href={`/entities/team-members/${row.id}`}
             onClick={() => handleView(row)}
             data-testid="view-details-button"
           >
             View
-          </Button>
-          <Button
+          </NavButton>
+          <NavButton
             variant="outline"
             size="small"
+            href={`/entities/team-members/${row.id}/edit`}
             onClick={() => handleEdit(row)}
             data-testid="edit-button"
           >
             Edit
-          </Button>
+          </NavButton>
           <Button
             variant="outline"
             size="small"
@@ -162,22 +165,24 @@ export const TeamMemberList: React.FC<TeamMemberListProps> = ({
       <td>{new Date(teamMember.join_date).toLocaleDateString()}</td>
       <td>
         <div className="flex space-x-2">
-          <Button
+          <NavButton
             variant="outline"
             size="small"
+            href={`/entities/team-members/${teamMember.id}`}
             onClick={() => handleView(teamMember)}
             data-testid="view-details-button"
           >
             View
-          </Button>
-          <Button
+          </NavButton>
+          <NavButton
             variant="outline"
             size="small"
+            href={`/entities/team-members/${teamMember.id}/edit`}
             onClick={() => handleEdit(teamMember)}
             data-testid="edit-button"
           >
             Edit
-          </Button>
+          </NavButton>
           <Button
             variant="outline"
             size="small"
@@ -203,11 +208,12 @@ export const TeamMemberList: React.FC<TeamMemberListProps> = ({
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold">Team Members</h2>
           {!onViewDetails && (
-            <Button
+            <NavButton
+              href="/entities/team-members/new"
               onClick={() => router.push('/entities/team-members/new')}
             >
               Add Team Member
-            </Button>
+            </NavButton>
           )}
         </div>
       </CardHeader>

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { OrganizationList } from '@/components/features/entity/organizations/OrganizationList';
 import { Breadcrumbs, BreadcrumbItem } from '@/components/ui/Breadcrumbs';
-import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Plus } from 'lucide-react';
 import { Organization } from '@/types/entity';
 import { useEntityStore } from '@/store/slices/entitySlice';
@@ -51,24 +51,20 @@ const OrganizationsPage = () => {
     }
   };
 
-  const handleCreateNew = () => {
-    router.push('/entities/organizations/new');
-  };
-
   return (
     <div className="container mx-auto py-6 px-4">
       <div className="mb-6">
         <Breadcrumbs items={breadcrumbItems} className="mb-2" />
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Organizations</h1>
-          <Button 
-            onClick={handleCreateNew}
+          <NavButton 
+            href="/entities/organizations/new"
             className="flex items-center gap-2"
             data-testid="create-organization-button"
           >
             <Plus className="h-4 w-4" />
             New Organization
-          </Button>
+          </NavButton>
         </div>
         <p className="text-muted-foreground mt-1">
           Manage your organizations, departments, and teams

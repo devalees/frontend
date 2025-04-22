@@ -5,33 +5,23 @@ import { OrganizationContextList } from '@/components/features/rbac/organization
 import { OrganizationContextForm } from '@/components/features/rbac/OrganizationContextForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Plus, ChevronRight } from 'lucide-react';
 import { ToastContainer, useToast } from '@/components/ui/use-toast';
-
-// Mock type definition to match our mock implementation
-interface OrganizationContextItem {
-  id: string;
-  name: string;
-  description: string;
-  parent_id: string | null;
-  is_active: boolean;
-  level: number;
-  created_at: string;
-  updated_at: string;
-}
+import { OrganizationContext } from '@/types/rbac';
 
 export default function OrganizationContextPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedContext, setSelectedContext] = useState<OrganizationContextItem | null>(null);
-  const [viewHierarchyContext, setViewHierarchyContext] = useState<OrganizationContextItem | null>(null);
+  const [selectedContext, setSelectedContext] = useState<OrganizationContext | null>(null);
+  const [viewHierarchyContext, setViewHierarchyContext] = useState<OrganizationContext | null>(null);
   const { toast } = useToast();
 
-  const handleEdit = (context: OrganizationContextItem) => {
+  const handleEdit = (context: OrganizationContext) => {
     setSelectedContext(context);
     setIsFormOpen(true);
   };
 
-  const handleDelete = async (context: OrganizationContextItem) => {
+  const handleDelete = async (context: OrganizationContext) => {
     const confirmDelete = window.confirm(`Are you sure you want to delete "${context.name}"?`);
     if (confirmDelete) {
       toast({
@@ -41,21 +31,21 @@ export default function OrganizationContextPage() {
     }
   };
 
-  const handleActivate = async (context: OrganizationContextItem) => {
+  const handleActivate = async (context: OrganizationContext) => {
     toast({
       title: 'Organization Context Activated',
       description: `"${context.name}" has been activated successfully.`,
     });
   };
 
-  const handleDeactivate = async (context: OrganizationContextItem) => {
+  const handleDeactivate = async (context: OrganizationContext) => {
     toast({
       title: 'Organization Context Deactivated',
       description: `"${context.name}" has been deactivated successfully.`,
     });
   };
 
-  const handleViewHierarchy = (context: OrganizationContextItem) => {
+  const handleViewHierarchy = (context: OrganizationContext) => {
     setViewHierarchyContext(context);
     toast({
       title: 'Hierarchy View',
@@ -90,9 +80,9 @@ export default function OrganizationContextPage() {
     <div className="container mx-auto py-6">
       {/* Breadcrumb Navigation */}
       <nav className="flex items-center mb-4 text-sm text-gray-500">
-        <a href="/dashboard" className="hover:text-gray-700">Dashboard</a>
+        <NavButton href="/dashboard" className="hover:text-gray-700">Dashboard</NavButton>
         <ChevronRight className="h-4 w-4 mx-2" />
-        <a href="/rbac" className="hover:text-gray-700">RBAC</a>
+        <NavButton href="/rbac" className="hover:text-gray-700">RBAC</NavButton>
         <ChevronRight className="h-4 w-4 mx-2" />
         <span className="text-gray-900 font-medium">Organization Contexts</span>
       </nav>

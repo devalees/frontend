@@ -10,10 +10,25 @@ import { OrganizationSettings } from '@/types/entity';
 // Mock the hooks
 jest.mock('@/store/slices/entitySlice');
 jest.mock('@/components/ui/use-toast');
+jest.mock('@/lib/prefetching/prefetchProvider', () => ({
+  usePrefetchSettings: () => ({
+    settings: {
+      enabled: true,
+      linkHoverDelay: 100,
+    }
+  })
+}));
+
+// Mock next/navigation
+const mockPush = jest.fn();
+const mockBack = jest.fn();
+const mockPrefetch = jest.fn();
+
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn(),
-    back: jest.fn(),
+    push: mockPush,
+    back: mockBack,
+    prefetch: mockPrefetch,
   }),
 }));
 
@@ -113,15 +128,12 @@ describe('EditOrganizationSettingsPage', () => {
   });
 
   it('should handle cancel button click', () => {
-    const mockRouter = { back: jest.fn() };
-    jest.spyOn(require('next/navigation'), 'useRouter').mockReturnValue(mockRouter);
-
     render(<EditOrganizationSettingsPage params={mockParams} />);
 
     const cancelButton = screen.getByTestId('cancel-button');
     fireEvent.click(cancelButton);
 
-    expect(mockRouter.back).toHaveBeenCalled();
+    expect(mockBack).toHaveBeenCalled();
   });
 
   it('should fetch organization settings on mount', () => {

@@ -9,6 +9,7 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Badge } from '@/components/ui/Badge';
 import { Edit, Trash2, Eye, ToggleLeft, ToggleRight } from 'lucide-react';
 
@@ -180,14 +181,15 @@ export function OrganizationContextList({
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex justify-end space-x-2">
-                        <Button
+                        <NavButton
                           variant="outline"
                           size="small"
+                          href="#"
                           onClick={() => onEdit(context)}
                           title="Edit"
                         >
                           <Edit className="h-4 w-4" />
-                        </Button>
+                        </NavButton>
                         <Button
                           variant="outline"
                           size="small"
@@ -216,14 +218,15 @@ export function OrganizationContextList({
                             <ToggleLeft className="h-4 w-4" />
                           </Button>
                         )}
-                        <Button
+                        <NavButton
                           variant="outline"
                           size="small"
+                          href="#"
                           onClick={() => onViewHierarchy(context)}
                           title="View Hierarchy"
                         >
                           <Eye className="h-4 w-4" />
-                        </Button>
+                        </NavButton>
                       </div>
                     </td>
                   </tr>
@@ -235,32 +238,35 @@ export function OrganizationContextList({
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center space-x-2 mt-4">
-              <Button
+              <NavButton
                 variant="outline"
                 size="small"
+                href="#"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
               >
                 Previous
-              </Button>
+              </NavButton>
               {Array.from({ length: totalPages }).map((_, index) => (
-                <Button
+                <NavButton
                   key={index}
                   variant={currentPage === index + 1 ? "default" : "outline"}
                   size="small"
+                  href="#"
                   onClick={() => handlePageChange(index + 1)}
                 >
                   {index + 1}
-                </Button>
+                </NavButton>
               ))}
-              <Button
+              <NavButton
                 variant="outline"
                 size="small"
+                href="#"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
               >
                 Next
-              </Button>
+              </NavButton>
             </div>
           )}
         </>

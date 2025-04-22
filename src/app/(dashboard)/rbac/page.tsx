@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Shield, Users, Database, UserCheck, Key, Building, FileText } from 'lucide-react';
 import { Link } from '@/components/ui/Link';
 
@@ -79,18 +79,13 @@ const RBACDashboardPage = () => {
               </p>
             </CardContent>
             <CardFooter>
-              <Link 
+              <NavButton 
                 href={section.path}
+                variant="default" 
                 className="w-full"
-                variant="primary"
               >
-                <Button 
-                  variant="default" 
-                  className="w-full"
-                >
-                  Manage {section.title}
-                </Button>
-              </Link>
+                Manage {section.title}
+              </NavButton>
             </CardFooter>
           </Card>
         ))}

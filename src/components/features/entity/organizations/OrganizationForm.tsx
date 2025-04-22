@@ -3,6 +3,7 @@ import { FormSection } from '@/components/forms/Form';
 import { Organization } from '@/types/entity';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 
 interface OrganizationFormProps {
   organization?: Organization;

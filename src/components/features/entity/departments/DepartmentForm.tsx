@@ -6,6 +6,7 @@ import { Department } from '@/types/entity';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Select } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
 import FormField from '@/components/ui/FormField';
@@ -284,14 +285,15 @@ export const DepartmentForm: React.FC<DepartmentFormProps> = ({
 
       <div className="flex justify-end space-x-4">
         {onCancel && (
-          <Button
+          <NavButton
             type="button"
             variant="outline"
             onClick={onCancel}
+            href="#"
             data-testid="cancel-button"
           >
             Cancel
-          </Button>
+          </NavButton>
         )}
         <Button
           type="submit"

@@ -9,6 +9,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Input } from '@/components/ui/Input';
 import ChangePasswordForm from './ChangePasswordForm';
 import { ChangePasswordRequest } from '@/lib/api/auth';
@@ -187,7 +188,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         </Button>
         
         <Button 
-          variant="primary" 
+          variant="default" 
           onClick={handleLogout}
           aria-label="Logout"
           disabled={isLoggingOut}

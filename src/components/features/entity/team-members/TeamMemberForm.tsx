@@ -4,6 +4,7 @@ import { Card, CardHeader } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Checkbox } from '../../../../components/ui/Checkbox';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { TeamMember } from '@/types/entity';
@@ -208,14 +209,15 @@ export const TeamMemberForm: React.FC<TeamMemberFormProps> = ({ teamMember }) =>
         )}
 
         <div className="flex justify-end space-x-2">
-          <Button
+          <NavButton
             type="button"
             variant="outline"
+            href="#"
             onClick={() => router.back()}
             disabled={loading}
           >
             Cancel
-          </Button>
+          </NavButton>
           <Button type="submit" disabled={loading}>
             {teamMember ? 'Update Team Member' : 'Create Team Member'}
           </Button>

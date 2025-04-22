@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { TeamMemberList } from '@/components/features/entity/team-members/TeamMemberList';
 import { Breadcrumbs, BreadcrumbItem } from '@/components/ui/Breadcrumbs';
-import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Plus } from 'lucide-react';
 import { TeamMember } from '@/types/entity';
 import { useEntityStore } from '@/store/slices/entitySlice';
@@ -51,24 +51,20 @@ const TeamMembersPage = () => {
     }
   };
 
-  const handleCreateNew = () => {
-    router.push('/entities/team-members/new');
-  };
-
   return (
     <div className="container mx-auto py-6 px-4">
       <div className="mb-6">
         <Breadcrumbs items={breadcrumbItems} className="mb-2" />
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Team Members</h1>
-          <Button 
-            onClick={handleCreateNew}
+          <NavButton 
+            href="/entities/team-members/new"
             className="flex items-center gap-2"
             data-testid="create-team-member-button"
           >
             <Plus className="h-4 w-4" />
             New Team Member
-          </Button>
+          </NavButton>
         </div>
         <p className="text-muted-foreground mt-1">
           Manage team members and their roles

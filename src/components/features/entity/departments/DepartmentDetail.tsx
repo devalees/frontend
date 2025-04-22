@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Department, Team, TeamMember } from '@/types/entity';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Badge } from '@/components/ui/Badge';
 import { Table, Column } from '@/components/ui/Table';
 
@@ -170,20 +171,20 @@ export const DepartmentDetail: React.FC<DepartmentDetailProps> = ({
           <p className="text-gray-600 mt-1">{department.description}</p>
         </div>
         <div className="flex space-x-2">
-          <button
+          <Button
             onClick={onEdit}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
             aria-label="Edit"
           >
             Edit
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={onDelete}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
             aria-label="Delete"
           >
             Delete
-          </button>
+          </Button>
         </div>
       </div>
 

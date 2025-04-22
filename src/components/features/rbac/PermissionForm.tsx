@@ -10,6 +10,7 @@ import { Permission } from '../../../types/rbac';
 import { Form, FormSection } from '../../forms/Form';
 import { Input } from '../../ui/Input';
 import { Button } from '../../ui/Button';
+import { NavButton } from '../../ui/NavButton';
 
 interface PermissionFormProps {
   permission?: Permission;
@@ -161,13 +162,14 @@ export const PermissionForm: React.FC<PermissionFormProps> = ({
         </FormSection>
 
         <div className="flex justify-end space-x-3 mt-6">
-          <Button 
+          <NavButton 
             variant="tertiary" 
+            href="#"
             onClick={onCancel}
             disabled={isSubmitting}
           >
             Cancel
-          </Button>
+          </NavButton>
           <Button 
             variant="default"
             disabled={isSubmitting}

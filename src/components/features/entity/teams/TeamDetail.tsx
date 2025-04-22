@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Team, TeamMember } from '@/types/entity';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Badge } from '@/components/ui/Badge';
 import { Table, Column } from '@/components/ui/Table';
 
@@ -123,13 +124,14 @@ export const TeamDetail: React.FC<TeamDetailProps> = ({
         </div>
         <div className="flex space-x-2">
           {onEdit && (
-            <Button
+            <NavButton
               variant="outline"
+              href={`/teams/${id}/edit`}
               onClick={onEdit}
               data-testid="edit-button"
             >
               Edit Team
-            </Button>
+            </NavButton>
           )}
           {onDelete && (
             <Button

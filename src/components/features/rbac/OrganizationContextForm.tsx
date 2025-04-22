@@ -6,6 +6,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
@@ -96,14 +97,15 @@ export const OrganizationContextForm: React.FC<OrganizationContextFormProps> = (
           <CardTitle>
             {initialData ? `Edit Organization Context: ${initialData.name}` : 'Add New Organization Context'}
           </CardTitle>
-          <Button
+          <NavButton
             variant="tertiary"
             size="small"
+            href="#"
             onClick={onCancel}
             className="p-1 h-auto"
           >
             <X className="h-5 w-5" />
-          </Button>
+          </NavButton>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
@@ -166,14 +168,15 @@ export const OrganizationContextForm: React.FC<OrganizationContextFormProps> = (
             </div>
           </CardContent>
           <CardFooter className="flex justify-end space-x-2">
-            <Button 
+            <NavButton 
               variant="secondary" 
+              href="#"
               onClick={onCancel} 
               type="button"
               disabled={isSubmitting}
             >
               Cancel
-            </Button>
+            </NavButton>
             <Button 
               type="submit" 
               disabled={isSubmitting}

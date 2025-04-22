@@ -11,7 +11,7 @@
  */
 
 import React, { useState } from 'react';
-import { Link } from '@/components/ui/Link';
+import { NavButton } from '@/components/ui/NavButton';
 import { usePathname } from 'next/navigation';
 
 export default function DashboardLayout({
@@ -58,7 +58,7 @@ export default function DashboardLayout({
           <div className="mt-5 flex-1 h-0 overflow-y-auto">
             <nav className="px-2 space-y-1">
               {navigation.map((item) => (
-                <Link
+                <NavButton
                   key={item.name}
                   href={item.href}
                   className={`${
@@ -76,7 +76,7 @@ export default function DashboardLayout({
                     aria-hidden="true"
                   />
                   {item.name}
-                </Link>
+                </NavButton>
               ))}
             </nav>
           </div>
@@ -92,7 +92,7 @@ export default function DashboardLayout({
           <div className="mt-5 flex-grow flex flex-col">
             <nav className="flex-1 px-2 pb-4 space-y-1">
               {navigation.map((item) => (
-                <Link
+                <NavButton
                   key={item.name}
                   href={item.href}
                   className={`${
@@ -110,7 +110,7 @@ export default function DashboardLayout({
                     aria-hidden="true"
                   />
                   {item.name}
-                </Link>
+                </NavButton>
               ))}
             </nav>
           </div>

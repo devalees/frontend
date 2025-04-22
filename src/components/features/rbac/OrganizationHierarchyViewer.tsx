@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { OrganizationContext } from '../../../types/rbac';
 import { useRbac } from '../../../hooks/useRbac';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Tree, TreeItem } from '@/components/ui/Tree';
 import { Network, ChevronRight, ChevronDown } from 'lucide-react';
 
@@ -119,9 +119,13 @@ export const OrganizationHierarchyViewer: React.FC<OrganizationHierarchyViewerPr
           )}
         </CardContent>
         <CardFooter className="flex justify-end">
-          <Button onClick={onClose} data-testid="close-hierarchy-btn">
+          <NavButton 
+            href="#"
+            onClick={onClose} 
+            data-testid="close-hierarchy-btn"
+          >
             Close
-          </Button>
+          </NavButton>
         </CardFooter>
       </Card>
     </div>

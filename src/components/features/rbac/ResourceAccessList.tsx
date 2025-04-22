@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Table } from '@/components/ui/Table';
 import { Input } from '@/components/ui/Input';
 import { Spinner } from '@/components/ui/Spinner';
+import { Button } from '@/components/ui/Button';
 import { ResourceAccess } from '@/types/rbac';
 
 interface ResourceAccessListProps {
@@ -69,38 +70,42 @@ export const ResourceAccessList: React.FC<ResourceAccessListProps> = ({
       cell: (_value: string, item: ResourceAccess) => (
         <div className="flex space-x-2">
           {onEdit && (
-            <button
+            <Button
+              variant="ghost"
               onClick={() => onEdit(item)}
               className="text-blue-600 hover:text-blue-800"
             >
               Edit
-            </button>
+            </Button>
           )}
           {onDelete && (
-            <button
+            <Button
+              variant="ghost"
               onClick={() => onDelete(item)}
               className="text-red-600 hover:text-red-800"
             >
               Delete
-            </button>
+            </Button>
           )}
           {item.is_active ? (
             onDeactivate && (
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => onDeactivate(item)}
                 className="text-yellow-600 hover:text-yellow-800"
               >
                 Deactivate
-              </button>
+              </Button>
             )
           ) : (
             onActivate && (
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => onActivate(item)}
                 className="text-green-600 hover:text-green-800"
               >
                 Activate
-              </button>
+              </Button>
             )
           )}
         </div>

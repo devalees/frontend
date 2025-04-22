@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { TeamMemberDetail } from '@/components/features/entity/team-members/TeamMemberDetail';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
+import { NavButton } from '@/components/ui/NavButton';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { useToast } from '@/components/ui/use-toast';
@@ -17,10 +18,6 @@ export default function TeamMemberDetailPage() {
   const { toast } = useToast();
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
-
-  const handleEdit = () => {
-    router.push(`/entities/team-members/${id}/edit`);
-  };
 
   const handleDelete = async () => {
     try {
@@ -59,13 +56,13 @@ export default function TeamMemberDetailPage() {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Team Member Details</h1>
           <div className="space-x-4">
-            <Button
+            <NavButton
+              href={`/entities/team-members/${id}/edit`}
               variant="outline"
-              onClick={handleEdit}
               data-testid="edit-button"
             >
               Edit
-            </Button>
+            </NavButton>
             <Button
               variant="destructive"
               onClick={() => setShowDeleteModal(true)}

@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { useRbac } from '../../../hooks/useRbac';
 import { Permission } from '../../../types/rbac';
 import { Button } from '../../ui/Button';
+import { NavButton } from '../../ui/NavButton';
 import { Input } from '../../ui/Input';
 import { Grid, GridItem } from '../../layout/Grid';
 import { useStore } from '../../../lib/store';
@@ -97,35 +98,38 @@ export const PermissionList: React.FC<PermissionListProps> = ({
 
     return (
       <div className="flex justify-center mt-4 space-x-2">
-        <Button 
+        <NavButton 
           variant="tertiary" 
           size="small" 
+          href="#"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1 || isLoading}
         >
           Previous
-        </Button>
+        </NavButton>
         
         {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-          <Button
+          <NavButton
             key={page}
             variant={page === currentPage ? 'default' : 'tertiary'}
             size="small"
+            href="#"
             onClick={() => handlePageChange(page)}
             disabled={isLoading}
           >
             {page}
-          </Button>
+          </NavButton>
         ))}
         
-        <Button 
+        <NavButton 
           variant="tertiary" 
           size="small" 
+          href="#"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages || isLoading}
         >
           Next
-        </Button>
+        </NavButton>
       </div>
     );
   };
@@ -217,14 +221,15 @@ export const PermissionList: React.FC<PermissionListProps> = ({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                   {onEditPermission && (
-                    <Button 
+                    <NavButton 
                       variant="tertiary" 
                       size="small" 
+                      href="#"
                       onClick={() => onEditPermission(permission)}
                       disabled={isLoading}
                     >
                       Edit
-                    </Button>
+                    </NavButton>
                   )}
                   {onDeletePermission && (
                     <Button 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { OrganizationSettings } from '@/types/entity';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Link } from '@/components/ui/Link';
 
 interface OrganizationSettingsDetailProps {
@@ -148,11 +149,13 @@ export const OrganizationSettingsDetail: React.FC<OrganizationSettingsDetailProp
         </dl>
       </div>
       <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-        <Link href={`/entities/organizations/${settings.organization_id}`}>
-          <Button variant="outline" data-testid="view-organization-button">
-            View Organization
-          </Button>
-        </Link>
+        <NavButton 
+          href={`/entities/organizations/${settings.organization_id}`}
+          variant="outline" 
+          data-testid="view-organization-button"
+        >
+          View Organization
+        </NavButton>
       </div>
     </div>
   );

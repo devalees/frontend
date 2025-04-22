@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { DepartmentList } from '@/components/features/entity/departments/DepartmentList';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
-import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Card, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Department } from '@/types/entity';
 import { useToast } from '@/components/ui/use-toast';
@@ -61,12 +61,12 @@ export default function DepartmentsPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Departments</CardTitle>
-          <Button
-            onClick={handleCreate}
+          <NavButton
+            href="/entities/departments/new"
             data-testid="create-department-button"
           >
             Create Department
-          </Button>
+          </NavButton>
         </CardHeader>
 
         <div className="p-6">

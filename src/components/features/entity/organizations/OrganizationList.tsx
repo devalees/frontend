@@ -3,6 +3,7 @@ import { Organization } from '@/types/entity';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { Table, Column } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { PaginatedList } from '@/components/PaginatedList';
@@ -75,24 +76,26 @@ export const OrganizationList: React.FC<OrganizationListProps> = ({
       cell: (_, row) => (
         <div className="flex space-x-2">
           {onViewDetails && (
-            <Button
+            <NavButton
               variant="outline"
               size="small"
+              href={`/organizations/${row.id}`}
               onClick={() => onViewDetails(row)}
               data-testid="view-details-button"
             >
               View
-            </Button>
+            </NavButton>
           )}
           {onEdit && (
-            <Button
+            <NavButton
               variant="outline"
               size="small"
+              href={`/organizations/${row.id}/edit`}
               onClick={() => onEdit(row)}
               data-testid="edit-button"
             >
               Edit
-            </Button>
+            </NavButton>
           )}
           {onDelete && (
             <Button

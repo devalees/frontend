@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Select } from '@/components/forms/Select';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Spinner } from '@/components/ui/Spinner';
 import { useRbac } from '@/hooks/useRbac';
 import { ResourceAccess, Resource, Role, Permission } from '@/types/rbac';
@@ -170,13 +171,14 @@ export const ResourceAccessForm: React.FC<ResourceAccessFormProps> = ({
 
           <div className="flex justify-end space-x-2">
             {onCancel && (
-              <Button
+              <NavButton
                 variant="outline"
+                href="#"
                 onClick={onCancel}
                 disabled={form.formState.isSubmitting}
               >
                 Cancel
-              </Button>
+              </NavButton>
             )}
             <Button
               type="submit"

@@ -3,6 +3,7 @@
 import React, { ReactNode } from 'react';
 import { usePaginationPrefetch, usePrefetchSettings } from '@/lib/prefetching';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Spinner } from '@/components/ui/Spinner';
 
 interface PaginatedListProps<T> {
@@ -81,43 +82,47 @@ export function PaginatedList<T>({
 
     return (
       <div className="flex items-center justify-center space-x-2 mt-4">
-        <Button
+        <NavButton
+          href={`?page=1`}
           variant="outline"
           size="small"
           onClick={() => handlePageChange(1)}
           disabled={currentPage === 1 || isLoading}
         >
           First
-        </Button>
-        <Button
+        </NavButton>
+        <NavButton
+          href={`?page=${currentPage - 1}`}
           variant="outline"
           size="small"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1 || isLoading}
         >
           Previous
-        </Button>
+        </NavButton>
         
         <span className="mx-2">
           Page {currentPage} of {totalPages}
         </span>
         
-        <Button
+        <NavButton
+          href={`?page=${currentPage + 1}`}
           variant="outline"
           size="small"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages || isLoading}
         >
           Next
-        </Button>
-        <Button
+        </NavButton>
+        <NavButton
+          href={`?page=${totalPages}`}
           variant="outline"
           size="small"
           onClick={() => handlePageChange(totalPages)}
           disabled={currentPage === totalPages || isLoading}
         >
           Last
-        </Button>
+        </NavButton>
       </div>
     );
   };

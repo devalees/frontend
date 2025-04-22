@@ -3,6 +3,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { TeamDetail } from '@/components/features/entity/teams/TeamDetail';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
+import { NavButton } from '@/components/ui/NavButton';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 
@@ -12,10 +13,6 @@ export default function TeamDetailPage() {
   const id = params.id as string;
   const { deleteTeam } = useEntityStore();
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-
-  const handleEdit = () => {
-    router.push(`/entities/teams/${id}/edit`);
-  };
 
   const handleDelete = async () => {
     try {
@@ -41,13 +38,13 @@ export default function TeamDetailPage() {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Team Details</h1>
           <div className="space-x-4">
-            <Button
+            <NavButton
+              href={`/entities/teams/${id}/edit`}
               variant="outline"
-              onClick={handleEdit}
               data-testid="edit-button"
             >
               Edit
-            </Button>
+            </NavButton>
             <Button
               variant="destructive"
               onClick={() => setShowDeleteModal(true)}

@@ -3,6 +3,7 @@ import { FormSection } from '@/components/forms/Form';
 import { OrganizationSettings } from '@/types/entity';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Select, SelectOption } from '@/components/forms/Select';
 
 interface OrganizationSettingsFormProps {
@@ -426,15 +427,16 @@ export const OrganizationSettingsForm: React.FC<OrganizationSettingsFormProps> =
       </FormSection>
 
       <div className="flex justify-end space-x-4 mt-6">
-        <Button
+        <NavButton
           type="button"
           variant="outline"
           onClick={onCancel}
+          href="#"
           disabled={isLoading}
           data-testid="cancel-button"
         >
           Cancel
-        </Button>
+        </NavButton>
         <Button
           type="submit"
           variant="default"

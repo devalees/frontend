@@ -7,6 +7,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '../../ui/Button';
+import { NavButton } from '../../ui/NavButton';
 import { Input } from '../../ui/Input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/Select';
 import { Switch } from '../../ui/Switch';
@@ -103,15 +104,16 @@ export const ComplianceReportForm: React.FC<ComplianceReportFormProps> = ({
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
-            <Button
+            <NavButton
               type="button"
               variant="tertiary"
+              href="#"
               onClick={onCancel}
               disabled={isSubmitting}
               data-testid="cancel-report-btn"
             >
               Cancel
-            </Button>
+            </NavButton>
             <Button
               type="submit"
               disabled={isSubmitting}

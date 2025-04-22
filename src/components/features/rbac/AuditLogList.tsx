@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRbac } from '../../../hooks/useRbac';
 import { Button } from '../../ui/Button';
+import { NavButton } from '../../ui/NavButton';
 import { Input } from '../../ui/Input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/Select';
 import { DatePicker } from '../../ui/DatePicker';
@@ -199,15 +200,16 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
       cell: (log: AuditLogItem) => (
         <div className="flex justify-end">
           {onViewDetails && (
-            <Button 
+            <NavButton 
               variant="tertiary" 
               size="small" 
+              href={`/audit-logs/${log.id}`}
               onClick={() => onViewDetails(log)}
               className="flex items-center"
             >
               <Eye className="h-4 w-4 mr-1" />
               View Details
-            </Button>
+            </NavButton>
           )}
         </div>
       ),
@@ -220,35 +222,38 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
 
     return (
       <div className="flex justify-center mt-4 space-x-2">
-        <Button 
+        <NavButton 
           variant="tertiary" 
           size="small" 
+          href="#"
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1 || isLoading}
         >
           Previous
-        </Button>
+        </NavButton>
         
         {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-          <Button
+          <NavButton
             key={page}
             variant={page === currentPage ? 'default' : 'tertiary'}
             size="small"
+            href="#"
             onClick={() => handlePageChange(page)}
             disabled={isLoading}
           >
             {page}
-          </Button>
+          </NavButton>
         ))}
         
-        <Button 
+        <NavButton 
           variant="tertiary" 
           size="small" 
+          href="#"
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages || isLoading}
         >
           Next
-        </Button>
+        </NavButton>
       </div>
     );
   };

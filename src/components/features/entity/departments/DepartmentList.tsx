@@ -3,6 +3,7 @@ import { Department } from '@/types/entity';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { Table, Column } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { PaginatedList } from '@/components/PaginatedList';
@@ -70,14 +71,15 @@ export const DepartmentList: React.FC<DepartmentListProps> = ({
       cell: (_, row) => (
         <div className="flex space-x-2">
           {onViewDetails && (
-            <Button
+            <NavButton
               variant="outline"
               size="small"
               onClick={() => onViewDetails(row)}
+              href="#"
               data-testid="view-details-button"
             >
               View
-            </Button>
+            </NavButton>
           )}
           {onEdit && (
             <Button

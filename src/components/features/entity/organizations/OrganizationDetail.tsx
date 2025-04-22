@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Organization, Department, Team, TeamMember } from '@/types/entity';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Badge } from '@/components/ui/Badge';
 import { Table, Column } from '@/components/ui/Table';
 
@@ -172,36 +173,39 @@ export const OrganizationDetail: React.FC<OrganizationDetailProps> = ({
       </div>
 
       <div className="flex space-x-4 border-b">
-        <button
+        <NavButton
           className={`px-4 py-2 ${
             activeTab === 'details'
               ? 'border-b-2 border-blue-500 text-blue-600'
               : 'text-gray-600'
           }`}
           onClick={() => setActiveTab('details')}
+          href="#"
         >
           Details
-        </button>
-        <button
+        </NavButton>
+        <NavButton
           className={`px-4 py-2 ${
             activeTab === 'departments'
               ? 'border-b-2 border-blue-500 text-blue-600'
               : 'text-gray-600'
           }`}
           onClick={() => setActiveTab('departments')}
+          href="#"
         >
           Departments ({departments.length})
-        </button>
-        <button
+        </NavButton>
+        <NavButton
           className={`px-4 py-2 ${
             activeTab === 'members'
               ? 'border-b-2 border-blue-500 text-blue-600'
               : 'text-gray-600'
           }`}
           onClick={() => setActiveTab('members')}
+          href="#"
         >
           Team Members ({teamMembers.length})
-        </button>
+        </NavButton>
       </div>
 
       {activeTab === 'details' && (

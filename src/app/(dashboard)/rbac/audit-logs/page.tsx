@@ -6,6 +6,7 @@ import { AuditLogViewer } from '@/components/features/rbac/AuditLogViewer';
 import { ComplianceReportForm } from '@/components/features/rbac/ComplianceReportForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { FileText, ChevronRight, Trash2 } from 'lucide-react';
 import { useToast, ToastContainer } from '@/components/ui/use-toast';
 
@@ -72,9 +73,9 @@ export default function AuditLogPage() {
     <div className="container mx-auto py-6">
       {/* Breadcrumb Navigation */}
       <nav className="flex items-center mb-4 text-sm text-gray-500">
-        <a href="/dashboard" className="hover:text-gray-700">Dashboard</a>
+        <NavButton href="/dashboard" className="hover:text-gray-700">Dashboard</NavButton>
         <ChevronRight className="h-4 w-4 mx-2" />
-        <a href="/rbac" className="hover:text-gray-700">RBAC</a>
+        <NavButton href="/rbac" className="hover:text-gray-700">RBAC</NavButton>
         <ChevronRight className="h-4 w-4 mx-2" />
         <span className="text-gray-900 font-medium">Audit Logs</span>
       </nav>

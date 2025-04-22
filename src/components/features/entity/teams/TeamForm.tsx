@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, FormSection } from '@/components/forms/Form';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Select } from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
 import { FormField } from '@/components/ui/FormField';
@@ -332,16 +333,17 @@ export const TeamForm: React.FC<TeamFormProps> = ({
         )}
 
         <div className="flex justify-end space-x-4">
-          <Button
+          <NavButton
             type="button"
             variant="secondary"
+            href="#"
             onClick={onCancel}
             data-testid="cancel-button"
             disabled={isSubmitting || loading}
             aria-busy={isSubmitting || loading}
           >
             Cancel
-          </Button>
+          </NavButton>
           {isSubmitting || loading ? (
             <Button
               type="submit"

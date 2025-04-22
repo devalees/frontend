@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { NavButton } from '@/components/ui/NavButton';
 import { Building, Users, UserPlus, Settings } from 'lucide-react';
 import { Breadcrumbs, BreadcrumbItem } from '@/components/ui/Breadcrumbs';
 
@@ -77,14 +77,14 @@ const EntitiesPage = () => {
               </p>
             </CardContent>
             <CardFooter>
-              <Button 
+              <NavButton 
+                href={section.path}
                 variant="default" 
                 className="w-full"
-                onClick={() => navigateToSection(section.path)}
                 data-testid={`navigate-to-${section.title.toLowerCase().replace(/\s+/g, '-')}`}
               >
                 Manage {section.title}
-              </Button>
+              </NavButton>
             </CardFooter>
           </Card>
         ))}
