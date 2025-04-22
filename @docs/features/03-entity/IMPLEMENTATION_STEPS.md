@@ -222,7 +222,7 @@
      - Use `componentTestUtils.ts` for component testing
 
 2. **Create Team Member Components**
-   - [ ] Implement team member list component
+   - [x] Implement team member list component
      - File: `src/components/features/entity/team-members/TeamMemberList.tsx`
      - Display team members in a table or list
      - Support filtering and pagination

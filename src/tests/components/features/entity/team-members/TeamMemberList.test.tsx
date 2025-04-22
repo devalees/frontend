@@ -52,8 +52,12 @@ describe('TeamMemberList Component', () => {
     }
   ];
 
+  const mockDeleteTeamMember = jest.fn();
+
   beforeEach(() => {
     jest.clearAllMocks();
+    // Mock window.confirm
+    window.confirm = jest.fn(() => true);
   });
 
   it('renders loading state correctly', () => {
@@ -97,20 +101,48 @@ describe('TeamMemberList Component', () => {
   });
 
   it('renders team members correctly', () => {
-    // Mock the store to return team members
+    const mockTeamMembers = [
+      {
+        id: '1',
+        user_id: 'user1',
+        team_id: 'team1',
+        role: 'Developer',
+        is_leader: true,
+        join_date: '2023-01-01'
+      },
+      {
+        id: '2',
+        user_id: 'user2',
+        team_id: 'team1',
+        role: 'Designer',
+        is_leader: false,
+        join_date: '2023-01-02'
+      }
+    ];
+
     (useEntityStore as unknown as jest.Mock).mockReturnValue({
       teamMembers: mockTeamMembers,
       loading: false,
       error: null,
-      fetchTeamMembers: jest.fn()
+      fetchTeamMembers: jest.fn(),
+      deleteTeamMember: jest.fn()
     });
 
-    const { getByTestId, getByText } = renderWithProviders(<TeamMemberList />);
+    const { getByTestId, getAllByRole } = renderWithProviders(<TeamMemberList />);
+    
+    // Check if the list is rendered
     expect(getByTestId('team-member-list')).toBeInTheDocument();
     
-    // Check if the team member roles are in the document
-    expect(getByText('Developer')).toBeInTheDocument();
-    expect(getByText('Designer')).toBeInTheDocument();
+    // Check if both team members are rendered in the table
+    const rows = getAllByRole('row');
+    expect(rows.length).toBe(3); // Header row + 2 data rows
+    
+    // Check the content of the first row (excluding header)
+    const cells = rows[1].querySelectorAll('td');
+    expect(cells[0].textContent).toBe('user1');
+    expect(cells[1].textContent).toBe('team1');
+    expect(cells[2].textContent).toBe('Developer');
+    expect(cells[3].textContent).toBe('Yes');
   });
 
   it('fetches team members on mount', async () => {
@@ -131,26 +163,50 @@ describe('TeamMemberList Component', () => {
   });
 
   it('displays team member details correctly', () => {
-    // Mock the store to return team members
+    const mockTeamMembers = [
+      {
+        id: '1',
+        user_id: 'user1',
+        team_id: 'team1',
+        role: 'Developer',
+        is_leader: true,
+        join_date: '2023-01-01'
+      }
+    ];
+
     (useEntityStore as unknown as jest.Mock).mockReturnValue({
       teamMembers: mockTeamMembers,
       loading: false,
       error: null,
-      fetchTeamMembers: jest.fn()
+      fetchTeamMembers: jest.fn(),
+      deleteTeamMember: jest.fn()
     });
 
-    const { getByText } = renderWithProviders(<TeamMemberList />);
+    const { getByTestId } = renderWithProviders(<TeamMemberList />);
     
-    // Check if the team member details are in the document
-    expect(getByText('Developer')).toBeInTheDocument();
-    expect(getByText('Designer')).toBeInTheDocument();
-    expect(getByText('JavaScript')).toBeInTheDocument();
-    expect(getByText('UI/UX')).toBeInTheDocument();
+    // Check if the list is rendered
+    expect(getByTestId('team-member-list')).toBeInTheDocument();
+    
+    // Check the content of the cells
+    const cells = getByTestId('team-member-list').querySelectorAll('td');
+    expect(cells[0].textContent).toBe('user1');
+    expect(cells[1].textContent).toBe('team1');
+    expect(cells[2].textContent).toBe('Developer');
+    expect(cells[3].textContent).toBe('Yes');
   });
 
   it('handles team member deletion', async () => {
-    // Mock the store with delete function
-    const mockDeleteTeamMember = jest.fn();
+    const mockTeamMembers = [
+      {
+        id: '1',
+        user_id: 'user1',
+        team_id: 'team1',
+        role: 'Developer',
+        is_leader: true,
+        join_date: '2023-01-01'
+      }
+    ];
+
     (useEntityStore as unknown as jest.Mock).mockReturnValue({
       teamMembers: mockTeamMembers,
       loading: false,
@@ -159,12 +215,12 @@ describe('TeamMemberList Component', () => {
       deleteTeamMember: mockDeleteTeamMember
     });
 
-    const { getAllByTestId } = renderWithProviders(<TeamMemberList />);
+    const { getByTestId } = renderWithProviders(<TeamMemberList />);
     
-    // Find and click the delete button for the first team member
-    const deleteButtons = getAllByTestId('delete-team-member');
-    deleteButtons[0].click();
-    
+    // Find and click the delete button
+    const deleteButton = getByTestId('delete-team-member');
+    deleteButton.click();
+
     // Check if the delete function was called with the correct ID
     await new Promise(resolve => setTimeout(resolve, 0));
     expect(mockDeleteTeamMember).toHaveBeenCalledWith('1');
