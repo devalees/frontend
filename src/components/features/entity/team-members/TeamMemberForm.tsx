@@ -4,9 +4,10 @@ import { Card, CardHeader } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
-import { Checkbox } from '@/components/ui/Checkbox';
+import { Checkbox } from '../../../../components/ui/Checkbox';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { TeamMember } from '@/types/entity';
+import { ValidationError } from '@/lib/api/errors';
 
 interface TeamMemberFormProps {
   teamMember?: TeamMember;
@@ -57,6 +58,7 @@ export const TeamMemberForm: React.FC<TeamMemberFormProps> = ({ teamMember }) =>
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setFormErrors({});
 
     if (!validateForm()) {
       return;
@@ -74,7 +76,19 @@ export const TeamMemberForm: React.FC<TeamMemberFormProps> = ({ teamMember }) =>
       }
       router.back();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      if (err instanceof ValidationError) {
+        setError(err.message);
+        // Handle field-specific validation errors
+        const fieldErrors: FormErrors = {};
+        Object.entries(err.errors || {}).forEach(([field, messages]) => {
+          if (messages && messages.length > 0) {
+            fieldErrors[field as keyof FormErrors] = messages[0];
+          }
+        });
+        setFormErrors(fieldErrors);
+      } else {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      }
     } finally {
       setLoading(false);
     }
@@ -141,6 +155,9 @@ export const TeamMemberForm: React.FC<TeamMemberFormProps> = ({ teamMember }) =>
               { value: 'team2', label: 'Team 2' }
             ]}
           />
+          {formErrors.team_id && (
+            <p className="mt-1 text-sm text-red-600">{formErrors.team_id}</p>
+          )}
         </div>
 
         <div>

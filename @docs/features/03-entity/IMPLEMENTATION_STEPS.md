@@ -228,7 +228,7 @@
      - Support filtering and pagination
      - Add actions for edit, delete, and view details
 
-   - [ ] Implement team member form component
+   - [x] Implement team member form component
      - File: `src/components/features/entity/team-members/TeamMemberForm.tsx`
      - Create form for adding/editing team members
      - Use existing form components
