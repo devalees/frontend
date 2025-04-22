@@ -8,18 +8,24 @@
 
 ## Implementation Phases
 
-### Phase 1: Core Entity Types and API Integration
+### Phase 1: Core Entity Types and API Integration ✅
 1. **Set Up Tests**
    - [x] Create Entity type tests using centralized testing utilities
      - File: `src/tests/types/entity.test.ts`
      - Import utilities from `src/tests/utils/` (NOT directly from testing libraries)
      - Test type definitions and interfaces
 
-   - [ ] Create Entity API tests
+   - [x] Create Entity API tests
      - File: `src/tests/api/entity.test.ts`
-     - Use `mockApi.ts` for API mocking
-     - Test API methods for all Entity endpoints
+     - Use `createMockResponse` for API mocking
+     - Test API methods for all Entity endpoints (41 tests passing)
      - Test error handling and response parsing
+     - Completed test coverage:
+       - Organization API (12 tests)
+       - Department API (9 tests)
+       - Team API (7 tests)
+       - Team Member API (6 tests)
+       - Organization Settings API (7 tests)
 
 2. **Define Entity Types**
    - [x] Create Entity type definitions
@@ -28,11 +34,17 @@
      - Define PaginatedResponse type for list endpoints
 
 3. **Create Entity API Service**
-   - [ ] Implement API service for Entity
+   - [x] Implement API service for Entity
      - File: `src/lib/api/entity.ts`
      - Implement methods for all Entity endpoints
      - Use axios for API requests
      - Handle authentication and error responses
+     - Completed API methods:
+       - Organization management (CRUD + analytics)
+       - Department management (CRUD + hierarchy)
+       - Team management (CRUD + members)
+       - Team Member management (CRUD)
+       - Organization Settings management (CRUD)
 
 ### Phase 2: Entity State Management
 1. **Set Up Tests**
@@ -353,49 +365,7 @@
      - Directory: `src/tests/components/features/entity/search/`
      - Test each component individually
      - Test component integration with hooks and store
-     - Use `componentTestUtils.ts` for component testing
-
-2. **Create Entity Search Components**
-   - [ ] Implement entity search component
-     - File: `src/components/features/entity/search/EntitySearch.tsx`
-     - Create search interface for entities
-     - Support filtering by entity type
-     - Add actions for searching and filtering
-
-   - [ ] Implement entity filter component
-     - File: `src/components/features/entity/search/EntityFilter.tsx`
-     - Create filter interface for entities
-     - Support filtering by various criteria
-     - Add actions for applying filters
-
-3. **Create Entity Search Pages**
-   - [ ] Implement entity search page
-     - File: `src/app/(dashboard)/entities/search/page.tsx`
-     - Use entity search and filter components
-     - Add navigation and breadcrumbs
-     - Handle search and filter actions
-
-### Phase 11: Entity Batch Operations
-1. **Set Up Tests**
-   - [ ] Create Entity Batch Operations component tests
-     - Directory: `src/tests/components/features/entity/batch/`
-     - Test each component individually
-     - Test component integration with hooks and store
-     - Use `componentTestUtils.ts` for component testing
-
-2. **Create Entity Batch Operations Components**
-   - [ ] Implement entity batch operations component
-     - File: `src/components/features/entity/batch/EntityBatchOperations.tsx`
-     - Create interface for batch operations
-     - Support selecting multiple entities
-     - Add actions for batch operations
-
-3. **Create Entity Batch Operations Pages**
-   - [ ] Implement entity batch operations page
-     - File: `src/app/(dashboard)/entities/batch/page.tsx`
-     - Use entity batch operations component
-     - Add navigation and breadcrumbs
-     - Handle batch operation actions
+     - Use `componentTestUtils.ts`
 
 ## Testing Guidelines
 - Use centralized testing utilities from `src/tests/utils/`
@@ -403,62 +373,63 @@
 - Use `componentTestUtils.ts` for React component tests
 - Use `functionTestUtils.ts` for utility function tests
 - Use `integrationTestUtils.ts` for integration tests
-- Use `mockApi.ts` for mocking API responses
+- Use `createMockResponse` for API mocking
 
 ## API Integration Details
 Based on `/home/ehab/Desktop/backend/docs/front-end/entity.md`:
 
 ### Organization Endpoints
-- **List Organizations**: `GET /api/v1/entity/organizations/`
-- **Get Organization**: `GET /api/v1/entity/organizations/{id}/`
-- **Create Organization**: `POST /api/v1/entity/organizations/`
-- **Update Organization**: `PUT/PATCH /api/v1/entity/organizations/{id}/`
-- **Delete Organization**: `DELETE /api/v1/entity/organizations/{id}/`
-- **Hard Delete Organization**: `DELETE /api/v1/entity/organizations/{id}/hard_delete/`
-- **Get Organization Departments**: `GET /api/v1/entity/organizations/{id}/department/`
-- **Get Organization Team Members**: `GET /api/v1/entity/organizations/{id}/team_member/`
-- **Get Organization Analytics**: `GET /api/v1/entity/organizations/{id}/analytics/`
-- **Get Organization Activity**: `GET /api/v1/entity/organizations/{id}/activity/`
-- **Get Organization Performance**: `GET /api/v1/entity/organizations/{id}/performance/`
-- **Get Organization Growth**: `GET /api/v1/entity/organizations/{id}/growth/`
+- **List Organizations**: `GET /api/v1/entity/organizations/` ✅
+- **Get Organization**: `GET /api/v1/entity/organizations/{id}/` ✅
+- **Create Organization**: `POST /api/v1/entity/organizations/` ✅
+- **Update Organization**: `PUT/PATCH /api/v1/entity/organizations/{id}/` ✅
+- **Delete Organization**: `DELETE /api/v1/entity/organizations/{id}/` ✅
+- **Hard Delete Organization**: `DELETE /api/v1/entity/organizations/{id}/hard_delete/` ✅
+- **Get Organization Departments**: `GET /api/v1/entity/organizations/{id}/department/` ✅
+- **Get Organization Team Members**: `GET /api/v1/entity/organizations/{id}/team_member/` ✅
+- **Get Organization Analytics**: `GET /api/v1/entity/organizations/{id}/analytics/` ✅
+- **Get Organization Activity**: `GET /api/v1/entity/organizations/{id}/activity/` ✅
+- **Get Organization Performance**: `GET /api/v1/entity/organizations/{id}/performance/` ✅
+- **Get Organization Growth**: `GET /api/v1/entity/organizations/{id}/growth/` ✅
 
 ### Department Endpoints
-- **List Departments**: `GET /api/v1/entity/departments/`
-- **Get Department**: `GET /api/v1/entity/departments/{id}/`
-- **Create Department**: `POST /api/v1/entity/departments/`
-- **Update Department**: `PUT/PATCH /api/v1/entity/departments/{id}/`
-- **Delete Department**: `DELETE /api/v1/entity/departments/{id}/`
-- **Hard Delete Department**: `DELETE /api/v1/entity/departments/{id}/hard_delete/`
-- **Get Department Teams**: `GET /api/v1/entity/departments/{id}/team/`
-- **Get Department Team Members**: `GET /api/v1/entity/departments/{id}/team_member/`
-- **Get Child Departments**: `GET /api/v1/entity/departments/{id}/child_department/`
+- **List Departments**: `GET /api/v1/entity/departments/` ✅
+- **Get Department**: `GET /api/v1/entity/departments/{id}/` ✅
+- **Create Department**: `POST /api/v1/entity/departments/` ✅
+- **Update Department**: `PUT/PATCH /api/v1/entity/departments/{id}/` ✅
+- **Delete Department**: `DELETE /api/v1/entity/departments/{id}/` ✅
+- **Hard Delete Department**: `DELETE /api/v1/entity/departments/{id}/hard_delete/` ✅
+- **Get Department Teams**: `GET /api/v1/entity/departments/{id}/team/` ✅
+- **Get Department Team Members**: `GET /api/v1/entity/departments/{id}/team_member/` ✅
+- **Get Child Departments**: `GET /api/v1/entity/departments/{id}/child_department/` ✅
 
 ### Team Endpoints
-- **List Teams**: `GET /api/v1/entity/teams/`
-- **Get Team**: `GET /api/v1/entity/teams/{id}/`
-- **Create Team**: `POST /api/v1/entity/teams/`
-- **Update Team**: `PUT/PATCH /api/v1/entity/teams/{id}/`
-- **Delete Team**: `DELETE /api/v1/entity/teams/{id}/`
-- **Hard Delete Team**: `DELETE /api/v1/entity/teams/{id}/hard_delete/`
-- **Get Team Members**: `GET /api/v1/entity/teams/{id}/team_member/`
+- **List Teams**: `GET /api/v1/entity/teams/` ✅
+- **Get Team**: `GET /api/v1/entity/teams/{id}/` ✅
+- **Create Team**: `POST /api/v1/entity/teams/` ✅
+- **Update Team**: `PUT/PATCH /api/v1/entity/teams/{id}/` ✅
+- **Delete Team**: `DELETE /api/v1/entity/teams/{id}/` ✅
+- **Hard Delete Team**: `DELETE /api/v1/entity/teams/{id}/hard_delete/` ✅
+- **Get Team Members**: `GET /api/v1/entity/teams/{id}/team_member/` ✅
 
 ### Team Member Endpoints
-- **List Team Members**: `GET /api/v1/entity/team-members/`
-- **Get Team Member**: `GET /api/v1/entity/team-members/{id}/`
-- **Create Team Member**: `POST /api/v1/entity/team-members/`
-- **Update Team Member**: `PUT/PATCH /api/v1/entity/team-members/{id}/`
-- **Delete Team Member**: `DELETE /api/v1/entity/team-members/{id}/`
-- **Hard Delete Team Member**: `DELETE /api/v1/entity/team-members/{id}/hard_delete/`
+- **List Team Members**: `GET /api/v1/entity/team-members/` ✅
+- **Get Team Member**: `GET /api/v1/entity/team-members/{id}/` ✅
+- **Create Team Member**: `POST /api/v1/entity/team-members/` ✅
+- **Update Team Member**: `PUT/PATCH /api/v1/entity/team-members/{id}/` ✅
+- **Delete Team Member**: `DELETE /api/v1/entity/team-members/{id}/` ✅
+- **Hard Delete Team Member**: `DELETE /api/v1/entity/team-members/{id}/hard_delete/` ✅
 
 ### Organization Settings Endpoints
-- **List Organization Settings**: `GET /api/v1/entity/organization-settings/`
-- **Get Organization Settings**: `GET /api/v1/entity/organization-settings/{id}/`
-- **Create Organization Settings**: `POST /api/v1/entity/organization-settings/`
-- **Update Organization Settings**: `PUT/PATCH /api/v1/entity/organization-settings/{id}/`
-- **Delete Organization Settings**: `DELETE /api/v1/entity/organization-settings/{id}/`
-- **Hard Delete Organization Settings**: `DELETE /api/v1/entity/organization-settings/{id}/hard_delete/`
-- **Get Settings by Organization**: `GET /api/v1/entity/organization-settings/get_by_organization/`
+- **List Organization Settings**: `GET /api/v1/entity/organization-settings/` ✅
+- **Get Organization Settings**: `GET /api/v1/entity/organization-settings/{id}/` ✅
+- **Create Organization Settings**: `POST /api/v1/entity/organization-settings/` ✅
+- **Update Organization Settings**: `PUT/PATCH /api/v1/entity/organization-settings/{id}/` ✅
+- **Delete Organization Settings**: `DELETE /api/v1/entity/organization-settings/{id}/` ✅
+- **Hard Delete Organization Settings**: `DELETE /api/v1/entity/organization-settings/{id}/hard_delete/` ✅
+- **Get Settings by Organization**: `GET /api/v1/entity/organization-settings/get_by_organization/` ✅
 
 Status Key:
 - [ ] To Do
-- [x] Completed 
+- [x] Completed
+- ✅ Implemented and Tested
