@@ -142,7 +142,7 @@
      - Use existing form components
      - Add validation and error handling
 
-   - [ ] Implement department detail component
+   - [x] Implement department detail component
      - File: `src/components/features/entity/departments/DepartmentDetail.tsx`
      - Display department details
      - Show related teams and members

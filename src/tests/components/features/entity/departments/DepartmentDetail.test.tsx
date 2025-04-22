@@ -206,7 +206,10 @@ describe('DepartmentDetail Component', () => {
     
     // Wait for the team members to load
     await waitFor(() => {
-      expect(screen.getByText('Developer')).toBeInTheDocument();
+      const rows = screen.getAllByRole('row');
+      const memberRow = rows.find(row => row.textContent?.includes('user2'));
+      expect(memberRow).toBeInTheDocument();
+      expect(memberRow?.textContent).toContain('Developer');
     });
   });
 
