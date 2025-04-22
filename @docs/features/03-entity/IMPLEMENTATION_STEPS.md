@@ -207,7 +207,7 @@
      - Add navigation and breadcrumbs
      - Handle team detail actions
 
-   - [ ] Implement team edit page
+   - [x] Implement team edit page
      - File: `src/app/(dashboard)/entities/teams/[id]/edit/page.tsx`
      - Use team form component
      - Add navigation and breadcrumbs
@@ -215,7 +215,7 @@
 
 ### Phase 6: Team Member Management
 1. **Set Up Tests**
-   - [ ] Create Team Member component tests
+   - [x] Create Team Member component tests
      - Directory: `src/tests/components/features/entity/team-members/`
      - Test each component individually
      - Test component integration with hooks and store
