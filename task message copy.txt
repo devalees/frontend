@@ -1,0 +1,230 @@
+- please follow project rules always test first then the actual code.
+- all models must be in server/apps directory the directory is already exists @apps 
+- name the apps by requirements.
+- must follow stack chosen in project rules.
+- use the stack's related to requirement from project rules
+- always follow the stack's official document in implementation.
+- always keep server live and watch the log for errors - @monitor_server.sh  
+
+based on project rules let us implement this requirement: Restrict access to specific hours of operation in rbac Model
+
+
+
+
+- is the entire application behavior matched all the passed tests
+
+- before you start analyze and fix the errors, i noticed that there is a folder violates our project structure @tests would you agree? just give me your thought without move or edit anything
+- good go ahead and fix this issue but make sure to fix the code base related to that procedure
+
+
+
+- add the new models to admin page
+
+- please commit all changes to dev branch then push to my repo on github based on project rules
+
+- based on business logic and functionalities we have, do you have any suggestions  enhance this requirement more? 
+
+- Keep watching terminal logs if any error fix it.
+
+- please provide a list of all files or folders created not committed to dev branch.
+- please remove all Untracked Files or folders, then restore the project based on last commit on dev branch
+
+
+
+
+--- FOR TESTING
+- run  command for comprehensive test using pytest for existed tests in entire application if found any error fix them based on stack's documentation
+- what the test score of   according to pytest
+- consider creating integration tests for (existed models) to test the interaction between different components
+- consider creating Database Migration Tests
+- I want you add more test for auth, users, rbac to be 100% test coverage
+- run the existed integration tests if found any error fix them based and make them matching the existing models:
+don't implement anything related to api, we don't build the api yet.
+- run the existed performance tests and simulate 200 users use the app. produce the result please
+- run the existed load tests
+- run the existed edge case tests
+
+
+Add performance tests for critical paths
+Consider adding load tests for concurrent user scenarios
+Add more edge case tests for error conditions
+
+
+
+
+I want you to propose a PRD and RFC for Multi-layer caching strategy (Redis, Memcached)
+
+
+
+
+based on project rules and implementation steps, 1. **User Authentication** section implement the following:
+- [ ] Login System:- 
+       - [ ] Create test file (`src/tests/features/auth/login.test.ts`)
+       - [ ] Write failing tests for login form validation
+       - [ ] Write failing tests for login API integration
+       - [ ] Write failing tests for error handling
+with these condition:-
+- Test-first methodology for all features using pytest with minimum 90% coverage score
+
+
+
+Current state of contact app dose not completed relative to implementation steps what's considered please consider to followup starting from first point if it is done go to the next.
+- please follow test-driven-approach
+- please provide current state from time to time briefly. 
+
+let's implement [ ] Add contact caching
+- test-driven-approach using pytest
+
+is all implementation considered done?
+
+Please check done in the file 
+
+please make a new How To use file for celery in details with simple language
+
+
+
+based on project rules and implementation steps file implement:
+### Phase 3: Password Management (Optional)
+2. **Change Password**
+   - [ ] Add change password feature for logged-in users
+     - Create change password form
+     - Validate current and new passwords
+     - Show success/error messages
+with following conditions:-
+- IMPORTANT: All tests MUST use the centralized testing utilities and contexts, NO direct testing library imports allowed.
+- Test Coverage Rate at least 90%
+
+git commit --no-verify -m ""
+
+with following conditions:-
+- Test-Driven-Approach using pytest as the main tool with coverage rate at least 90%
+- DON'T IMPLEMENT MORE THAN THIS REQUIREMENT
+- DON'T AFFECT OTHER IMPLEMENTATIONS
+
+
+
+- if you faced a problem with migrations you can delete it all and remove the database and create fresh one
+
+
+
+Deep dive into   app to fully analyze it then produce two things:
+1- what has done according to implementation steps file
+2- any enhancement if needed based on your analysis
+
+
+[ ] Create test file (Sidebar.test.tsx)
+[ ] Write failing tests for layout
+[ ] Write failing tests for interactions
+[ ] Write failing tests for responsiveness
+[ ] Write failing tests for accessibility
+
+Audit Trail Base Model
+Version Control Base Model
+Workflow Base Model
+Search Base Model
+File Storage Base Model
+Analytics Base Model
+Integration Base Model
+Localization Base Model
+Validation Base Model
+Permission Base Model
+Comment/Feedback Base Model
+Tagging Base Model
+Export/Import Base Model
+Scheduling Base Model
+Reporting Base Model
+Caching Base Model
+Filtering Base Model
+Notification Base Model
+Version Control Base Model
+
+
+
+
+
+
+
+
+
+
+
+
+based on project rules and implementation steps file and the following plan:
+### Phase 3: RBAC UI Components
+1. **Set Up Tests**
+   - [ ] Create RBAC component tests
+     - Directory: `src/tests/components/features/rbac/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+  
+  
+  
+===== FOR TEST ONLY ====
+based on project rules and implementation steps file and the following plan:
+### Phase 3: Organization Management
+1. **Set Up Tests**
+   - [ ] Create Organization component tests
+     - Directory: `src/tests/components/features/entity/organizations/`
+     - Test each component individually
+     - Test component integration with hooks and store
+     - Use `componentTestUtils.ts` for component testing
+
+## Testing Guidelines:-
+- Use centralized testing utilities from `src/tests/utils/`
+- NO direct imports from testing libraries
+. Test Cover rate at least 90%
+- Use `componentTestUtils.ts` for React component tests
+- Use `functionTestUtils.ts` for utility function tests
+- Use `integrationTestUtils.ts` for integration tests
+- Use `mockApi.ts` for mocking API responses
+. Follow the existing project architecture
+. Use Core Technologies stated in project rules.
+
+
+
+=== FOR IMPLEMENTATION ===
+based on project rules and implementation steps file and the following plan:
+### Phase 3: Organization Management 
+2. **Create Organization Components**
+   - [ ] Implement organization detail component
+     - File: `src/components/features/entity/organizations/OrganizationDetail.tsx`
+     - Display organization details
+     - Show related departments and teams
+     - Add actions for managing organization
+     - Ensure edit and delete buttons are present for tests
+
+## Implementation Guidelines:-
+1. Use Core Technologies stated in project rules.
+2. Reuse existing components and utilities
+3. Focus on one feature at a time
+4. Follow the existing project architecture
+5. All API endpoints @ ## API Integration Details in implementation steps file
+
+
+update the implementation steps file to reflect our progress
+run the tests to verify that the actual implementation is passed
+run npm test to verify that the actual implementation is passed
+
+git reset --hard HEAD
+git clean -fd
+git commit --no-verify -m ""
+
+
+please run global npm test to examine some failed tests
+-focus on the failing tests
+-fix one by one, then run the tests..
+-keep running the tests until all tests are passed
+-add some console logs in potential falling areas
+-All tests MUST use the centralized testing utilities and contexts, NO direct testing library imports allowed.
+
+
+RBAC - Implement first
+Entity - Implement second
+Contacts - Implement third
+Project - Implement fourth
+Time Management - Implement fifth
+Documents - Implement last
+
+
+

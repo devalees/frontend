@@ -8,7 +8,7 @@ import {
   organizationSettingsApi
 } from '@/lib/api/entity'
 
-interface EntityState {
+export interface EntityState {
   // State
   organizations: Organization[]
   departments: Department[]
@@ -92,7 +92,7 @@ export const useEntityStore = create<EntityState>((set, get) => ({
     try {
       set({ loading: true, error: null })
       const response = await organizationApi.getOrganizations()
-      set({ organizations: response.results, loading: false })
+      set({ organizations: response.results || [], loading: false })
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to fetch organizations', loading: false })
     }
@@ -115,7 +115,7 @@ export const useEntityStore = create<EntityState>((set, get) => ({
       set({ loading: true, error: null })
       const response = await organizationApi.createOrganization(organization)
       set(state => ({
-        organizations: [...state.organizations, response],
+        organizations: state.organizations ? [...state.organizations, response] : [response],
         loading: false
       }))
       return response
@@ -130,9 +130,9 @@ export const useEntityStore = create<EntityState>((set, get) => ({
       set({ loading: true, error: null })
       const response = await organizationApi.updateOrganization(id, organization)
       set(state => ({
-        organizations: state.organizations.map(org => 
+        organizations: state.organizations ? state.organizations.map(org => 
           org.id === id ? response : org
-        ),
+        ) : [],
         loading: false
       }))
       return response
@@ -147,7 +147,7 @@ export const useEntityStore = create<EntityState>((set, get) => ({
       set({ loading: true, error: null })
       await organizationApi.deleteOrganization(id)
       set(state => ({
-        organizations: state.organizations.filter(org => org.id !== id),
+        organizations: state.organizations ? state.organizations.filter(org => org.id !== id) : [],
         loading: false
       }))
     } catch (error) {
