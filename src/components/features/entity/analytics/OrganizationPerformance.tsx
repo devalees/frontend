@@ -20,31 +20,37 @@ interface OrganizationPerformanceProps {
 // Define types for filter options
 type TimePeriod = 'last_week' | 'last_month' | 'last_quarter' | 'last_year' | 'all_time';
 type MetricType = 'all' | 'productivity' | 'efficiency' | 'quality' | 'innovation';
+type TrendPeriod = 'weekly' | 'monthly';
 
-// Define performance data type
+// Define performance data type to match the test mock data
 interface PerformanceData {
   overall_score: number;
-  productivity_score: number;
-  efficiency_score: number;
-  quality_score: number;
-  innovation_score: number;
-  department_performance: {
-    id: string;
-    name: string;
-    overall_score: number;
-  }[];
+  metrics: {
+    productivity: number;
+    efficiency: number;
+    quality: number;
+    collaboration: number;
+    innovation: number;
+  };
+  trends: {
+    weekly: {
+      date: string;
+      score: number;
+    }[];
+    monthly: {
+      date: string;
+      score: number;
+    }[];
+  };
   team_performance: {
-    id: string;
-    name: string;
-    overall_score: number;
+    team_id: string;
+    team_name: string;
+    score: number;
   }[];
-  historical_data: {
-    period: string;
-    overall_score: number;
-    productivity_score: number;
-    efficiency_score: number;
-    quality_score: number;
-    innovation_score: number;
+  department_performance: {
+    department_id: string;
+    department_name: string;
+    score: number;
   }[];
 }
 
@@ -60,6 +66,9 @@ const OrganizationPerformance: React.FC<OrganizationPerformanceProps> = ({ organ
   // Component state
   const [timePeriod, setTimePeriod] = useState<TimePeriod>('last_quarter');
   const [metricType, setMetricType] = useState<MetricType>('all');
+  const [trendPeriod, setTrendPeriod] = useState<TrendPeriod>('weekly');
+  const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
+  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
 
   // Get performance state
   const performanceState = getOrganizationPerformance(organizationId, {
@@ -93,6 +102,23 @@ const OrganizationPerformance: React.FC<OrganizationPerformanceProps> = ({ organ
       time_period: timePeriod,
       metric_type: newMetricType
     });
+  };
+
+  // Handle team click
+  const handleTeamClick = (teamId: string, teamName: string) => {
+    setSelectedTeam(teamName);
+  };
+
+  // Handle department click
+  const handleDepartmentClick = (departmentId: string, departmentName: string) => {
+    setSelectedDepartment(departmentName);
+  };
+
+  // Handle export data
+  const handleExportData = () => {
+    if (performanceState && performanceState.data) {
+      navigator.clipboard.writeText(JSON.stringify(performanceState.data, null, 2));
+    }
   };
 
   // Format score values as percentages
@@ -167,7 +193,7 @@ const OrganizationPerformance: React.FC<OrganizationPerformanceProps> = ({ organ
         <h2 className="text-2xl font-bold">Organization Performance</h2>
         <div className="flex items-center space-x-4">
           <Select
-            data-testid="time-period-selector"
+            data-testid="performance-time-filter"
             value={timePeriod}
             onChange={handleTimePeriodChange}
             className="w-40"
@@ -187,6 +213,13 @@ const OrganizationPerformance: React.FC<OrganizationPerformanceProps> = ({ organ
           >
             Refresh
           </Button>
+          <Button
+            data-testid="export-performance-button"
+            variant="outline"
+            onClick={handleExportData}
+          >
+            Export Data
+          </Button>
         </div>
       </div>
 
@@ -197,7 +230,7 @@ const OrganizationPerformance: React.FC<OrganizationPerformanceProps> = ({ organ
         </CardHeader>
         <CardContent className="text-center py-8">
           <div className={`text-6xl font-bold ${getScoreColorClass(performanceData.overall_score)}`}>
-            {formatScore(performanceData.overall_score)}
+            {performanceData.overall_score}
           </div>
           <div className="w-2/3 mx-auto bg-gray-200 rounded-full h-4 mt-8">
             <div 
@@ -221,16 +254,16 @@ const OrganizationPerformance: React.FC<OrganizationPerformanceProps> = ({ organ
       <Grid cols={4} gap={4}>
         <Card>
           <CardHeader>
-            <CardTitle>Productivity</CardTitle>
+            <CardTitle data-testid="productivity-metric-title">Productivity</CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <div className={`text-3xl font-bold ${getScoreColorClass(performanceData.productivity_score)}`}>
-              {formatScore(performanceData.productivity_score)}
+            <div className={`text-3xl font-bold ${getScoreColorClass(performanceData.metrics.productivity)}`}>
+              {`${performanceData.metrics.productivity}%`}
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4">
               <div 
                 className="bg-primary-600 h-2.5 rounded-full" 
-                style={{ width: `${performanceData.productivity_score}%` }}
+                style={{ width: `${performanceData.metrics.productivity}%` }}
               ></div>
             </div>
           </CardContent>
@@ -238,16 +271,16 @@ const OrganizationPerformance: React.FC<OrganizationPerformanceProps> = ({ organ
 
         <Card>
           <CardHeader>
-            <CardTitle>Efficiency</CardTitle>
+            <CardTitle data-testid="efficiency-metric-title">Efficiency</CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <div className={`text-3xl font-bold ${getScoreColorClass(performanceData.efficiency_score)}`}>
-              {formatScore(performanceData.efficiency_score)}
+            <div className={`text-3xl font-bold ${getScoreColorClass(performanceData.metrics.efficiency)}`}>
+              {`${performanceData.metrics.efficiency}%`}
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4">
               <div 
                 className="bg-primary-600 h-2.5 rounded-full" 
-                style={{ width: `${performanceData.efficiency_score}%` }}
+                style={{ width: `${performanceData.metrics.efficiency}%` }}
               ></div>
             </div>
           </CardContent>
@@ -255,16 +288,16 @@ const OrganizationPerformance: React.FC<OrganizationPerformanceProps> = ({ organ
 
         <Card>
           <CardHeader>
-            <CardTitle>Quality</CardTitle>
+            <CardTitle data-testid="quality-metric-title">Quality</CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <div className={`text-3xl font-bold ${getScoreColorClass(performanceData.quality_score)}`}>
-              {formatScore(performanceData.quality_score)}
+            <div className={`text-3xl font-bold ${getScoreColorClass(performanceData.metrics.quality)}`}>
+              {`${performanceData.metrics.quality}%`}
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4">
               <div 
                 className="bg-primary-600 h-2.5 rounded-full" 
-                style={{ width: `${performanceData.quality_score}%` }}
+                style={{ width: `${performanceData.metrics.quality}%` }}
               ></div>
             </div>
           </CardContent>
@@ -272,101 +305,90 @@ const OrganizationPerformance: React.FC<OrganizationPerformanceProps> = ({ organ
 
         <Card>
           <CardHeader>
-            <CardTitle>Innovation</CardTitle>
+            <CardTitle data-testid="innovation-metric-title">Innovation</CardTitle>
           </CardHeader>
           <CardContent className="text-center">
-            <div className={`text-3xl font-bold ${getScoreColorClass(performanceData.innovation_score)}`}>
-              {formatScore(performanceData.innovation_score)}
+            <div className={`text-3xl font-bold ${getScoreColorClass(performanceData.metrics.innovation)}`}>
+              {`${performanceData.metrics.innovation}%`}
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4">
               <div 
                 className="bg-primary-600 h-2.5 rounded-full" 
-                style={{ width: `${performanceData.innovation_score}%` }}
+                style={{ width: `${performanceData.metrics.innovation}%` }}
               ></div>
             </div>
           </CardContent>
         </Card>
       </Grid>
 
-      {/* Department Performance */}
+      {/* Performance Trends */}
       <Card>
-        <CardHeader className="flex justify-between items-center">
-          <CardTitle>Department Performance</CardTitle>
-          <Link 
-            href={`/entities/organizations/${organizationId}/departments`}
-            variant="primary"
-            size="small"
-          >
-            View All Departments
-          </Link>
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle>{trendPeriod === 'weekly' ? 'Weekly Trends' : 'Monthly Trends'}</CardTitle>
+            <div className="flex">
+              <Button 
+                data-testid="weekly-trends-tab"
+                variant={trendPeriod === 'weekly' ? 'default' : 'outline'} 
+                size="small"
+                onClick={() => setTrendPeriod('weekly')}
+                className="mr-2"
+              >
+                Weekly
+              </Button>
+              <Button 
+                data-testid="monthly-trends-tab"
+                variant={trendPeriod === 'monthly' ? 'default' : 'outline'} 
+                size="small"
+                onClick={() => setTrendPeriod('monthly')}
+              >
+                Monthly
+              </Button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4" data-testid="department-performance">
-            {performanceData.department_performance.map(department => (
-              <div key={department.id} className="flex items-center space-x-4">
-                <div className="w-1/4 font-medium truncate">
-                  <Link 
-                    href={`/entities/departments/${department.id}`}
-                    variant="primary"
-                  >
-                    {department.name}
-                  </Link>
+          <div data-testid="performance-chart" className="h-64 w-full">
+            {/* Chart would be rendered here */}
+            <div className="flex items-end justify-between h-full py-4">
+              {performanceData.trends[trendPeriod].map((item, index) => (
+                <div key={index} className="flex flex-col items-center">
+                  <div 
+                    className="bg-primary-600 rounded-t w-12" 
+                    style={{ height: `${item.score}%` }}
+                  ></div>
+                  <span className="text-xs mt-2">{item.date}</span>
+                  <span className="text-xs font-medium">{item.score}%</span>
                 </div>
-                <div className="w-3/4">
-                  <div className="flex items-center">
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div 
-                        className="bg-primary-600 h-2.5 rounded-full" 
-                        style={{ width: `${department.overall_score}%` }}
-                      ></div>
-                    </div>
-                    <div className={`ml-4 font-medium ${getScoreColorClass(department.overall_score)}`}>
-                      {formatScore(department.overall_score)}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Team Performance */}
       <Card>
-        <CardHeader className="flex justify-between items-center">
+        <CardHeader>
           <CardTitle>Team Performance</CardTitle>
-          <Link 
-            href={`/entities/organizations/${organizationId}/teams`}
-            variant="primary"
-            size="small"
-          >
-            View All Teams
-          </Link>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4" data-testid="team-performance">
-            {performanceData.team_performance.map(team => (
-              <div key={team.id} className="flex items-center space-x-4">
-                <div className="w-1/4 font-medium truncate">
-                  <Link 
-                    href={`/entities/teams/${team.id}`}
-                    variant="primary"
-                  >
-                    {team.name}
-                  </Link>
+          <div className="divide-y">
+            {performanceData.team_performance.map((team) => (
+              <div 
+                key={team.team_id} 
+                data-testid="team-row"
+                className="py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => handleTeamClick(team.team_id, team.team_name)}
+              >
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">{team.team_name}</span>
+                  <span className={`font-bold ${getScoreColorClass(team.score)}`}>{`${team.score}%`}</span>
                 </div>
-                <div className="w-3/4">
-                  <div className="flex items-center">
-                    <div className="w-full bg-gray-200 rounded-full h-2.5">
-                      <div 
-                        className="bg-primary-600 h-2.5 rounded-full" 
-                        style={{ width: `${team.overall_score}%` }}
-                      ></div>
-                    </div>
-                    <div className={`ml-4 font-medium ${getScoreColorClass(team.overall_score)}`}>
-                      {formatScore(team.overall_score)}
-                    </div>
-                  </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                  <div 
+                    className="bg-primary-600 h-1.5 rounded-full" 
+                    style={{ width: `${team.score}%` }}
+                  ></div>
                 </div>
               </div>
             ))}
@@ -374,29 +396,73 @@ const OrganizationPerformance: React.FC<OrganizationPerformanceProps> = ({ organ
         </CardContent>
       </Card>
 
-      {/* Performance Trends */}
+      {/* Department Performance */}
       <Card>
-        <CardHeader className="flex justify-between items-center">
-          <CardTitle>Performance Trends</CardTitle>
-          <NavButton
-            href={`/entities/organizations/${organizationId}/performance/trends`}
-            variant="outline"
-            size="small"
-          >
-            View Detailed Trends
-          </NavButton>
+        <CardHeader>
+          <CardTitle>Department Performance</CardTitle>
         </CardHeader>
         <CardContent>
-          <div data-testid="performance-chart" className="h-80 w-full">
-            {/* Here we would render a chart component with the historical data */}
-            <div className="flex justify-center items-center h-full bg-gray-50 rounded-md">
-              <p className="text-gray-500">
-                Performance trends visualization would be rendered here using chart library
-              </p>
-            </div>
+          <div className="divide-y">
+            {performanceData.department_performance.map((department) => (
+              <div 
+                key={department.department_id} 
+                data-testid="department-row"
+                className="py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => handleDepartmentClick(department.department_id, department.department_name)}
+              >
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">{department.department_name}</span>
+                  <span className={`font-bold ${getScoreColorClass(department.score)}`}>{`${department.score}%`}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+                  <div 
+                    className="bg-primary-600 h-1.5 rounded-full" 
+                    style={{ width: `${department.score}%` }}
+                  ></div>
+                </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
+
+      {/* Team Details Modal */}
+      {selectedTeam && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          data-testid="team-details-modal"
+        >
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">{selectedTeam} Performance Details</h3>
+              <Button variant="ghost" size="small" onClick={() => setSelectedTeam(null)}>Close</Button>
+            </div>
+            <div className="space-y-4">
+              {/* Team details would go here */}
+              <p>Detailed performance metrics for {selectedTeam} team.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Department Details Modal */}
+      {selectedDepartment && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          data-testid="department-details-modal"
+        >
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[80vh] overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">{selectedDepartment} Performance Details</h3>
+              <Button variant="ghost" size="small" onClick={() => setSelectedDepartment(null)}>Close</Button>
+            </div>
+            <div className="space-y-4">
+              {/* Department details would go here */}
+              <p>Detailed performance metrics for {selectedDepartment} department.</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

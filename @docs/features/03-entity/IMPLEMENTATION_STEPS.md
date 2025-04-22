@@ -313,7 +313,7 @@
      - Show recent activities and engagement metrics
      - Add actions for filtering and exporting
 
-   - [ ] Implement organization performance component
+   - [x] Implement organization performance component
      - File: `src/components/features/entity/analytics/OrganizationPerformance.tsx`
      - Display organization performance
      - Show team and department performance

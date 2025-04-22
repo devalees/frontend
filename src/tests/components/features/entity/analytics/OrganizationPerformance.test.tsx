@@ -5,7 +5,7 @@
 
 import { jest } from '@jest/globals';
 import { renderWithProviders } from '../../../../utils/componentTestUtils';
-import { screen, fireEvent } from '@testing-library/react';
+import { screen, fireEvent, within } from '@testing-library/react';
 import { createMockResponse } from '../../../../utils/mockApi';
 import OrganizationPerformance from '../../../../../components/features/entity/analytics/OrganizationPerformance';
 import * as useEntityModule from '../../../../../hooks/useEntity';
@@ -75,25 +75,14 @@ describe('OrganizationPerformance Component', () => {
     // Setup mock implementation
     jest.spyOn(useEntityModule, 'useEntity').mockImplementation(() => ({
       getOrganizationPerformance: mockGetOrganizationPerformance,
-      // Include other required methods from useEntity
-      organizations: {
-        getOrganizations: jest.fn(),
-        getOrganization: jest.fn(),
-        createOrganization: jest.fn(),
-        updateOrganization: jest.fn(),
-        deleteOrganization: jest.fn(),
-        hardDeleteOrganization: jest.fn(),
-        getOrganizationDepartments: jest.fn(),
-        getOrganizationTeamMembers: jest.fn(),
-        getOrganizationAnalytics: jest.fn(),
-        getOrganizationActivity: jest.fn(),
-        getOrganizationGrowth: jest.fn(),
-      },
-      // Include other mock objects required by the component
-      departments: {},
-      teams: {},
-      teamMembers: {},
-      organizationSettings: {}
+      // Add minimal required mock properties
+      organizations: [],
+      departments: [],
+      teams: [],
+      teamMembers: [],
+      organizationSettings: [],
+      loading: false,
+      error: null
     }));
   });
 
@@ -120,11 +109,20 @@ describe('OrganizationPerformance Component', () => {
     expect(screen.getByText('Overall Performance')).toBeInTheDocument();
     expect(screen.getByText('85')).toBeInTheDocument(); // overall_score
     
-    // Check that metrics are displayed
-    expect(screen.getByText('Productivity')).toBeInTheDocument();
-    expect(screen.getByText('90%')).toBeInTheDocument(); // productivity score
-    expect(screen.getByText('Efficiency')).toBeInTheDocument();
-    expect(screen.getByText('80%')).toBeInTheDocument(); // efficiency score
+    // Check that metrics are displayed - find by heading and check nearby content
+    const cards = screen.getAllByRole('heading');
+    
+    // Find the Productivity card
+    const productivityHeading = cards.find(heading => heading.textContent === 'Productivity');
+    expect(productivityHeading).toBeInTheDocument();
+    const productivityCard = productivityHeading!.closest('.bg-white');
+    expect(within(productivityCard!).getByText('90%')).toBeInTheDocument();
+    
+    // Find the Efficiency card
+    const efficiencyHeading = cards.find(heading => heading.textContent === 'Efficiency');
+    expect(efficiencyHeading).toBeInTheDocument();
+    const efficiencyCard = efficiencyHeading!.closest('.bg-white');
+    expect(within(efficiencyCard!).getByText('80%')).toBeInTheDocument();
     
     // Check that team performance is displayed
     expect(screen.getByText('Team Performance')).toBeInTheDocument();
@@ -159,7 +157,10 @@ describe('OrganizationPerformance Component', () => {
       <OrganizationPerformance organizationId="1" />
     );
     
-    expect(mockGetOrganizationPerformance).toHaveBeenCalledWith('1');
+    expect(mockGetOrganizationPerformance).toHaveBeenCalledWith('1', expect.objectContaining({
+      time_period: expect.any(String),
+      metric_type: expect.any(String)
+    }));
   });
 
   test('changes time period for trends display', () => {

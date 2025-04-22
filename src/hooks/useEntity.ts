@@ -277,4 +277,54 @@ export const useOrganizationSettings = () => {
     getOrganizationSettingsById: store.getOrganizationSettingsById,
     getSettingsByOrganization: store.getSettingsByOrganization,
   }
+}
+
+// Combined Entity Hook
+export const useEntity = () => {
+  const organizationHook = useOrganization()
+  const departmentHook = useDepartment()
+  const teamHook = useTeam()
+  const teamMemberHook = useTeamMember()
+  const organizationSettingsHook = useOrganizationSettings()
+
+  return {
+    ...organizationHook,
+    departments: departmentHook.departments,
+    teams: teamHook.teams,
+    teamMembers: teamMemberHook.teamMembers,
+    organizationSettings: organizationSettingsHook.organizationSettings,
+    
+    // Department methods
+    fetchDepartments: departmentHook.fetchDepartments,
+    createDepartment: departmentHook.createDepartment,
+    updateDepartment: departmentHook.updateDepartment,
+    deleteDepartment: departmentHook.deleteDepartment,
+    getDepartmentById: departmentHook.getDepartmentById,
+    getDepartmentTeams: departmentHook.getDepartmentTeams,
+    getDepartmentTeamMembers: departmentHook.getDepartmentTeamMembers,
+    getChildDepartments: departmentHook.getChildDepartments,
+    
+    // Team methods
+    fetchTeams: teamHook.fetchTeams,
+    createTeam: teamHook.createTeam,
+    updateTeam: teamHook.updateTeam,
+    deleteTeam: teamHook.deleteTeam,
+    getTeamById: teamHook.getTeamById,
+    getTeamMembers: teamHook.getTeamMembers,
+    
+    // Team Member methods
+    fetchTeamMembers: teamMemberHook.fetchTeamMembers,
+    createTeamMember: teamMemberHook.createTeamMember,
+    updateTeamMember: teamMemberHook.updateTeamMember,
+    deleteTeamMember: teamMemberHook.deleteTeamMember,
+    getTeamMemberById: teamMemberHook.getTeamMemberById,
+    
+    // Organization Settings methods
+    fetchOrganizationSettings: organizationSettingsHook.fetchOrganizationSettings,
+    createOrganizationSettings: organizationSettingsHook.createOrganizationSettings,
+    updateOrganizationSettings: organizationSettingsHook.updateOrganizationSettings,
+    deleteOrganizationSettings: organizationSettingsHook.deleteOrganizationSettings,
+    getOrganizationSettingsById: organizationSettingsHook.getOrganizationSettingsById,
+    getSettingsByOrganization: organizationSettingsHook.getSettingsByOrganization,
+  }
 } 
