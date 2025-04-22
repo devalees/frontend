@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { RoleList } from '@/components/features/rbac/RoleList';
 import { RoleForm } from '@/components/features/rbac/RoleForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -13,8 +13,8 @@ import { useRbac } from '@/hooks/useRbac';
 
 export default function RolesPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
-  const [viewPermissionsRole, setViewPermissionsRole] = useState<Role | null>(null);
+  const [selectedRole, setSelectedRole] = useState<Role | undefined>(undefined);
+  const [viewPermissionsRole, setViewPermissionsRole] = useState<Role | undefined>(undefined);
   const { toast } = useToast();
   const { roles } = useRbac();
 
@@ -51,7 +51,7 @@ export default function RolesPage() {
   };
 
   const handleFormClose = () => {
-    setSelectedRole(null);
+    setSelectedRole(undefined);
     setIsFormOpen(false);
   };
 
@@ -102,14 +102,14 @@ export default function RolesPage() {
               <h2 className="text-xl font-bold">Permissions for {viewPermissionsRole.name}</h2>
               <Button 
                 variant="tertiary" 
-                onClick={() => setViewPermissionsRole(null)}
+                onClick={() => setViewPermissionsRole(undefined)}
               >
                 Close
               </Button>
             </div>
             <p className="mb-4">This is a placeholder for the permissions view. In a real implementation, this would show the permissions assigned to this role.</p>
             <div className="flex justify-end">
-              <Button onClick={() => setViewPermissionsRole(null)}>
+              <Button onClick={() => setViewPermissionsRole(undefined)}>
                 Close
               </Button>
             </div>

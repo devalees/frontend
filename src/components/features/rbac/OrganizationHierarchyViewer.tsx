@@ -7,9 +7,9 @@
 import React, { useEffect, useState } from 'react';
 import { OrganizationContext } from '../../../types/rbac';
 import { useRbac } from '../../../hooks/useRbac';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
-import { NavButton } from '@/components/ui/NavButton';
-import { Tree, TreeItem } from '@/components/ui/Tree';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../../ui/Card';
+import { NavButton } from '../../ui/NavButton';
+import { Tree, TreeItem } from '../../ui/Tree';
 import { Network, ChevronRight, ChevronDown } from 'lucide-react';
 
 interface OrganizationHierarchyViewerProps {
@@ -21,7 +21,7 @@ export const OrganizationHierarchyViewer: React.FC<OrganizationHierarchyViewerPr
   context,
   onClose,
 }) => {
-  const { organizationContext } = useRbac();
+  const { organizationContexts } = useRbac();
   const [ancestors, setAncestors] = useState<OrganizationContext[]>([]);
   const [descendants, setDescendants] = useState<OrganizationContext[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -32,12 +32,12 @@ export const OrganizationHierarchyViewer: React.FC<OrganizationHierarchyViewerPr
       try {
         // In a real implementation, these would be separate API calls
         // but for this example, we'll simulate using the existing data
-        const contextAncestors = organizationContext.data.filter(
-          ctx => context.parent_id && (ctx.id === context.parent_id)
+        const contextAncestors = organizationContexts.data.filter(
+          (ctx: OrganizationContext) => context.parent_id && (ctx.id === context.parent_id)
         );
         
-        const contextDescendants = organizationContext.data.filter(
-          ctx => ctx.parent_id === context.id
+        const contextDescendants = organizationContexts.data.filter(
+          (ctx: OrganizationContext) => ctx.parent_id === context.id
         );
         
         setAncestors(contextAncestors);
@@ -50,7 +50,7 @@ export const OrganizationHierarchyViewer: React.FC<OrganizationHierarchyViewerPr
     };
 
     fetchHierarchy();
-  }, [context.id, context.parent_id, organizationContext.data]);
+  }, [context.id, context.parent_id, organizationContexts.data]);
 
   // Render a simple tree view for demo purposes
   // In a real implementation, this would be a more sophisticated tree component

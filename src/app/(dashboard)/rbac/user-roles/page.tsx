@@ -8,19 +8,20 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRbac } from '../../../hooks/useRbac';
-import { UserRole } from '../../../types/rbac';
-import { UserRoleList } from '../../../components/features/rbac/UserRoleList';
-import { UserRoleForm } from '../../../components/features/rbac/UserRoleForm';
-import { Button } from '../../../components/ui/Button';
-import { Breadcrumb } from '../../../components/ui/Breadcrumb';
-import { Toast } from '../../../components/ui/Toast';
+import { useRbac } from '@/hooks/useRbac';
+import { UserRole } from '@/types/rbac';
+import { UserRoleList } from '@/components/features/rbac/UserRoleList';
+import { UserRoleForm } from '@/components/features/rbac/UserRoleForm';
+import { Button } from '@/components/ui/Button';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function UserRolesPage() {
   const { userRoles } = useRbac();
   const [showForm, setShowForm] = useState(false);
   const [selectedUserRole, setSelectedUserRole] = useState<UserRole | undefined>();
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const { toast: showToast } = useToast();
 
   const handleActivateUserRole = async (userRole: UserRole) => {
     try {
@@ -28,9 +29,16 @@ export default function UserRolesPage() {
         ...userRole,
         is_active: true
       });
-      setToast({ message: 'User role activated successfully', type: 'success' });
+      showToast({
+        title: 'Success',
+        description: 'User role activated successfully'
+      });
     } catch (error) {
-      setToast({ message: 'Failed to activate user role', type: 'error' });
+      showToast({
+        title: 'Error',
+        description: 'Failed to activate user role',
+        variant: 'destructive'
+      });
     }
   };
 
@@ -40,9 +48,16 @@ export default function UserRolesPage() {
         ...userRole,
         is_active: false
       });
-      setToast({ message: 'User role deactivated successfully', type: 'success' });
+      showToast({
+        title: 'Success',
+        description: 'User role deactivated successfully'
+      });
     } catch (error) {
-      setToast({ message: 'Failed to deactivate user role', type: 'error' });
+      showToast({
+        title: 'Error',
+        description: 'Failed to deactivate user role',
+        variant: 'destructive'
+      });
     }
   };
 
@@ -52,9 +67,16 @@ export default function UserRolesPage() {
         ...userRole,
         delegated_by: userRole.user_id
       });
-      setToast({ message: 'User role delegated successfully', type: 'success' });
+      showToast({
+        title: 'Success',
+        description: 'User role delegated successfully'
+      });
     } catch (error) {
-      setToast({ message: 'Failed to delegate user role', type: 'error' });
+      showToast({
+        title: 'Error',
+        description: 'Failed to delegate user role',
+        variant: 'destructive'
+      });
     }
   };
 
@@ -63,15 +85,22 @@ export default function UserRolesPage() {
       await userRoles.create(userRole);
       setShowForm(false);
       setSelectedUserRole(undefined);
-      setToast({ message: 'User role saved successfully', type: 'success' });
+      showToast({
+        title: 'Success',
+        description: 'User role saved successfully'
+      });
     } catch (error) {
-      setToast({ message: 'Failed to save user role', type: 'error' });
+      showToast({
+        title: 'Error',
+        description: 'Failed to save user role',
+        variant: 'destructive'
+      });
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Breadcrumb
+      <Breadcrumbs
         items={[
           { label: 'Dashboard', href: '/dashboard' },
           { label: 'RBAC', href: '/rbac' },
@@ -82,7 +111,7 @@ export default function UserRolesPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">User Roles</h1>
         <Button
-          variant="primary"
+          variant="default"
           onClick={() => {
             setSelectedUserRole(undefined);
             setShowForm(true);
@@ -114,14 +143,6 @@ export default function UserRolesPage() {
             />
           </div>
         </div>
-      )}
-
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
       )}
     </div>
   );

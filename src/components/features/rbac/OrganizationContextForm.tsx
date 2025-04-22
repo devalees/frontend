@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { NavButton } from '@/components/ui/NavButton';
 import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
+import { Select } from '@/components/ui/Select';
 import { Switch } from '@/components/ui/Switch';
 import { Label } from '@/components/ui/Label';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -22,7 +22,7 @@ interface OrganizationContextFormProps {
     description: string;
     parent_id: string | null;
     is_active: boolean;
-    level: number;
+    level?: number;
     created_at: string;
     updated_at: string;
   };
@@ -141,21 +141,18 @@ export const OrganizationContextForm: React.FC<OrganizationContextFormProps> = (
             <div className="space-y-2">
               <Label htmlFor="parent">Parent Context (Optional)</Label>
               <Select 
-                value={parentId} 
-                onValueChange={(value) => setParentId(value)}
-              >
-                <SelectTrigger id="parent">
-                  <SelectValue placeholder="Select a parent context" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">None (Root)</SelectItem>
-                  {parentContexts.map(context => (
-                    <SelectItem key={context.id} value={context.id}>
-                      {context.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                id="parent"
+                value={parentId}
+                onChange={(e) => setParentId(e.target.value)}
+                options={[
+                  { value: '', label: 'None (Root)' },
+                  ...parentContexts.map(context => ({
+                    value: context.id,
+                    label: context.name
+                  }))
+                ]}
+                placeholder="Select a parent context"
+              />
             </div>
 
             <div className="flex items-center space-x-2">

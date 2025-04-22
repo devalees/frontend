@@ -74,10 +74,11 @@ export interface ResourceAccess extends BaseEntity {
 export interface OrganizationContext extends BaseEntity {
   name: string;
   description: string;
-  parent_id?: string;
+  parent_id: string | null;
   is_active: boolean;
   activated_at?: string;
   deactivated_at?: string;
+  level?: number;
 }
 
 // AuditLog entity

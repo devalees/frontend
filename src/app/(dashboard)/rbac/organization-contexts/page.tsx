@@ -12,8 +12,8 @@ import { OrganizationContext } from '@/types/rbac';
 
 export default function OrganizationContextPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedContext, setSelectedContext] = useState<OrganizationContext | null>(null);
-  const [viewHierarchyContext, setViewHierarchyContext] = useState<OrganizationContext | null>(null);
+  const [selectedContext, setSelectedContext] = useState<OrganizationContext | undefined>(undefined);
+  const [viewHierarchyContext, setViewHierarchyContext] = useState<OrganizationContext | undefined>(undefined);
   const { toast } = useToast();
 
   const handleEdit = (context: OrganizationContext) => {
@@ -68,12 +68,12 @@ export default function OrganizationContextPage() {
       });
     }
     setIsFormOpen(false);
-    setSelectedContext(null);
+    setSelectedContext(undefined);
   };
 
   const handleFormCancel = () => {
     setIsFormOpen(false);
-    setSelectedContext(null);
+    setSelectedContext(undefined);
   };
 
   return (
@@ -112,7 +112,7 @@ export default function OrganizationContextPage() {
 
       {isFormOpen && (
         <OrganizationContextForm
-          initialData={selectedContext || undefined}
+          initialData={selectedContext}
           onSubmit={handleFormSubmit}
           onCancel={handleFormCancel}
         />

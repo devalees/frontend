@@ -9,7 +9,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Button } from '../../ui/Button';
 import { NavButton } from '../../ui/NavButton';
 import { Input } from '../../ui/Input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/Select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/SelectComposable';
 import { Switch } from '../../ui/Switch';
 import { Label } from '../../ui/Label';
 import { FileText, Download } from 'lucide-react';

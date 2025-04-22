@@ -1,11 +1,9 @@
 import { jest } from '@jest/globals';
 import { screen, render, fireEvent, waitFor } from '@testing-library/react';
-import { renderWithProviders } from '@/tests/utils/componentTestUtils';
 import { mockOrganizationSettings } from '@/tests/utils/mockData';
 import EditOrganizationSettingsPage from '@/app/(dashboard)/entities/organization-settings/[id]/edit/page';
 import { useEntityStore } from '@/store/slices/entitySlice';
 import { useToast } from '@/components/ui/use-toast';
-import { OrganizationSettings } from '@/types/entity';
 
 // Mock the hooks
 jest.mock('@/store/slices/entitySlice');
@@ -82,7 +80,9 @@ describe('EditOrganizationSettingsPage', () => {
   });
 
   it('should handle form submission successfully', async () => {
-    const mockUpdateOrganizationSettings = jest.fn().mockResolvedValue(undefined);
+    // Create a mock function that resolves with void for a mock API response
+    const mockUpdateOrganizationSettings = jest.fn().mockImplementation(() => Promise.resolve());
+      
     (useEntityStore as unknown as jest.Mock).mockReturnValue({
       ...mockStore,
       updateOrganizationSettings: mockUpdateOrganizationSettings,
@@ -107,7 +107,10 @@ describe('EditOrganizationSettingsPage', () => {
 
   it('should handle form submission error', async () => {
     const errorMessage = 'Failed to update settings';
-    const mockUpdateOrganizationSettings = jest.fn().mockRejectedValue(new Error(errorMessage));
+    
+    // Create a mock function that rejects with an Error for a mock API error
+    const mockUpdateOrganizationSettings = jest.fn().mockImplementation(() => Promise.reject(new Error(errorMessage)));
+      
     (useEntityStore as unknown as jest.Mock).mockReturnValue({
       ...mockStore,
       updateOrganizationSettings: mockUpdateOrganizationSettings,

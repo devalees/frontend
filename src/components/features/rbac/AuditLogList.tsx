@@ -4,14 +4,11 @@
  * Displays a list of audit logs with filtering, pagination, and actions for viewing details.
  */
 
-import React, { useState, useEffect } from 'react';
-import { useRbac } from '../../../hooks/useRbac';
+import React, { useState } from 'react';
 import { Button } from '../../ui/Button';
 import { NavButton } from '../../ui/NavButton';
 import { Input } from '../../ui/Input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/Select';
-import { DatePicker } from '../../ui/DatePicker';
-import { Table } from '../../ui/Table';
+import { Select } from '../../ui/Select';
 import { Badge } from '../../ui/Badge';
 import { Eye, Filter } from 'lucide-react';
 
@@ -89,7 +86,7 @@ const mockAuditLogs: AuditLogItem[] = [
 
 interface AuditLogListProps {
   onViewDetails?: (log: AuditLogItem) => void;
-  onFilterChange?: (filters: any) => void;
+  onFilterChange?: (filters: Record<string, string>) => void;
   className?: string;
 }
 
@@ -101,7 +98,7 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
   const [filters, setFilters] = useState({
     startDate: '2024-01-01',
     endDate: '2024-12-31',
@@ -287,40 +284,34 @@ export const AuditLogList: React.FC<AuditLogListProps> = ({
           <div>
             <label className="block text-sm font-medium mb-1">Action</label>
             <Select 
-              value={filters.action} 
-              onValueChange={(value) => handleFilterChange('action', value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select action" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="CREATE">Create</SelectItem>
-                <SelectItem value="UPDATE">Update</SelectItem>
-                <SelectItem value="DELETE">Delete</SelectItem>
-                <SelectItem value="VIEW">View</SelectItem>
-                <SelectItem value="">All Actions</SelectItem>
-              </SelectContent>
-            </Select>
+              value={filters.action}
+              options={[
+                { value: 'CREATE', label: 'Create' },
+                { value: 'UPDATE', label: 'Update' },
+                { value: 'DELETE', label: 'Delete' },
+                { value: 'VIEW', label: 'View' },
+                { value: '', label: 'All Actions' }
+              ]}
+              onChange={(e) => handleFilterChange('action', e.target.value)}
+              placeholder="Select action"
+            />
           </div>
           
           <div>
             <label className="block text-sm font-medium mb-1">Resource Type</label>
             <Select 
-              value={filters.resourceType} 
-              onValueChange={(value) => handleFilterChange('resourceType', value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select resource type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="ROLE">Role</SelectItem>
-                <SelectItem value="PERMISSION">Permission</SelectItem>
-                <SelectItem value="RESOURCE">Resource</SelectItem>
-                <SelectItem value="USER_ROLE">User Role</SelectItem>
-                <SelectItem value="RESOURCE_ACCESS">Resource Access</SelectItem>
-                <SelectItem value="">All Resources</SelectItem>
-              </SelectContent>
-            </Select>
+              value={filters.resourceType}
+              options={[
+                { value: 'ROLE', label: 'Role' },
+                { value: 'PERMISSION', label: 'Permission' },
+                { value: 'RESOURCE', label: 'Resource' },
+                { value: 'USER_ROLE', label: 'User Role' },
+                { value: 'RESOURCE_ACCESS', label: 'Resource Access' },
+                { value: '', label: 'All Resources' }
+              ]}
+              onChange={(e) => handleFilterChange('resourceType', e.target.value)}
+              placeholder="Select resource type"
+            />
           </div>
           
           <div>
