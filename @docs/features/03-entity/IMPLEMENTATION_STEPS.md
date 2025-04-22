@@ -182,7 +182,7 @@
      - Support filtering and pagination
      - Add actions for edit, delete, and view details
 
-   - [ ] Implement team form component
+   - [x] Implement team form component
      - File: `src/components/features/entity/teams/TeamForm.tsx`
      - Create form for adding/editing teams
      - Use existing form components
