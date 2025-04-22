@@ -241,7 +241,7 @@
      - Add actions for managing team member
 
 3. **Create Team Member Pages**
-   - [ ] Implement team members page
+   - [x] Implement team members page
      - File: `src/app/(dashboard)/entities/team-members/page.tsx`
      - Use team member list component
      - Add navigation and breadcrumbs

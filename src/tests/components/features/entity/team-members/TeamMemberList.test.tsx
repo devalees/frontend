@@ -207,18 +207,24 @@ describe('TeamMemberList Component', () => {
       }
     ];
 
-    (useEntityStore as unknown as jest.Mock).mockReturnValue({
+    // Create a proper mock for the store with getState function
+    const mockStore = {
       teamMembers: mockTeamMembers,
       loading: false,
       error: null,
       fetchTeamMembers: jest.fn(),
-      deleteTeamMember: mockDeleteTeamMember
-    });
+      deleteTeamMember: mockDeleteTeamMember,
+      getState: jest.fn().mockReturnValue({
+        deleteTeamMember: mockDeleteTeamMember
+      })
+    };
+
+    (useEntityStore as unknown as jest.Mock).mockReturnValue(mockStore);
 
     const { getByTestId } = renderWithProviders(<TeamMemberList />);
     
     // Find and click the delete button
-    const deleteButton = getByTestId('delete-team-member');
+    const deleteButton = getByTestId('delete-button');
     deleteButton.click();
 
     // Check if the delete function was called with the correct ID

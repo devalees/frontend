@@ -9,7 +9,17 @@ import { TeamMember } from '@/types/entity';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 
-export const TeamMemberList: React.FC = () => {
+interface TeamMemberListProps {
+  onViewDetails?: (teamMember: TeamMember) => void;
+  onEdit?: (teamMember: TeamMember) => void;
+  onDelete?: (teamMember: TeamMember) => void;
+}
+
+export const TeamMemberList: React.FC<TeamMemberListProps> = ({
+  onViewDetails,
+  onEdit,
+  onDelete
+}) => {
   const router = useRouter();
   const { teamMembers, loading, error, fetchTeamMembers, deleteTeamMember } = useEntityStore();
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,18 +31,28 @@ export const TeamMemberList: React.FC = () => {
     fetchTeamMembers();
   }, [fetchTeamMembers]);
 
-  const handleView = (id: string) => {
-    router.push(`/entities/team-members/${id}`);
+  const handleView = (teamMember: TeamMember) => {
+    if (onViewDetails) {
+      onViewDetails(teamMember);
+    } else {
+      router.push(`/entities/team-members/${teamMember.id}`);
+    }
   };
 
-  const handleEdit = (id: string) => {
-    router.push(`/entities/team-members/${id}/edit`);
+  const handleEdit = (teamMember: TeamMember) => {
+    if (onEdit) {
+      onEdit(teamMember);
+    } else {
+      router.push(`/entities/team-members/${teamMember.id}/edit`);
+    }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this team member?')) {
+  const handleDelete = async (teamMember: TeamMember) => {
+    if (onDelete) {
+      onDelete(teamMember);
+    } else if (window.confirm('Are you sure you want to delete this team member?')) {
       try {
-        await deleteTeamMember(id);
+        await deleteTeamMember(teamMember.id);
       } catch (error) {
         console.error('Failed to delete team member:', error);
       }
@@ -73,22 +93,24 @@ export const TeamMemberList: React.FC = () => {
           <Button
             variant="outline"
             size="small"
-            onClick={() => handleView(row.id)}
+            onClick={() => handleView(row)}
+            data-testid="view-details-button"
           >
             View
           </Button>
           <Button
             variant="outline"
             size="small"
-            onClick={() => handleEdit(row.id)}
+            onClick={() => handleEdit(row)}
+            data-testid="edit-button"
           >
             Edit
           </Button>
           <Button
             variant="outline"
             size="small"
-            onClick={() => handleDelete(row.id)}
-            data-testid="delete-team-member"
+            onClick={() => handleDelete(row)}
+            data-testid="delete-button"
           >
             Delete
           </Button>
@@ -140,11 +162,13 @@ export const TeamMemberList: React.FC = () => {
       <CardHeader>
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold">Team Members</h2>
-          <Button
-            onClick={() => router.push('/entities/team-members/new')}
-          >
-            Add Team Member
-          </Button>
+          {!onViewDetails && (
+            <Button
+              onClick={() => router.push('/entities/team-members/new')}
+            >
+              Add Team Member
+            </Button>
+          )}
         </div>
       </CardHeader>
       <div className="p-4" data-testid="team-member-list">
