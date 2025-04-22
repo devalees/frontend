@@ -201,7 +201,7 @@
      - Add navigation and breadcrumbs
      - Handle team management actions
 
-   - [ ] Implement team detail page
+   - [x] Implement team detail page
      - File: `src/app/(dashboard)/entities/teams/[id]/page.tsx`
      - Use team detail component
      - Add navigation and breadcrumbs
