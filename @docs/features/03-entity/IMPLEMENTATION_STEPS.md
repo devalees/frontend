@@ -103,7 +103,7 @@
      - Ensure edit and delete buttons are present for tests
 
 3. **Create Organization Pages**
-   - [ ] Implement organizations page
+   - [x] Implement organizations page
      - File: `src/app/(dashboard)/entities/organizations/page.tsx`
      - Use organization list component
      - Add navigation and breadcrumbs

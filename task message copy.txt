@@ -186,13 +186,24 @@ based on project rules and implementation steps file and the following plan:
 === FOR IMPLEMENTATION ===
 based on project rules and implementation steps file and the following plan:
 ### Phase 3: Organization Management 
-2. **Create Organization Components**
-   - [ ] Implement organization detail component
-     - File: `src/components/features/entity/organizations/OrganizationDetail.tsx`
-     - Display organization details
-     - Show related departments and teams
-     - Add actions for managing organization
-     - Ensure edit and delete buttons are present for tests
+3. **Create Organization Pages**
+   - [ ] Implement organizations page
+     - File: `src/app/(dashboard)/entities/organizations/page.tsx`
+     - Use organization list component
+     - Add navigation and breadcrumbs
+     - Handle organization management actions
+
+   - [ ] Implement organization detail page
+     - File: `src/app/(dashboard)/entities/organizations/[id]/page.tsx`
+     - Use organization detail component
+     - Add navigation and breadcrumbs
+     - Handle organization detail actions
+
+   - [ ] Implement organization edit page
+     - File: `src/app/(dashboard)/entities/organizations/[id]/edit/page.tsx`
+     - Use organization form component
+     - Add navigation and breadcrumbs
+     - Handle organization edit actions
 
 ## Implementation Guidelines:-
 1. Use Core Technologies stated in project rules.
