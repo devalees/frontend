@@ -162,10 +162,10 @@ based on project rules and implementation steps file and the following plan:
   
 ===== FOR TEST ONLY ====
 based on project rules and implementation steps file and the following plan:
-### Phase 3: Organization Management
+### Phase 8: Entity Analytics and Reporting
 1. **Set Up Tests**
-   - [ ] Create Organization component tests
-     - Directory: `src/tests/components/features/entity/organizations/`
+   - [ ] Create Entity Analytics component tests
+     - Directory: `src/tests/components/features/entity/analytics/`
      - Test each component individually
      - Test component integration with hooks and store
      - Use `componentTestUtils.ts` for component testing
@@ -185,26 +185,14 @@ based on project rules and implementation steps file and the following plan:
 
 === FOR IMPLEMENTATION ===
 based on project rules and implementation steps file and the following plan:
-### Phase 3: Organization Management 
-3. **Create Organization Pages**
-   - [ ] Implement organizations page
-     - File: `src/app/(dashboard)/entities/organizations/page.tsx`
-     - Use organization list component
-     - Add navigation and breadcrumbs
-     - Handle organization management actions
-
-   - [ ] Implement organization detail page
-     - File: `src/app/(dashboard)/entities/organizations/[id]/page.tsx`
-     - Use organization detail component
-     - Add navigation and breadcrumbs
-     - Handle organization detail actions
-
-   - [ ] Implement organization edit page
-     - File: `src/app/(dashboard)/entities/organizations/[id]/edit/page.tsx`
-     - Use organization form component
-     - Add navigation and breadcrumbs
-     - Handle organization edit actions
-
+### Phase 8: Entity Analytics and Reporting
+2. **Create Entity Analytics Components**
+   - [ ] Implement organization analytics component
+     - File: `src/components/features/entity/analytics/OrganizationAnalytics.tsx`
+     - Display organization analytics
+     - Show key metrics and charts
+     - Add actions for exporting data
+     
 ## Implementation Guidelines:-
 1. Use Core Technologies stated in project rules.
 2. Reuse existing components and utilities
@@ -214,8 +202,8 @@ based on project rules and implementation steps file and the following plan:
 
 
 update the implementation steps file to reflect our progress
-run the tests to verify that the actual implementation is passed
-run npm test to verify that the actual implementation is passed
+run the test to verify that the actual implementation is passed
+run global npm test to verify that the actual implementation is passed
 
 git reset --hard HEAD
 git clean -fd
@@ -238,4 +226,11 @@ Time Management - Implement fifth
 Documents - Implement last
 
 
-
+     - Create a page test
+     - Run the test to verify that the actual implementation is passed
+     
+     
+To use this system in your application:
+Replace standard Link elements with EnhancedLink for navigation
+Use PaginatedList component for any paginated data
+For custom scenarios, use the hooks directly

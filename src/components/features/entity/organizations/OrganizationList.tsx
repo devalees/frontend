@@ -5,6 +5,7 @@ import { Table, Column } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
+import { PaginatedList } from '@/components/PaginatedList';
 
 interface OrganizationListProps {
   onEdit?: (organization: Organization) => void;
@@ -20,7 +21,6 @@ export const OrganizationList: React.FC<OrganizationListProps> = ({
   const { organizations, loading, error, fetchOrganizations } = useEntityStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchOrganizations();
@@ -31,11 +31,7 @@ export const OrganizationList: React.FC<OrganizationListProps> = ({
     org.industry?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredOrganizations.length / itemsPerPage);
-  const paginatedOrganizations = filteredOrganizations.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = Math.ceil(filteredOrganizations.length / 10);
 
   const columns: Column<Organization>[] = [
     {
@@ -121,6 +117,20 @@ export const OrganizationList: React.FC<OrganizationListProps> = ({
     return <div data-testid="error">{error}</div>;
   }
 
+  const renderItem = (organization: Organization) => (
+    <Table
+      data={[organization]}
+      columns={columns}
+      emptyMessage="No organizations found"
+    />
+  );
+
+  const handlePageChange = async (page: number) => {
+    setCurrentPage(page);
+    // If we need to fetch data from the server, we can do it here
+    // await fetchOrganizations({ page });
+  };
+
   return (
     <div data-testid="organization-list" className="space-y-4">
       <div className="flex justify-between items-center">
@@ -134,15 +144,14 @@ export const OrganizationList: React.FC<OrganizationListProps> = ({
         />
       </div>
 
-      <Table
-        data={paginatedOrganizations}
-        columns={columns}
+      <PaginatedList
+        data={filteredOrganizations}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        isLoading={loading}
+        fetchPage={handlePageChange}
+        renderItem={renderItem}
         emptyMessage="No organizations found"
-        pagination={{
-          currentPage,
-          totalPages,
-          onPageChange: setCurrentPage
-        }}
       />
     </div>
   );

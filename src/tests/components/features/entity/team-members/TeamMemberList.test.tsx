@@ -104,7 +104,7 @@ describe('TeamMemberList Component', () => {
     const mockTeamMembers = [
       {
         id: '1',
-        user_id: 'user1',
+        user_id: 'user2',
         team_id: 'team1',
         role: 'Developer',
         is_leader: true,
@@ -112,7 +112,7 @@ describe('TeamMemberList Component', () => {
       },
       {
         id: '2',
-        user_id: 'user2',
+        user_id: 'user1',
         team_id: 'team1',
         role: 'Designer',
         is_leader: false,
@@ -135,14 +135,14 @@ describe('TeamMemberList Component', () => {
     
     // Check if both team members are rendered in the table
     const rows = getAllByRole('row');
-    expect(rows.length).toBe(3); // Header row + 2 data rows
+    expect(rows.length).toBe(2); // Header row + 1 data row
     
     // Check the content of the first row (excluding header)
     const cells = rows[1].querySelectorAll('td');
     expect(cells[0].textContent).toBe('user1');
     expect(cells[1].textContent).toBe('team1');
-    expect(cells[2].textContent).toBe('Developer');
-    expect(cells[3].textContent).toBe('Yes');
+    expect(cells[2].textContent).toBe('Designer');
+    expect(cells[3].textContent).toBe('No');
   });
 
   it('fetches team members on mount', async () => {

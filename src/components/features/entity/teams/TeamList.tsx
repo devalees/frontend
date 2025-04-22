@@ -5,6 +5,7 @@ import { Table, Column } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
+import { PaginatedList } from '@/components/PaginatedList';
 
 interface TeamListProps {
   onEdit?: (team: Team) => void;
@@ -20,7 +21,6 @@ export const TeamList: React.FC<TeamListProps> = ({
   const { teams, loading, error, fetchTeams } = useEntityStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchTeams();
@@ -32,11 +32,7 @@ export const TeamList: React.FC<TeamListProps> = ({
     team.skills?.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const totalPages = Math.ceil(filteredTeams.length / itemsPerPage);
-  const paginatedTeams = filteredTeams.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = Math.ceil(filteredTeams.length / 10);
 
   const columns: Column<Team>[] = [
     {
@@ -136,6 +132,75 @@ export const TeamList: React.FC<TeamListProps> = ({
     return <div data-testid="error">{error}</div>;
   }
 
+  const renderItem = (team: Team) => (
+    <tr key={team.id}>
+      <td>
+        <div className="flex items-center">
+          <span className="font-medium">{team.name}</span>
+        </div>
+      </td>
+      <td>{team.description || 'N/A'}</td>
+      <td>{team.size || 'N/A'}</td>
+      <td>
+        {!team.skills || team.skills.length === 0 ? 'N/A' : (
+          <div className="flex flex-wrap gap-1">
+            {team.skills.map((skill: string, index: number) => (
+              <Badge key={index} variant="info">
+                {skill}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </td>
+      <td>{team.department_id || 'N/A'}</td>
+      <td>
+        <Badge variant={team.is_active ? 'success' : 'error'}>
+          {team.is_active ? 'Active' : 'Inactive'}
+        </Badge>
+      </td>
+      <td>
+        <div className="flex space-x-2">
+          {onViewDetails && (
+            <Button
+              variant="outline"
+              size="small"
+              onClick={() => onViewDetails(team)}
+              data-testid="view-details-button"
+            >
+              View
+            </Button>
+          )}
+          {onEdit && (
+            <Button
+              variant="outline"
+              size="small"
+              onClick={() => onEdit(team)}
+              data-testid="edit-button"
+            >
+              Edit
+            </Button>
+          )}
+          {onDelete && (
+            <Button
+              variant="destructive"
+              size="small"
+              onClick={() => onDelete(team)}
+              data-testid="delete-button"
+            >
+              Delete
+            </Button>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+
+  const handlePageChange = async (page: number) => {
+    setCurrentPage(page);
+    // If we need to fetch data from the server, we can do it here
+    // await fetchTeams({ page });
+  };
+
   return (
     <div data-testid="team-list" className="space-y-4">
       <div className="flex justify-between items-center">
@@ -149,15 +214,14 @@ export const TeamList: React.FC<TeamListProps> = ({
         />
       </div>
 
-      <Table
-        data={paginatedTeams}
-        columns={columns}
+      <PaginatedList
+        data={filteredTeams}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        isLoading={loading}
+        fetchPage={handlePageChange}
+        renderItem={renderItem}
         emptyMessage="No teams found. Create a new team to get started."
-        pagination={{
-          currentPage,
-          totalPages,
-          onPageChange: setCurrentPage
-        }}
       />
     </div>
   );

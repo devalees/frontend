@@ -8,6 +8,7 @@ import { useEntityStore } from '@/store/slices/entitySlice';
 import { TeamMember } from '@/types/entity';
 import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { PaginatedList } from '@/components/PaginatedList';
 
 interface TeamMemberListProps {
   onViewDetails?: (teamMember: TeamMember) => void;
@@ -25,7 +26,6 @@ export const TeamMemberList: React.FC<TeamMemberListProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [roleFilter, setRoleFilter] = useState('');
-  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchTeamMembers();
@@ -126,11 +126,7 @@ export const TeamMemberList: React.FC<TeamMemberListProps> = ({
     return matchesSearch && matchesRole;
   });
 
-  const totalPages = Math.ceil(filteredMembers.length / itemsPerPage);
-  const paginatedMembers = filteredMembers.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = Math.ceil(filteredMembers.length / 10);
 
   const uniqueRoles = Array.from(new Set(teamMembers.map(member => member.role)));
 
@@ -156,6 +152,50 @@ export const TeamMemberList: React.FC<TeamMemberListProps> = ({
       </div>
     );
   }
+
+  const renderItem = (teamMember: TeamMember) => (
+    <tr key={teamMember.id}>
+      <td>{teamMember.user_id}</td>
+      <td>{teamMember.team_id}</td>
+      <td>{teamMember.role}</td>
+      <td>{teamMember.is_leader ? 'Yes' : 'No'}</td>
+      <td>{new Date(teamMember.join_date).toLocaleDateString()}</td>
+      <td>
+        <div className="flex space-x-2">
+          <Button
+            variant="outline"
+            size="small"
+            onClick={() => handleView(teamMember)}
+            data-testid="view-details-button"
+          >
+            View
+          </Button>
+          <Button
+            variant="outline"
+            size="small"
+            onClick={() => handleEdit(teamMember)}
+            data-testid="edit-button"
+          >
+            Edit
+          </Button>
+          <Button
+            variant="outline"
+            size="small"
+            onClick={() => handleDelete(teamMember)}
+            data-testid="delete-button"
+          >
+            Delete
+          </Button>
+        </div>
+      </td>
+    </tr>
+  );
+
+  const handlePageChange = async (page: number) => {
+    setCurrentPage(page);
+    // If we need to fetch data from the server, we can do it here
+    // await fetchTeamMembers({ page });
+  };
 
   return (
     <Card>
@@ -190,14 +230,13 @@ export const TeamMemberList: React.FC<TeamMemberListProps> = ({
             className="w-48"
           />
         </div>
-        <Table
-          data={paginatedMembers}
-          columns={columns}
-          pagination={{
-            currentPage,
-            totalPages,
-            onPageChange: setCurrentPage
-          }}
+        <PaginatedList
+          data={filteredMembers}
+          totalPages={totalPages}
+          currentPage={currentPage}
+          isLoading={loading}
+          fetchPage={handlePageChange}
+          renderItem={renderItem}
           emptyMessage="No team members found"
         />
       </div>

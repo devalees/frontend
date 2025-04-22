@@ -5,6 +5,7 @@ import { Table, Column } from '@/components/ui/Table';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
+import { PaginatedList } from '@/components/PaginatedList';
 
 interface DepartmentListProps {
   onEdit?: (department: Department) => void;
@@ -20,7 +21,6 @@ export const DepartmentList: React.FC<DepartmentListProps> = ({
   const { departments, loading, error, fetchDepartments } = useEntityStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchDepartments();
@@ -32,11 +32,7 @@ export const DepartmentList: React.FC<DepartmentListProps> = ({
     dept.location?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredDepartments.length / itemsPerPage);
-  const paginatedDepartments = filteredDepartments.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = Math.ceil(filteredDepartments.length / 10);
 
   const columns: Column<Department>[] = [
     {
@@ -116,6 +112,20 @@ export const DepartmentList: React.FC<DepartmentListProps> = ({
     return <div data-testid="error">{error}</div>;
   }
 
+  const renderItem = (department: Department) => (
+    <Table
+      data={[department]}
+      columns={columns}
+      emptyMessage="No departments found"
+    />
+  );
+
+  const handlePageChange = async (page: number) => {
+    setCurrentPage(page);
+    // If we need to fetch data from the server, we can do it here
+    // await fetchDepartments({ page });
+  };
+
   return (
     <div data-testid="department-list" className="space-y-4">
       <div className="flex justify-between items-center">
@@ -129,15 +139,14 @@ export const DepartmentList: React.FC<DepartmentListProps> = ({
         />
       </div>
 
-      <Table
-        data={paginatedDepartments}
-        columns={columns}
+      <PaginatedList
+        data={filteredDepartments}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        isLoading={loading}
+        fetchPage={handlePageChange}
+        renderItem={renderItem}
         emptyMessage="No departments found"
-        pagination={{
-          currentPage,
-          totalPages,
-          onPageChange: setCurrentPage
-        }}
       />
     </div>
   );

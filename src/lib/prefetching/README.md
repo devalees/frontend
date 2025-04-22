@@ -11,38 +11,31 @@ This module provides a systematic approach to handling prefetching in the applic
 
 ## Components
 
-### PrefetchLink
+### Link
 
-Enhanced Link component that prefetches the target page on hover.
+Main UI component for navigation with built-in prefetching capabilities.
 
 ```tsx
-import { PrefetchLink } from '@/lib/prefetching';
+import { Link } from '@/components/ui/Link';
 
 // Basic usage
-<PrefetchLink href="/dashboard">Dashboard</PrefetchLink>
+<Link href="/dashboard">Dashboard</Link>
 
-// With custom prefetch delay
-<PrefetchLink href="/users" prefetchTimeout={200}>Users</PrefetchLink>
-
-// Disable prefetching for specific link
-<PrefetchLink href="/reports" prefetch={false}>Reports</PrefetchLink>
-```
-
-### EnhancedLink
-
-Styled version of PrefetchLink with design system integration.
-
-```tsx
-import { EnhancedLink } from '@/components/ui/EnhancedLink';
-
-<EnhancedLink 
-  href="/dashboard" 
-  variant="primary" 
-  size="large" 
+// With styling variants
+<Link 
+  href="/users" 
+  variant="primary"
+  size="large"
   underline={true}
 >
-  Dashboard
-</EnhancedLink>
+  Users
+</Link>
+
+// With custom prefetch delay (in milliseconds)
+<Link href="/analytics" prefetchTimeout={200}>Analytics</Link>
+
+// Disable prefetching for specific link
+<Link href="/reports" prefetch={false}>Reports</Link>
 ```
 
 ### PaginatedList
@@ -60,6 +53,16 @@ import { PaginatedList } from '@/components/PaginatedList';
   fetchPage={fetchUserPage}
   renderItem={(user) => <UserCard user={user} />}
 />
+```
+
+### PrefetchLink
+
+Low-level component that prefetches the target page on hover (used internally by the Link component).
+
+```tsx
+import { PrefetchLink } from '@/lib/prefetching';
+
+<PrefetchLink href="/dashboard">Dashboard</PrefetchLink>
 ```
 
 ## Hooks
@@ -116,7 +119,7 @@ import { PrefetchProvider } from '@/lib/prefetching';
 
 ## Best Practices
 
-1. **Use EnhancedLink for navigation**: Replace standard `<Link>` or `<a>` tags with `<EnhancedLink>` for automatic prefetching.
+1. **Use Link for navigation**: Replace standard `next/link` Link or `<a>` tags with our `<Link>` component for automatic prefetching.
 
 2. **Use PaginatedList for lists**: Leverage the built-in prefetching capabilities of the PaginatedList component.
 
@@ -132,8 +135,8 @@ import { PrefetchProvider } from '@/lib/prefetching';
    ```diff
    - import Link from 'next/link';
    - <Link href="/dashboard">Dashboard</Link>
-   + import { EnhancedLink } from '@/components/ui/EnhancedLink';
-   + <EnhancedLink href="/dashboard">Dashboard</EnhancedLink>
+   + import { Link } from '@/components/ui/Link';
+   + <Link href="/dashboard">Dashboard</Link>
    ```
 
 2. For data lists, replace custom pagination with:

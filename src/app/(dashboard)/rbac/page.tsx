@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Shield, Users, Database, UserCheck, Key, Building, FileText } from 'lucide-react';
-import { EnhancedLink } from '@/components/ui/EnhancedLink';
+import { Link } from '@/components/ui/Link';
 
 const RBACDashboardPage = () => {
   const router = useRouter();
@@ -79,7 +79,7 @@ const RBACDashboardPage = () => {
               </p>
             </CardContent>
             <CardFooter>
-              <EnhancedLink 
+              <Link 
                 href={section.path}
                 className="w-full"
                 variant="primary"
@@ -90,7 +90,7 @@ const RBACDashboardPage = () => {
                 >
                   Manage {section.title}
                 </Button>
-              </EnhancedLink>
+              </Link>
             </CardFooter>
           </Card>
         ))}

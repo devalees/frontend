@@ -1,7 +1,7 @@
 import React from 'react';
 import { OrganizationSettings } from '@/types/entity';
 import { Button } from '@/components/ui/Button';
-import Link from 'next/link';
+import { Link } from '@/components/ui/Link';
 
 interface OrganizationSettingsDetailProps {
   settings: OrganizationSettings;

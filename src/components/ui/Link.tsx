@@ -5,7 +5,7 @@ import { PrefetchLink, PrefetchLinkProps } from '@/lib/prefetching';
 import { usePrefetchSettings } from '@/lib/prefetching';
 import { cn } from '@/lib/utils';
 
-interface EnhancedLinkProps extends PrefetchLinkProps {
+interface LinkProps extends PrefetchLinkProps {
   variant?: 'default' | 'primary' | 'secondary' | 'subtle' | 'destructive';
   size?: 'default' | 'small' | 'large';
   underline?: boolean;
@@ -15,7 +15,7 @@ interface EnhancedLinkProps extends PrefetchLinkProps {
 /**
  * Enhanced link component that combines styling with prefetching capability
  */
-export const EnhancedLink: React.FC<EnhancedLinkProps> = ({
+export const Link: React.FC<LinkProps> = ({
   href,
   children,
   className = '',
@@ -77,4 +77,4 @@ export const EnhancedLink: React.FC<EnhancedLinkProps> = ({
   );
 };
 
-export default EnhancedLink; 
+export default Link; 

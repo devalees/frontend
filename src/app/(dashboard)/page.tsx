@@ -10,7 +10,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@/components/ui/Link';
 import { getTokens } from '@/lib/features/auth/token';
 
 export default function DashboardPage() {
