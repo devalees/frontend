@@ -109,13 +109,13 @@
      - Add navigation and breadcrumbs
      - Handle organization management actions
 
-   - [ ] Implement organization detail page
+   - [x] Implement organization detail page
      - File: `src/app/(dashboard)/entities/organizations/[id]/page.tsx`
      - Use organization detail component
      - Add navigation and breadcrumbs
      - Handle organization detail actions
 
-   - [ ] Implement organization edit page
+   - [x] Implement organization edit page
      - File: `src/app/(dashboard)/entities/organizations/[id]/edit/page.tsx`
      - Use organization form component
      - Add navigation and breadcrumbs
