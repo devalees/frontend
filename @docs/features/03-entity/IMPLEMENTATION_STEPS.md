@@ -149,19 +149,19 @@
      - Add actions for managing department
 
 3. **Create Department Pages**
-   - [ ] Implement departments page
+   - [x] Implement departments page
      - File: `src/app/(dashboard)/entities/departments/page.tsx`
      - Use department list component
      - Add navigation and breadcrumbs
      - Handle department management actions
 
-   - [ ] Implement department detail page
+   - [x] Implement department detail page
      - File: `src/app/(dashboard)/entities/departments/[id]/page.tsx`
      - Use department detail component
      - Add navigation and breadcrumbs
      - Handle department detail actions
 
-   - [ ] Implement department edit page
+   - [x] Implement department edit page
      - File: `src/app/(dashboard)/entities/departments/[id]/edit/page.tsx`
      - Use department form component
      - Add navigation and breadcrumbs
@@ -169,7 +169,7 @@
 
 ### Phase 5: Team Management
 1. **Set Up Tests**
-   - [ ] Create Team component tests
+   - [x] Create Team component tests
      - Directory: `src/tests/components/features/entity/teams/`
      - Test each component individually
      - Test component integration with hooks and store
