@@ -136,7 +136,7 @@
      - Support filtering and pagination
      - Add actions for edit, delete, and view details
 
-   - [ ] Implement department form component
+   - [x] Implement department form component
      - File: `src/components/features/entity/departments/DepartmentForm.tsx`
      - Create form for adding/editing departments
      - Use existing form components
