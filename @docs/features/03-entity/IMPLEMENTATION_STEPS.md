@@ -195,7 +195,7 @@
      - Add actions for managing team
 
 3. **Create Team Pages**
-   - [ ] Implement teams page
+   - [x] Implement teams page
      - File: `src/app/(dashboard)/entities/teams/page.tsx`
      - Use team list component
      - Add navigation and breadcrumbs
