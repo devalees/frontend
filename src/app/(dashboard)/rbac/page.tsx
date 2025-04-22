@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Shield, Users, Database, UserCheck, Key, Building, FileText } from 'lucide-react';
+import { EnhancedLink } from '@/components/ui/EnhancedLink';
 
 const RBACDashboardPage = () => {
   const router = useRouter();
@@ -54,10 +55,6 @@ const RBACDashboardPage = () => {
     },
   ];
 
-  const navigateToSection = (path: string) => {
-    router.push(path);
-  };
-
   return (
     <div className="container mx-auto py-8">
       <div className="mb-8">
@@ -82,13 +79,18 @@ const RBACDashboardPage = () => {
               </p>
             </CardContent>
             <CardFooter>
-              <Button 
-                variant="default" 
+              <EnhancedLink 
+                href={section.path}
                 className="w-full"
-                onClick={() => navigateToSection(section.path)}
+                variant="primary"
               >
-                Manage {section.title}
-              </Button>
+                <Button 
+                  variant="default" 
+                  className="w-full"
+                >
+                  Manage {section.title}
+                </Button>
+              </EnhancedLink>
             </CardFooter>
           </Card>
         ))}
