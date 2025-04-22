@@ -116,7 +116,9 @@ export const TeamMemberList: React.FC = () => {
     return (
       <Card>
         <CardHeader>
-          <Skeleton className="h-8 w-48" data-testid="loading" />
+          <div data-testid="loading">
+            <Skeleton className="h-8 w-48" />
+          </div>
         </CardHeader>
         <div className="p-4">
           <Skeleton className="h-64 w-full" />
