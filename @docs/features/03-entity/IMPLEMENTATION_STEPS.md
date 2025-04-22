@@ -176,7 +176,7 @@
      - Use `componentTestUtils.ts` for component testing
 
 2. **Create Team Components**
-   - [ ] Implement team list component
+   - [x] Implement team list component
      - File: `src/components/features/entity/teams/TeamList.tsx`
      - Display teams in a table or list
      - Support filtering and pagination

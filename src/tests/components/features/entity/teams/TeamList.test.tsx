@@ -9,20 +9,11 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { TeamList } from '@/components/features/entity/teams/TeamList';
 import { useEntityStore } from '@/store/slices/entitySlice';
-import { Team, TeamMember } from '@/types/entity';
-import { StoreApi } from 'zustand';
-import { jest } from '@jest/globals';
-import { renderWithProviders } from '@/tests/utils/componentTestUtils';
-import { mockTeam, mockTeamMember } from '@/tests/utils/mockData';
+import { Team } from '@/types/entity';
 
 // Mock the entity store
 jest.mock('@/store/slices/entitySlice', () => ({
   useEntityStore: jest.fn()
-}));
-
-// Mock react-router-dom
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => jest.fn()
 }));
 
 // Define mock data
@@ -51,105 +42,137 @@ const mockTeams: Team[] = [
   }
 ];
 
-const mockTeamMembers: TeamMember[] = [
-  {
-    id: '1',
-    team_id: '1',
-    user_id: 'user1',
-    role: 'leader',
-    is_leader: true,
-    join_date: '2024-01-01',
-    created_at: '2024-01-01',
-    updated_at: '2024-01-01',
-    is_active: true,
-    skills: ['React', 'TypeScript'],
-    availability: 100,
-    performance_rating: 4.5
-  },
-  {
-    id: '2',
-    team_id: '1',
-    user_id: 'user2',
-    role: 'member',
-    is_leader: false,
-    join_date: '2024-01-01',
-    created_at: '2024-01-01',
-    updated_at: '2024-01-01',
-    is_active: true,
-    skills: ['Node.js', 'Express'],
-    availability: 80,
-    performance_rating: 4.0
-  }
-];
-
 describe('TeamList', () => {
   const mockFetchTeams = jest.fn();
-  const mockDeleteTeam = jest.fn();
-  const mockGetTeamMembers = jest.fn();
+  const mockOnEdit = jest.fn();
+  const mockOnDelete = jest.fn();
+  const mockOnViewDetails = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
     const mockStore = {
       teams: mockTeams,
-      teamMembers: mockTeamMembers,
       loading: false,
       error: null,
-      fetchTeams: mockFetchTeams,
-      deleteTeam: mockDeleteTeam,
-      getTeamMembers: mockGetTeamMembers
+      fetchTeams: mockFetchTeams
     };
     (useEntityStore as unknown as jest.Mock).mockImplementation(() => mockStore);
   });
 
   it('renders loading state', () => {
     (useEntityStore as unknown as jest.Mock).mockImplementation(() => ({
+      teams: [],
       loading: true,
-      error: null
+      error: null,
+      fetchTeams: mockFetchTeams
     }));
 
-    render(<TeamList />);
+    render(<TeamList onEdit={mockOnEdit} onDelete={mockOnDelete} onViewDetails={mockOnViewDetails} />);
     expect(screen.getByTestId('loading')).toBeInTheDocument();
   });
 
   it('renders error state', () => {
     const errorMessage = 'Failed to load teams';
     (useEntityStore as unknown as jest.Mock).mockImplementation(() => ({
+      teams: [],
       loading: false,
-      error: errorMessage
+      error: errorMessage,
+      fetchTeams: mockFetchTeams
     }));
 
-    render(<TeamList />);
-    expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    render(<TeamList onEdit={mockOnEdit} onDelete={mockOnDelete} onViewDetails={mockOnViewDetails} />);
+    expect(screen.getByTestId('error')).toHaveTextContent(errorMessage);
   });
 
   it('renders teams list', () => {
-    render(<TeamList />);
+    render(<TeamList onEdit={mockOnEdit} onDelete={mockOnDelete} onViewDetails={mockOnViewDetails} />);
     
     expect(screen.getByText('Team 1')).toBeInTheDocument();
     expect(screen.getByText('Description 1')).toBeInTheDocument();
     expect(screen.getByText('5')).toBeInTheDocument();
-    expect(screen.getByText('React, TypeScript')).toBeInTheDocument();
+    expect(screen.getByText('React')).toBeInTheDocument();
+    expect(screen.getByText('TypeScript')).toBeInTheDocument();
   });
 
   it('handles team deletion', async () => {
     window.confirm = jest.fn(() => true);
-    render(<TeamList />);
+    render(<TeamList onEdit={mockOnEdit} onDelete={mockOnDelete} onViewDetails={mockOnViewDetails} />);
 
-    const deleteButtons = screen.getAllByText('Delete');
+    const deleteButtons = screen.getAllByTestId('delete-button');
     fireEvent.click(deleteButtons[0]);
 
-    expect(window.confirm).toHaveBeenCalled();
-    expect(mockDeleteTeam).toHaveBeenCalledWith('1');
+    expect(mockOnDelete).toHaveBeenCalledWith(mockTeams[0]);
+  });
+
+  it('handles team editing', () => {
+    render(<TeamList onEdit={mockOnEdit} onDelete={mockOnDelete} onViewDetails={mockOnViewDetails} />);
+
+    const editButtons = screen.getAllByTestId('edit-button');
+    fireEvent.click(editButtons[0]);
+
+    expect(mockOnEdit).toHaveBeenCalledWith(mockTeams[0]);
+  });
+
+  it('handles viewing team details', () => {
+    render(<TeamList onEdit={mockOnEdit} onDelete={mockOnDelete} onViewDetails={mockOnViewDetails} />);
+
+    const viewButtons = screen.getAllByTestId('view-details-button');
+    fireEvent.click(viewButtons[0]);
+
+    expect(mockOnViewDetails).toHaveBeenCalledWith(mockTeams[0]);
   });
 
   it('shows empty state when no teams exist', () => {
     (useEntityStore as unknown as jest.Mock).mockImplementation(() => ({
       teams: [],
       loading: false,
-      error: null
+      error: null,
+      fetchTeams: mockFetchTeams
     }));
 
-    render(<TeamList />);
+    render(<TeamList onEdit={mockOnEdit} onDelete={mockOnDelete} onViewDetails={mockOnViewDetails} />);
     expect(screen.getByText('No teams found. Create a new team to get started.')).toBeInTheDocument();
+  });
+
+  it('filters teams based on search term', () => {
+    render(<TeamList onEdit={mockOnEdit} onDelete={mockOnDelete} onViewDetails={mockOnViewDetails} />);
+    
+    const searchInput = screen.getByTestId('search-input');
+    fireEvent.change(searchInput, { target: { value: 'React' } });
+    
+    expect(screen.getByText('Team 1')).toBeInTheDocument();
+    expect(screen.queryByText('Team 2')).not.toBeInTheDocument();
+  });
+
+  it('handles pagination', () => {
+    // Create more teams to test pagination
+    const manyTeams = Array.from({ length: 15 }, (_, i) => ({
+      ...mockTeams[0],
+      id: `${i + 1}`,
+      name: `Team ${i + 1}`
+    }));
+    
+    (useEntityStore as unknown as jest.Mock).mockImplementation(() => ({
+      teams: manyTeams,
+      loading: false,
+      error: null,
+      fetchTeams: mockFetchTeams
+    }));
+
+    render(<TeamList onEdit={mockOnEdit} onDelete={mockOnDelete} onViewDetails={mockOnViewDetails} />);
+    
+    // First page should show first 10 teams
+    expect(screen.getByText('Team 1')).toBeInTheDocument();
+    expect(screen.getByText('Team 10')).toBeInTheDocument();
+    expect(screen.queryByText('Team 11')).not.toBeInTheDocument();
+    
+    // Navigate to next page
+    const nextButton = screen.getByText('Next');
+    fireEvent.click(nextButton);
+    
+    // Second page should show remaining teams
+    expect(screen.queryByText('Team 1')).not.toBeInTheDocument();
+    expect(screen.getByText('Team 11')).toBeInTheDocument();
+    expect(screen.getByText('Team 15')).toBeInTheDocument();
   });
 }); 
