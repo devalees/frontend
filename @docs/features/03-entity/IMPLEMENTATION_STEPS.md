@@ -123,7 +123,7 @@
 
 ### Phase 4: Department Management
 1. **Set Up Tests**
-   - [ ] Create Department component tests
+   - [x] Create Department component tests
      - Directory: `src/tests/components/features/entity/departments/`
      - Test each component individually
      - Test component integration with hooks and store
