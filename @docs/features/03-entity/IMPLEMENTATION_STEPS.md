@@ -294,20 +294,20 @@
 
 ### Phase 8: Entity Analytics and Reporting
 1. **Set Up Tests**
-   - [ ] Create Entity Analytics component tests
+   - [x] Create Entity Analytics component tests
      - Directory: `src/tests/components/features/entity/analytics/`
      - Test each component individually
      - Test component integration with hooks and store
      - Use `componentTestUtils.ts` for component testing
 
 2. **Create Entity Analytics Components**
-   - [ ] Implement organization analytics component
+   - [x] Implement organization analytics component
      - File: `src/components/features/entity/analytics/OrganizationAnalytics.tsx`
      - Display organization analytics
      - Show key metrics and charts
      - Add actions for exporting data
 
-   - [ ] Implement organization activity component
+   - [x] Implement organization activity component
      - File: `src/components/features/entity/analytics/OrganizationActivity.tsx`
      - Display organization activity
      - Show recent activities and engagement metrics

@@ -178,6 +178,8 @@ based on project rules and implementation steps file and the following plan:
 - Use `functionTestUtils.ts` for utility function tests
 - Use `integrationTestUtils.ts` for integration tests
 - Use `mockApi.ts` for mocking API responses
+- Use `Link.tsx` or `NavButton.tsx` for Navigation
+- Use `PaginatedList.tsx` for Pagination List
 . Follow the existing project architecture
 . Use Core Technologies stated in project rules.
 
@@ -195,15 +197,17 @@ based on project rules and implementation steps file and the following plan:
      
 ## Implementation Guidelines:-
 1. Use Core Technologies stated in project rules.
-2. Reuse existing components and utilities
-3. Focus on one feature at a time
-4. Follow the existing project architecture
-5. All API endpoints @ ## API Integration Details in implementation steps file
+2. Use `Link.tsx` or `NavButton.tsx` for Navigation
+3. Use `PaginatedList.tsx` for Pagination List
+4. Reuse existing components and utilities
+5. Focus on one feature at a time
+6. Follow the existing project architecture
+7. All API endpoints @ ## API Integration Details in implementation steps file
 
-
-update the implementation steps file to reflect our progress
-run the test to verify that the actual implementation is passed
-run global npm test to verify that the actual implementation is passed
+- if there is Button for Navigation You MUST use `NavButton.tsx`
+- update the implementation steps file to reflect our progress
+- run the test to verify that the actual implementation is passed
+- run global npm test to verify that the actual implementation is passed
 
 git reset --hard HEAD
 git clean -fd
