@@ -247,7 +247,7 @@
      - Add navigation and breadcrumbs
      - Handle team member management actions
 
-   - [ ] Implement team member detail page
+   - [x] Implement team member detail page
      - File: `src/app/(dashboard)/entities/team-members/[id]/page.tsx`
      - Use team member detail component
      - Add navigation and breadcrumbs
