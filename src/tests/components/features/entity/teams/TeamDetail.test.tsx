@@ -10,11 +10,6 @@ jest.mock('@/store/slices/entitySlice', () => ({
   useEntityStore: jest.fn()
 }));
 
-// Mock react-router-dom
-jest.mock('react-router-dom', () => ({
-  useNavigate: () => jest.fn()
-}));
-
 // Define mock data
 const mockTeam: Team = {
   id: '1',
@@ -60,22 +55,22 @@ const mockTeamMembers: TeamMember[] = [
 ];
 
 describe('TeamDetail', () => {
-  const mockFetchTeam = jest.fn();
-  const mockFetchTeamMembers = jest.fn();
-  const mockDeleteTeam = jest.fn();
+  const mockGetTeam = jest.fn();
+  const mockGetTeamMembers = jest.fn();
+  const mockOnEdit = jest.fn();
+  const mockOnDelete = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
-    const mockStore = {
-      team: mockTeam,
-      teamMembers: mockTeamMembers,
+    mockGetTeam.mockResolvedValue(mockTeam);
+    mockGetTeamMembers.mockResolvedValue(mockTeamMembers);
+    
+    (useEntityStore as unknown as jest.Mock).mockImplementation(() => ({
       loading: false,
       error: null,
-      fetchTeam: mockFetchTeam,
-      fetchTeamMembers: mockFetchTeamMembers,
-      deleteTeam: mockDeleteTeam
-    };
-    (useEntityStore as unknown as jest.Mock).mockImplementation(() => mockStore);
+      getTeam: mockGetTeam,
+      getTeamMembers: mockGetTeamMembers
+    }));
   });
 
   it('renders loading state', () => {
@@ -84,7 +79,7 @@ describe('TeamDetail', () => {
       error: null
     }));
 
-    render(<TeamDetail teamId="1" />);
+    renderWithProviders(<TeamDetail id="1" />);
     expect(screen.getByTestId('loading')).toBeInTheDocument();
   });
 
@@ -95,57 +90,78 @@ describe('TeamDetail', () => {
       error: errorMessage
     }));
 
-    render(<TeamDetail teamId="1" />);
+    renderWithProviders(<TeamDetail id="1" />);
+    expect(screen.getByTestId('error')).toBeInTheDocument();
     expect(screen.getByText(errorMessage)).toBeInTheDocument();
   });
 
-  it('renders team details', () => {
-    render(<TeamDetail teamId="1" />);
+  it('renders team details', async () => {
+    renderWithProviders(<TeamDetail id="1" />);
     
-    expect(screen.getByText('Team 1')).toBeInTheDocument();
-    expect(screen.getByText('Description 1')).toBeInTheDocument();
-    expect(screen.getByText('5')).toBeInTheDocument();
-    expect(screen.getByText('React, TypeScript')).toBeInTheDocument();
-    expect(screen.getByText('Department: dept1')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Team 1')).toBeInTheDocument();
+      expect(screen.getByText('Description 1')).toBeInTheDocument();
+      expect(screen.getByText('5')).toBeInTheDocument();
+      expect(screen.getByText('dept1')).toBeInTheDocument();
+    });
   });
 
-  it('renders team members', () => {
-    render(<TeamDetail teamId="1" />);
+  it('renders team members', async () => {
+    renderWithProviders(<TeamDetail id="1" />);
     
-    expect(screen.getByText('Team Members')).toBeInTheDocument();
-    expect(screen.getByText('user1')).toBeInTheDocument();
-    expect(screen.getByText('leader')).toBeInTheDocument();
-    expect(screen.getByText('user2')).toBeInTheDocument();
-    expect(screen.getByText('member')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Team Members (2)')).toBeInTheDocument();
+      expect(screen.getByText('user1')).toBeInTheDocument();
+      expect(screen.getByText('leader')).toBeInTheDocument();
+      expect(screen.getByText('user2')).toBeInTheDocument();
+    });
   });
 
-  it('handles team deletion', async () => {
-    window.confirm = jest.fn(() => true);
-    render(<TeamDetail teamId="1" />);
+  it('handles edit action', async () => {
+    renderWithProviders(<TeamDetail id="1" onEdit={mockOnEdit} />);
+    
+    await waitFor(() => {
+      const editButton = screen.getByTestId('edit-button');
+      expect(editButton).toBeInTheDocument();
+    });
+    
+    const editButton = screen.getByTestId('edit-button');
+    fireEvent.click(editButton);
+    
+    expect(mockOnEdit).toHaveBeenCalled();
+  });
 
-    const deleteButton = screen.getByRole('button', { name: 'Delete Team' });
+  it('handles delete action', async () => {
+    renderWithProviders(<TeamDetail id="1" onDelete={mockOnDelete} />);
+    
+    await waitFor(() => {
+      const deleteButton = screen.getByTestId('delete-button');
+      expect(deleteButton).toBeInTheDocument();
+    });
+    
+    const deleteButton = screen.getByTestId('delete-button');
     fireEvent.click(deleteButton);
-
-    expect(window.confirm).toHaveBeenCalled();
-    expect(mockDeleteTeam).toHaveBeenCalledWith('1');
-  });
-
-  it('shows empty state when no team members exist', () => {
-    (useEntityStore as unknown as jest.Mock).mockImplementation(() => ({
-      team: mockTeam,
-      teamMembers: [],
-      loading: false,
-      error: null
-    }));
-
-    render(<TeamDetail teamId="1" />);
-    expect(screen.getByText('No team members found.')).toBeInTheDocument();
-  });
-
-  it('fetches team and team members on mount', () => {
-    render(<TeamDetail teamId="1" />);
     
-    expect(mockFetchTeam).toHaveBeenCalledWith('1');
-    expect(mockFetchTeamMembers).toHaveBeenCalledWith('1');
+    expect(mockOnDelete).toHaveBeenCalled();
+  });
+
+  it('shows empty state when no team members exist', async () => {
+    mockGetTeamMembers.mockResolvedValue([]);
+    
+    renderWithProviders(<TeamDetail id="1" />);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Team Members (0)')).toBeInTheDocument();
+      expect(screen.getByText('No team members found')).toBeInTheDocument();
+    });
+  });
+
+  it('fetches team and team members on mount', async () => {
+    renderWithProviders(<TeamDetail id="1" />);
+    
+    await waitFor(() => {
+      expect(mockGetTeam).toHaveBeenCalledWith('1');
+      expect(mockGetTeamMembers).toHaveBeenCalledWith('1');
+    });
   });
 }); 

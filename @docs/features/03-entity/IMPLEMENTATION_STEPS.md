@@ -188,7 +188,7 @@
      - Use existing form components
      - Add validation and error handling
 
-   - [ ] Implement team detail component
+   - [x] Implement team detail component
      - File: `src/components/features/entity/teams/TeamDetail.tsx`
      - Display team details
      - Show related members
