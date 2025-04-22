@@ -253,7 +253,7 @@
      - Add navigation and breadcrumbs
      - Handle team member detail actions
 
-   - [ ] Implement team member edit page
+   - [x] Implement team member edit page
      - File: `src/app/(dashboard)/entities/team-members/[id]/edit/page.tsx`
      - Use team member form component
      - Add navigation and breadcrumbs
@@ -261,26 +261,26 @@
 
 ### Phase 7: Organization Settings Management
 1. **Set Up Tests**
-   - [ ] Create Organization Settings component tests
+   - [x] Create Organization Settings component tests
      - Directory: `src/tests/components/features/entity/organization-settings/`
      - Test each component individually
      - Test component integration with hooks and store
      - Use `componentTestUtils.ts` for component testing
 
 2. **Create Organization Settings Components**
-   - [ ] Implement organization settings form component
+   - [x] Implement organization settings form component
      - File: `src/components/features/entity/organization-settings/OrganizationSettingsForm.tsx`
      - Create form for managing organization settings
      - Use existing form components
      - Add validation and error handling
 
-   - [ ] Implement organization settings detail component
+   - [x] Implement organization settings detail component
      - File: `src/components/features/entity/organization-settings/OrganizationSettingsDetail.tsx`
      - Display organization settings details
      - Add actions for managing settings
 
 3. **Create Organization Settings Pages**
-   - [ ] Implement organization settings page
+   - [x] Implement organization settings page
      - File: `src/app/(dashboard)/entities/organization-settings/page.tsx`
      - Use organization settings form component
      - Add navigation and breadcrumbs
