@@ -130,7 +130,7 @@
      - Use `componentTestUtils.ts` for component testing
 
 2. **Create Department Components**
-   - [ ] Implement department list component
+   - [x] Implement department list component
      - File: `src/components/features/entity/departments/DepartmentList.tsx`
      - Display departments in a table or list
      - Support filtering and pagination
