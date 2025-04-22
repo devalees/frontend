@@ -234,7 +234,7 @@
      - Use existing form components
      - Add validation and error handling
 
-   - [ ] Implement team member detail component
+   - [x] Implement team member detail component
      - File: `src/components/features/entity/team-members/TeamMemberDetail.tsx`
      - Display team member details
      - Show related teams and roles
