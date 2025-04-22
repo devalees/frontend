@@ -286,7 +286,7 @@
      - Add navigation and breadcrumbs
      - Handle organization settings management actions
 
-   - [ ] Implement organization settings edit page
+   - [x] Implement organization settings edit page
      - File: `src/app/(dashboard)/entities/organization-settings/[id]/edit/page.tsx`
      - Use organization settings form component
      - Add navigation and breadcrumbs
