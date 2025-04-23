@@ -326,7 +326,7 @@
      - Add actions for filtering and exporting
 
 3. **Create Entity Analytics Pages**
-   - [ ] Implement organization analytics page
+   - [x] Implement organization analytics page
      - File: `src/app/(dashboard)/entities/organizations/[id]/analytics/page.tsx`
      - Use organization analytics components
      - Add navigation and breadcrumbs
