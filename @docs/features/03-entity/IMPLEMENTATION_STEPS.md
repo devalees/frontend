@@ -334,7 +334,7 @@
 
 ### Phase 9: Entity Hierarchy Visualization
 1. **Set Up Tests**
-   - [ ] Create Entity Hierarchy component tests
+   - [x] Create Entity Hierarchy component tests
      - Directory: `src/tests/components/features/entity/hierarchy/`
      - Test each component individually
      - Test component integration with hooks and store
