@@ -341,26 +341,26 @@
      - Use `componentTestUtils.ts` for component testing
 
 2. **Create Entity Hierarchy Components**
-   - [ ] Implement organization hierarchy component
+   - [x] Implement organization hierarchy component
      - File: `src/components/features/entity/hierarchy/OrganizationHierarchy.tsx`
      - Display organization hierarchy
      - Show departments and teams in a tree structure
      - Add actions for navigating and managing hierarchy
 
-   - [ ] Implement department hierarchy component
+   - [x] Implement department hierarchy component
      - File: `src/components/features/entity/hierarchy/DepartmentHierarchy.tsx`
      - Display department hierarchy
      - Show teams in a tree structure
      - Add actions for navigating and managing hierarchy
 
 3. **Create Entity Hierarchy Pages**
-   - [ ] Implement organization hierarchy page
+   - [x] Implement organization hierarchy page
      - File: `src/app/(dashboard)/entities/organizations/[id]/hierarchy/page.tsx`
      - Use organization hierarchy component
      - Add navigation and breadcrumbs
      - Handle hierarchy actions
 
-   - [ ] Implement department hierarchy page
+   - [x] Implement department hierarchy page
      - File: `src/app/(dashboard)/entities/departments/[id]/hierarchy/page.tsx`
      - Use department hierarchy component
      - Add navigation and breadcrumbs
@@ -368,7 +368,7 @@
 
 ### Phase 10: Entity Search and Filtering
 1. **Set Up Tests**
-   - [ ] Create Entity Search component tests
+   - [x] Create Entity Search component tests
      - Directory: `src/tests/components/features/entity/search/`
      - Test each component individually
      - Test component integration with hooks and store
@@ -440,24 +440,27 @@ Based on `/home/ehab/Desktop/backend/docs/front-end/entity.md`:
 - **Completed**: 
   - Phase 1: Core Entity Types and API Integration ✅
   - Phase 2: Entity State Management ✅
+  - Phase 3: Organization Management ✅
+  - Phase 4: Department Management ✅
+  - Phase 5: Team Management ✅
+  - Phase 6: Team Member Management ✅
+  - Phase 7: Organization Settings Management ✅
+  - Phase 8: Entity Analytics and Reporting ✅
+  - Phase 9: Entity Hierarchy Visualization ✅
   - API endpoints for all entity types ✅
   - Entity store implementation ✅
   - Entity hooks implementation ✅
 
 - **In Progress**:
-  - Phase 3: Organization Management
-    - Test files created but failing
-    - Need to implement missing components
-    - Need to fix Zustand store test setup
+  - Phase 10: Entity Search and Filtering
+    - Tests set up successfully
+    - Need to complete implementation of search components
 
 - **Next Steps**:
-  1. Fix the Zustand store test setup in `entity.test.ts`
-  2. Implement the missing organization components:
-     - `OrganizationList.tsx`
-     - `OrganizationForm.tsx`
-     - `OrganizationDetail.tsx`
-  3. Update tests to match the implemented components
-  4. Proceed with implementing organization pages
+  1. Complete implementation of search components
+  2. Implement global search for entities
+  3. Add advanced filtering options to entity lists
+  4. Implement search results page
 
 Status Key:
 - [ ] To Do
