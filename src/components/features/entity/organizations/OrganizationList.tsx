@@ -79,8 +79,11 @@ export const OrganizationList: React.FC<OrganizationListProps> = ({
             <NavButton
               variant="outline"
               size="small"
-              href={`/organizations/${row.id}`}
-              onClick={() => onViewDetails(row)}
+              href={`/entities/organizations/${row.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                onViewDetails(row);
+              }}
               data-testid="view-details-button"
             >
               View
@@ -90,8 +93,11 @@ export const OrganizationList: React.FC<OrganizationListProps> = ({
             <NavButton
               variant="outline"
               size="small"
-              href={`/organizations/${row.id}/edit`}
-              onClick={() => onEdit(row)}
+              href={`/entities/organizations/${row.id}/edit`}
+              onClick={(e) => {
+                e.preventDefault();
+                onEdit(row);
+              }}
               data-testid="edit-button"
             >
               Edit

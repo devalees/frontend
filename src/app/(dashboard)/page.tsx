@@ -66,6 +66,11 @@ export default function DashboardPage() {
               </Link>
             </li>
             <li>
+              <Link href="/entities" className="text-blue-600 hover:underline">
+                Manage Entities
+              </Link>
+            </li>
+            <li>
               <Link href="/projects" className="text-blue-600 hover:underline">
                 Manage Projects
               </Link>
@@ -105,6 +110,45 @@ export default function DashboardPage() {
         >
           View Auth Details
         </Link>
+      </div>
+      
+      <div className="mt-6 bg-gradient-to-r from-indigo-50 to-blue-50 border border-blue-200 rounded-lg p-5">
+        <div className="flex items-start space-x-4">
+          <div className="bg-white p-3 rounded-full shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-indigo-900">Entity Management</h3>
+            <p className="text-indigo-700 mb-3">
+              Manage your organizations, departments, teams, and team members in one place.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Link 
+                href="/entities" 
+                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 inline-flex items-center text-sm"
+              >
+                View All Entities
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+              <Link 
+                href="/entities/organizations" 
+                className="bg-white text-indigo-600 border border-indigo-200 px-3 py-1 rounded hover:bg-indigo-50 text-sm"
+              >
+                Organizations
+              </Link>
+              <Link 
+                href="/entities/teams" 
+                className="bg-white text-indigo-600 border border-indigo-200 px-3 py-1 rounded hover:bg-indigo-50 text-sm"
+              >
+                Teams
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -40,8 +40,15 @@ try {
   expectFn = { getState: () => ({ testPath: '' }) };
 }
 
-// Base URL for entity endpoints
-const BASE_URL = '/api/v1/entity';
+// Use the correct base URL that points to the backend
+const BASE_URL = 'http://localhost:8000/api/v1';
+
+/**
+ * Ensure path has trailing slash
+ */
+const ensureTrailingSlash = (path: string): string => {
+  return path.endsWith('/') ? path : `${path}/`;
+};
 
 /**
  * Helper function to determine if we are running the hierarchy tests
@@ -116,12 +123,37 @@ export const organizationApi = {
    */
   getOrganizations: async (params?: Record<string, any>): Promise<EntityPaginatedResponse<Organization>> => {
     try {
+      const url = ensureTrailingSlash(`${BASE_URL}/organizations`);
+      console.log('Fetching organizations from:', url);
+      
+      // Make the request with proper error handling
       const response = await axios.get<ApiResponse<EntityPaginatedResponse<Organization>>>(
-        `${BASE_URL}/organizations/`,
-        { params }
+        url,
+        { 
+          params,
+          // Prevent redirect loops
+          maxRedirects: 3,
+          // Allow cross-origin requests
+          withCredentials: true,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        }
       );
+      
+      console.log('Organizations API response status:', response.status);
       return formatResponse<EntityPaginatedResponse<Organization>>(response);
     } catch (error) {
+      console.error('Error fetching organizations:', error);
+      
+      // Log detailed error information
+      if (axios.isAxiosError(error)) {
+        console.error('Error response:', error.response);
+        console.error('Error request:', error.request);
+        console.error('Error config:', error.config);
+      }
+      
       return handleApiError(error);
     }
   },
@@ -317,12 +349,34 @@ export const departmentApi = {
    */
   getDepartments: async (params?: Record<string, any>): Promise<EntityPaginatedResponse<Department>> => {
     try {
+      const url = ensureTrailingSlash(`${BASE_URL}/departments`);
+      console.log('Fetching departments from:', url);
       const response = await axios.get<ApiResponse<EntityPaginatedResponse<Department>>>(
-        `${BASE_URL}/departments/`,
-        { params }
+        url,
+        { 
+          params,
+          // Prevent redirect loops
+          maxRedirects: 3,
+          // Allow cross-origin requests
+          withCredentials: true,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        }
       );
+      console.log('Departments API response status:', response.status);
       return formatResponse<EntityPaginatedResponse<Department>>(response);
     } catch (error) {
+      console.error('Error fetching departments:', error);
+      
+      // Log detailed error information
+      if (axios.isAxiosError(error)) {
+        console.error('Error response:', error.response);
+        console.error('Error request:', error.request);
+        console.error('Error config:', error.config);
+      }
+      
       return handleApiError(error);
     }
   },
@@ -472,12 +526,34 @@ export const teamApi = {
    */
   getTeams: async (params?: Record<string, any>): Promise<EntityPaginatedResponse<Team>> => {
     try {
+      const url = ensureTrailingSlash(`${BASE_URL}/teams`);
+      console.log('Fetching teams from:', url);
       const response = await axios.get<ApiResponse<EntityPaginatedResponse<Team>>>(
-        `${BASE_URL}/teams/`,
-        { params }
+        url,
+        { 
+          params,
+          // Prevent redirect loops
+          maxRedirects: 3,
+          // Allow cross-origin requests
+          withCredentials: true,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        }
       );
+      console.log('Teams API response status:', response.status);
       return formatResponse<EntityPaginatedResponse<Team>>(response);
     } catch (error) {
+      console.error('Error fetching teams:', error);
+      
+      // Log detailed error information
+      if (axios.isAxiosError(error)) {
+        console.error('Error response:', error.response);
+        console.error('Error request:', error.request);
+        console.error('Error config:', error.config);
+      }
+      
       return handleApiError(error);
     }
   },
@@ -591,12 +667,34 @@ export const teamMemberApi = {
    */
   getTeamMembers: async (params?: Record<string, any>): Promise<EntityPaginatedResponse<TeamMember>> => {
     try {
+      const url = ensureTrailingSlash(`${BASE_URL}/team-members`);
+      console.log('Fetching team members from:', url);
       const response = await axios.get<ApiResponse<EntityPaginatedResponse<TeamMember>>>(
-        `${BASE_URL}/team-members/`,
-        { params }
+        url,
+        { 
+          params,
+          // Prevent redirect loops
+          maxRedirects: 3,
+          // Allow cross-origin requests
+          withCredentials: true,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        }
       );
+      console.log('Team members API response status:', response.status);
       return formatResponse<EntityPaginatedResponse<TeamMember>>(response);
     } catch (error) {
+      console.error('Error fetching team members:', error);
+      
+      // Log detailed error information
+      if (axios.isAxiosError(error)) {
+        console.error('Error response:', error.response);
+        console.error('Error request:', error.request);
+        console.error('Error config:', error.config);
+      }
+      
       return handleApiError(error);
     }
   },
@@ -692,12 +790,34 @@ export const organizationSettingsApi = {
    */
   getOrganizationSettings: async (params?: Record<string, any>): Promise<EntityPaginatedResponse<OrganizationSettings>> => {
     try {
+      const url = ensureTrailingSlash(`${BASE_URL}/organization-settings`);
+      console.log('Fetching organization settings from:', url);
       const response = await axios.get<ApiResponse<EntityPaginatedResponse<OrganizationSettings>>>(
-        `${BASE_URL}/organization-settings/`,
-        { params }
+        url,
+        { 
+          params,
+          // Prevent redirect loops
+          maxRedirects: 3,
+          // Allow cross-origin requests
+          withCredentials: true,
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        }
       );
+      console.log('Organization settings API response status:', response.status);
       return formatResponse<EntityPaginatedResponse<OrganizationSettings>>(response);
     } catch (error) {
+      console.error('Error fetching organization settings:', error);
+      
+      // Log detailed error information
+      if (axios.isAxiosError(error)) {
+        console.error('Error response:', error.response);
+        console.error('Error request:', error.request);
+        console.error('Error config:', error.config);
+      }
+      
       return handleApiError(error);
     }
   },

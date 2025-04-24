@@ -123,8 +123,12 @@ export const TeamMemberList: React.FC<TeamMemberListProps> = ({
   ];
 
   const filteredMembers = teamMembers.filter(member => {
-    const matchesSearch = member.user_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         member.role.toLowerCase().includes(searchTerm.toLowerCase());
+    const memberUserId = member.user_id ? member.user_id.toLowerCase() : '';
+    const memberRole = member.role ? member.role.toLowerCase() : '';
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    
+    const matchesSearch = memberUserId.includes(lowerSearchTerm) || 
+                         memberRole.includes(lowerSearchTerm);
     const matchesRole = !roleFilter || member.role === roleFilter;
     return matchesSearch && matchesRole;
   });

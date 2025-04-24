@@ -24,7 +24,8 @@ const ENV_API_TIMEOUT = 'NEXT_PUBLIC_API_TIMEOUT';
 
 // Default configuration
 const DEFAULT_TIMEOUT = 10000;
-const DEFAULT_BASE_URL = 'http://localhost:8000/api/';
+// Use relative URL to leverage Next.js rewrites
+const DEFAULT_BASE_URL = '';
 
 // Extended axios request config with retry options
 interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
@@ -33,6 +34,7 @@ interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
   maxRetries?: number;
   debug?: boolean;
   validateStatus?: (status: number) => boolean;
+  maxRedirects?: number;
 }
 
 /**
@@ -50,7 +52,8 @@ export function getEnvironmentConfig(): ExtendedAxiosRequestConfig {
     debug: isDevelopment || isTest,
     headers: {
       'Content-Type': 'application/json'
-    }
+    },
+    maxRedirects: 3, // Reduced from 5 to prevent excessive redirects
   };
   
   // Development-specific configuration
@@ -220,6 +223,8 @@ export const setupInterceptors = (instance: AxiosInstance): void => {
   // Request interceptor for authentication
   instance.interceptors.request.use(
     (config) => {
+      console.log('Making API request to:', (config.baseURL || '') + (config.url || ''));
+      
       const token = tokenRefresh.getAccessToken();
       if (token) {
         config.headers = config.headers || {};
